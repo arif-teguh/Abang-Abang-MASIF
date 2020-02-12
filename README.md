@@ -1,2 +1,2 @@
-# Abang Abang-MASIF
-
+# MASIF
+Magang Intensif
