@@ -25,7 +25,7 @@ SECRET_KEY = '2=t-_dm)m_1&_fw&e^trsauh_zkjagkhwe#-bd^ouv6fd35^2v'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["localhost", "0.0.0.0", "127.0.0.1", "masif.herokuapp.com"]
 
 
 # Application definition
@@ -75,8 +75,11 @@ WSGI_APPLICATION = 'masifapp.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'HOST': 'db',
+        'PORT': 5432,
     }
 }
 
