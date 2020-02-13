@@ -1,4 +1,9 @@
+.vscode
+
 Pipfile.lock
 
 .coverage
 **/__pycache__/
+
+builds/
+static/
