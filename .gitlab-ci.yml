@@ -13,6 +13,7 @@ Test:
         - coverage report
     only:
         - staging
+    coverage: '/TOTAL\s+\d+\s+\d+\s+(\d+%)/'
 
 Staging:
     stage: deploy
