@@ -1,27 +1,39 @@
 stages:
-    - test
-    - deploy
-  
+  - test
+  - deploy
+
 Test:
-    stage: test
-    image: python:3.7
-    script:
-        - apt-get update -qy
-        - apt-get install -y python-dev python-pip
-        - pip install -r requirements.txt
-        - coverage run --source='.' manage.py test hello
-        - coverage report
-    only:
-        - staging
-    coverage: '/TOTAL\s+\d+\s+\d+\s+(\d+%)/'
+  stage: test
+  image: python:3.7
+  before_script:
+    - apt-get update -qy
+  script:
+    - apt-get install -y python-dev python-pip
+    - pip install -r requirements.txt
+    - coverage run --source='.' manage.py test hello
+    - coverage report
+  only:
+    - staging
+  coverage: '/TOTAL\s+\d+\s+\d+\s+(\d+%)/'
+
+SonarScanner:
+  stage: test
+  image: addianto/sonar-scanner-cli:latest
+  script:
+    - sonar-scanner \
+      -Dsonar.host.url=$SONARQUBE_HOST \
+      -Dsonar.login=$SONARQUBE_TOKEN \
+      -Dsonar.projectKey=$SONARQUBE_PROJECT_KEY \
+      -Dsonar.branch.name=$CI_COMMIT_REF_NAME
 
 Staging:
-    stage: deploy
-    image: ruby:2.7
-    script:
-        - apt-get update -qy
-        - apt-get install -y ruby-dev
-        - gem install dpl
-        - dpl --provider=heroku --app=masif --api-key=$HEROKU_STAGING_API_KEY
-    only:
-        - staging
+  stage: deploy
+  image: ruby:2.7
+  before_script:
+    - apt-get update -qy
+  script:
+    - apt-get install -y ruby-dev
+    - gem install dpl
+    - dpl --provider=heroku --app=$HEROKU_APPNAME --api-key=$HEROKU_STAGING_API_KEY
+  only:
+    - staging

@@ -1,9 +1,16 @@
+# Visual Studio Code dep
 .vscode
 
+# Pipenv dep
 Pipfile.lock
 
+# Django dep
 .coverage
 **/__pycache__/
-
-builds/
 static/
+
+# Gitlab runner dep
+builds/
+
+# SonarQube dep
+.scannerwork/
