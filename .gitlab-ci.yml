@@ -12,8 +12,6 @@ Test:
     - pip install -r requirements.txt
     - coverage run --source='.' manage.py test hello
     - coverage report
-  only:
-    - staging
   coverage: '/TOTAL\s+\d+\s+\d+\s+(\d+%)/'
 
 SonarScanner:
@@ -33,15 +31,3 @@ SonarScanner:
       -Dsonar.login=$SONARQUBE_TOKEN 
       -Dsonar.projectKey=$SONARQUBE_PROJECT_KEY 
       -Dsonar.branch.name=$CI_COMMIT_REF_NAME
-
-Staging:
-  stage: deploy
-  image: ruby:2.7
-  before_script:
-    - apt-get update -qy
-  script:
-    - apt-get install -y ruby-dev
-    - gem install dpl
-    - dpl --provider=heroku --app=$HEROKU_APPNAME --api-key=$HEROKU_STAGING_API_KEY
-  only:
-    - staging
