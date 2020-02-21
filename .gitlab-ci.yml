@@ -5,6 +5,9 @@ stages:
 Test:
   stage: test
   image: python:3.7
+  services: 
+    - name: postgres:12-alpine
+      alias: db
   before_script:
     - apt-get update -qy
   script:
