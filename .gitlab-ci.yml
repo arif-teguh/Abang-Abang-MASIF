@@ -17,7 +17,7 @@ Test:
   script:
     - apt-get install -y python-dev python-pip
     - pip install -r requirements.txt
-    - coverage run --source='.' manage.py test hello
+    - coverage run --source='.' manage.py test
     - coverage report
   coverage: '/TOTAL\s+\d+\s+\d+\s+(\d+%)/'
 
