@@ -10,8 +10,12 @@ class AdminUnitTest(TestCase):
         response = Client().get('/admin/')
         self.assertEqual(response.status_code, 200)
 
+    def test_admin_login_url_exist(self):
+        response = Client().get('/admin/')
+        self.assertEqual(response.status_code, 200)
+
     def test_admin_login_using_admin_login_function(self):
-        function_used = resolve('/admin/')
+        function_used = resolve('/admin/login/')
         self.assertEqual(function_used.func, views.admin_login)
 
     def test_page_title_admin_login(self):
@@ -21,7 +25,7 @@ class AdminUnitTest(TestCase):
         self.assertIn('<title>Admin Login</title>', html_response)
 
     def test_using_admin_login_html(self):
-        response = Client().get('/admin/')
-        self.assertTemplateUsed(response, 'admin_login.html')
+        response = Client().get('/admin/login/')
+        self.assertTemplateUsed(response, 'admin/admin_login.html')
 
 # Create your tests here.
