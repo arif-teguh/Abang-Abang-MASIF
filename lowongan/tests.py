@@ -1,3 +1,14 @@
-from django.test import TestCase
+from django.http import HttpRequest
+from django.test import TestCase, Client
+from django.urls import resolve
 
-# Create your tests here.
+from . import views
+
+class LowonganFormTest(TestCase):
+    def test_form_lowongan_url_exist(self):
+        response = Client().get('/lowongan/opd/form/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_form_lowongan_using_form_lowongan_function(self):
+        function_used = resolve('/lowongan/opd/form/')
+        self.assertEqual(function_used.func, views.show_form_lowongan)
