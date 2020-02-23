@@ -30,7 +30,7 @@ class AdminUnitTest(TestCase):
 
     def test_submit_button_exist(self):
         request = HttpRequest()
-        response = views.index(request)
+        response = views.admin_login(request)
         html_response = response.content.decode('utf8')
         self.assertIn('<button type="submit"', html_response)
 

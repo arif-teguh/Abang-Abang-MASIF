@@ -1,6 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
+    <style>
+        #submit-btn {
+            width: 100%
+        }
+
+        .admin-login-items {
+            margin-bottom: 2em;
+        }
+    </style>
+
+
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
@@ -13,10 +25,28 @@
             integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
             crossorigin="anonymous"></script>
 
+    <!-- Belom bisa pake static file -->
+    <link rel="stylesheet" type="text/css" href="./style.css">
+
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Admin Login</title>
 </head>
 <body>
+<div class="container-fluid">
+    <div class="row justify-content-center" style="height: 100vh">
+        <div class="col-4 align-self-center">
+            <form>
 
+                <h1 class="admin-login-items">Masuk Sebagai Admin</h1>
+                <input type="email" class="form-control admin-login-items" id="inputUsername"
+                       placeholder="Username">
+                <input type="password" class="form-control admin-login-items" id="inputPassword"
+                       placeholder="Password">
+                <button type="submit" class="btn btn-primary admin-login-items" id="submit-btn">Submit</button>
+            </form>
+        </div>
+    </div>
+</div>
 </body>
 </html>

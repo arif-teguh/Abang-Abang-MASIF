@@ -7,4 +7,4 @@ def admin_login(request):
 
 
 def admin_index(request):
-    return HttpResponse("<h1>Hello</h1>")
+    return HttpResponse("<h1>sssssssaassssa</h1>")
