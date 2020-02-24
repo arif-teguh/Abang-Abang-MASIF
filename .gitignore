@@ -8,6 +8,7 @@ Pipfile.lock
 .coverage
 **/__pycache__/
 static/
+coverage.xml
 
 # Gitlab runner dep
 builds/
