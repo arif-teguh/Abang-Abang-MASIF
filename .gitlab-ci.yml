@@ -1,4 +1,5 @@
 stages:
+  - lint
   - test
   - sonarqube
 
@@ -9,6 +10,20 @@ variables:
   POSTGRES_USER: postgres
   POSTGRES_PASSWORD: "postgres"
 
+Lint:
+  stage: lint
+  image: python:3.7
+  script:
+    - apt-get update -qy
+    - apt-get install -y python-dev python-pip
+    - pip install -r requirements.txt
+    - pylint --load-plugins=pylint_django --rcfile=.pylintrc  admin kesbangpol opd user -r n --exit-zero > pylint_report.txt
+  artifacts:
+    untracked: true
+    expire_in: 1 day
+    paths:
+      - pylint_report.txt
+
 Test:
   stage: test
   image: python:3.7
@@ -17,7 +32,7 @@ Test:
   script:
     - apt-get install -y python-dev python-pip
     - pip install -r requirements.txt
-    - coverage run --source='.' manage.py test hello
+    - coverage run --source='.' manage.py test
     - coverage xml -i
     - coverage report
   coverage: '/TOTAL\s+\d+\s+\d+\s+(\d+%)/'
@@ -26,6 +41,7 @@ Test:
     expire_in: 1 day
     paths:
       - coverage.xml
+      - pylint_report.txt
 
 SonarScanner:
   stage: sonarqube
@@ -45,5 +61,7 @@ SonarScanner:
       -Dsonar.projectKey=$SONARQUBE_PROJECT_KEY
       -Dsonar.branch.name=$CI_COMMIT_REF_NAME
       -Dsonar.python.coverage.reportPaths=coverage.xml
+      -Dsonar.python.pylint.reportPath=pylint_report.txt
   dependencies:
+    - Lint
     - Test
