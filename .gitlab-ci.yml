@@ -1,6 +1,6 @@
 stages:
   - test
-  - deploy
+  - sonarqube
 
 services:
   - postgres:12-alpine
@@ -18,11 +18,17 @@ Test:
     - apt-get install -y python-dev python-pip
     - pip install -r requirements.txt
     - coverage run --source='.' manage.py test hello
+    - coverage xml -i
     - coverage report
   coverage: '/TOTAL\s+\d+\s+\d+\s+(\d+%)/'
+  artifacts:
+    untracked: true
+    expire_in: 1 day
+    paths:
+      - coverage.xml
 
 SonarScanner:
-  stage: test
+  stage: sonarqube
   image:
     name: sonarsource/sonar-scanner-cli:latest
     entrypoint: [""]
@@ -38,3 +44,6 @@ SonarScanner:
       -Dsonar.login=$SONARQUBE_TOKEN
       -Dsonar.projectKey=$SONARQUBE_PROJECT_KEY
       -Dsonar.branch.name=$CI_COMMIT_REF_NAME
+      -Dsonar.python.coverage.reportPaths=coverage.xml
+  dependencies:
+    - Test
