@@ -17,13 +17,8 @@ Test:
   script:
     - apt-get install -y python-dev python-pip
     - pip install -r requirements.txt
-<<<<<<< HEAD
-    - coverage run --source='.' manage.py test
-=======
-    - 'pylint --load-plugins=pylint_django --rcfile=.pylintrc  admin kesbangpol opd user -r n --msg-template="{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}" > report.txt'
     - coverage run --source='.' manage.py test
     - coverage xml -i
->>>>>>> ed92f06f1b026647aae709f7cfbd05ec3481e34a
     - coverage report
   coverage: '/TOTAL\s+\d+\s+\d+\s+(\d+%)/'
   artifacts:
@@ -31,7 +26,6 @@ Test:
     expire_in: 1 day
     paths:
       - coverage.xml
-      - pylint_report.txt
 
 SonarScanner:
   stage: sonarqube
@@ -51,6 +45,5 @@ SonarScanner:
       -Dsonar.projectKey=$SONARQUBE_PROJECT_KEY
       -Dsonar.branch.name=$CI_COMMIT_REF_NAME
       -Dsonar.python.coverage.reportPaths=coverage.xml
-      -Dsonar.python.pylint.reportPath=pylint_report.txt
   dependencies:
     - Test

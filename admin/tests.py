@@ -10,10 +10,6 @@ class AdminUnitTest(TestCase):
         response = Client().get('/admin/')
         self.assertEqual(response.status_code, 200)
 
-    def test_admin_login_url_exist(self):
-        response = Client().get('/admin/')
-        self.assertEqual(response.status_code, 200)
-
     def test_admin_login_using_admin_login_function(self):
         function_used = resolve('/admin/login/')
         self.assertEqual(function_used.func, views.admin_login)
