@@ -38,3 +38,8 @@ max-module-lines=1000
 # String used as indentation unit. This is usually " " (4 spaces) or "\t" (1
 # tab).
 indent-string='    '
+
+[REPORTS]
+output-format=text
+files-output=no
+msg-template='{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}'
