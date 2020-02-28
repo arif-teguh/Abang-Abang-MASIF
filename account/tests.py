@@ -1,5 +1,5 @@
 from django.test import TestCase
-
+from account.models import Account, AdminProfile, OpdProfile, AccountManager
 
 
 # Create your tests here.
