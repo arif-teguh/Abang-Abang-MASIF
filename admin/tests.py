@@ -7,10 +7,6 @@ from .admin_login_form import AdminAuthenticationForm
 
 
 class AdminUnitTest(TestCase):
-    def test_admin_url_exist(self):
-        response = Client().get('/admin/')
-        self.assertEqual(response.status_code, 200)
-
     def test_page_title_admin_login(self):
         request = HttpRequest()
         response = views.admin_login(request)
