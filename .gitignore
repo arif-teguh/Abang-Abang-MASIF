@@ -1,6 +1,6 @@
 # Visual Studio Code dep
 .vscode
-
+venv/
 # Pipenv dep
 Pipfile.lock
 
