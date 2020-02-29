@@ -1,6 +1,7 @@
 from django.http import HttpRequest
 from django.test import TestCase, Client
 
+from account.models import Account
 from . import views
 from .admin_login_form import AdminAuthenticationForm
 
@@ -37,4 +38,45 @@ class AdminUnitTest(TestCase):
         response = Client().get('/admin/login/')
         self.assertIsInstance(response.context["form"], AdminAuthenticationForm)
 
-    # Create your tests here.
+    def test_admin_page_not_authenticated(self):
+        response = Client().get('/admin/')
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual('/account-redirector', response.url)
+
+    def test_admin_access_admin_page(self):
+        request = HttpRequest()
+        Account.objects.create_user(email='test@mail.com', password='12345678')
+        created_mock_user = Account.objects.all()[0]
+        request.user = created_mock_user
+        request.user.is_admin = True
+        request.user.is_opd = False
+        request.user.is_user = False
+        request.user.is_superuser = False
+        response = views.admin_index(request=request)
+        self.assertEqual(response.status_code, 200)
+
+    def test_opd_access_admin_page(self):
+        request = HttpRequest()
+        Account.objects.create_user(email='test@mail.com', password='12345678')
+        created_mock_user = Account.objects.all()[0]
+        request.user = created_mock_user
+        request.user.is_admin = False
+        request.user.is_opd = True
+        request.user.is_user = False
+        request.user.is_superuser = False
+        response = views.admin_index(request=request)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual('/account-redirector', response.url)
+
+    def test_user_access_admin_page(self):
+        request = HttpRequest()
+        Account.objects.create_user(email='test@mail.com', password='12345678')
+        created_mock_user = Account.objects.all()[0]
+        request.user = created_mock_user
+        request.user.is_admin = False
+        request.user.is_opd = False
+        request.user.is_user = True
+        request.user.is_superuser = False
+        response = views.admin_index(request=request)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual('/account-redirector', response.url)
