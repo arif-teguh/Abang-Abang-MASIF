@@ -1,8 +1,8 @@
 from django.http import HttpRequest
 from django.test import TestCase, Client
-from django.urls import resolve
 
 from . import views
+from .admin_login_form import AdminAuthenticationForm
 
 
 class AdminUnitTest(TestCase):
@@ -26,4 +26,15 @@ class AdminUnitTest(TestCase):
         html_response = response.content.decode('utf8')
         self.assertIn('<button type="submit"', html_response)
 
-# Create your tests here.
+    def test_admin_login_page_is_set_up_as_expected(self):
+        response = Client().get('/admin/login/')
+        self.assertEqual(200, response.status_code)
+        form = response.context['form']
+        self.assertTrue(
+            isinstance(form, AdminAuthenticationForm), type(form).__mro__)
+
+    def test_displays_admin_login_form(self):
+        response = Client().get('/admin/login/')
+        self.assertIsInstance(response.context["form"], AdminAuthenticationForm)
+
+    # Create your tests here.
