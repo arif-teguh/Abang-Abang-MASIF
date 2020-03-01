@@ -3,10 +3,11 @@ from django.urls import resolve
 from django.http import HttpRequest
 from . import views
 from account.models import Account
+from lowongan.models import Lowongan
 from .opd_login_form import OpdAuthenticationForm
 
 
-class OpdUnitTest(TestCase):
+class LoginOpdUnitTest(TestCase):
     #login
     def test_page_title_opd_login(self):
         request = HttpRequest()
@@ -41,6 +42,7 @@ class OpdUnitTest(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual('/account-redirector', response.url)
 
+class OpdRedirectUnitTest(TestCase):
     def test_opd_access_opd_page(self):
         request = HttpRequest()
         Account.objects.create_user(email='test@mail.com', password='12345678')
@@ -87,7 +89,7 @@ class OpdUnitTest(TestCase):
 
 
 
-#lowongan
+
     def test_opd_lowongan_template(self):
         response = self.client.get('/opd/lowongan/')
         self.assertTemplateUsed(response,'opd_lowongan.html')
@@ -97,7 +99,7 @@ class OpdUnitTest(TestCase):
         self.assertEqual(found.func, views.opd_lowongan)
 
     
-
+class LowonganOpdUnitTest(TestCase):
     def test_click_lowongan_button_exist(self):
         request = HttpRequest()
         response = views.opd_lowongan(request)
