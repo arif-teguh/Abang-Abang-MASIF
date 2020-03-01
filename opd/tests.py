@@ -144,4 +144,4 @@ class DetailLowonganOpdUnitTest(TestCase):
 
     def test_using_opd_index_func(self):
         found = resolve('/opd/lowongan/detail-1')
-        self.assertEqual(found.func, views.opd_lowongan)
+        self.assertEqual(found.func, views.opd_detail_lowongan)
