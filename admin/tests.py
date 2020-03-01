@@ -81,3 +81,51 @@ class AdminUnitTest(TestCase):
     def test_using_admin_index_func(self):
         found = resolve('/admin/')
         self.assertEqual(found.func, views.admin_index)
+
+    def test_admin_tambahkan_opd_not_authenticated_redirect_to_home(self):
+        request = HttpRequest()
+        response = views.admin_list_opd(request=request)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual('/account-redirector', response.url)
+
+    def test_using_admin_list_opd_func(self):
+        found = resolve('/admin/')
+        self.assertEqual(found.func, views.admin_list_opd)
+
+    def test_admin_access_admin_opd_list_page(self):
+        request = HttpRequest()
+        Account.objects.create_user(email='test@mail.com', password='12345678')
+        created_mock_user = Account.objects.all()[0]
+        request.user = created_mock_user
+        request.user.is_admin = True
+        request.user.is_opd = False
+        request.user.is_user = False
+        request.user.is_superuser = False
+        response = views.admin_list_opd(request=request)
+        self.assertEqual(response.status_code, 200)
+
+    def test_opd_access_admin_opd_list_page(self):
+        request = HttpRequest()
+        Account.objects.create_user(email='test@mail.com', password='12345678')
+        created_mock_user = Account.objects.all()[0]
+        request.user = created_mock_user
+        request.user.is_admin = False
+        request.user.is_opd = True
+        request.user.is_user = False
+        request.user.is_superuser = False
+        response = views.admin_list_opd(request=request)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual('/account-redirector', response.url)
+
+    def test_user_access_admin_opd_list_page(self):
+        request = HttpRequest()
+        Account.objects.create_user(email='test@mail.com', password='12345678')
+        created_mock_user = Account.objects.all()[0]
+        request.user = created_mock_user
+        request.user.is_admin = False
+        request.user.is_opd = False
+        request.user.is_user = True
+        request.user.is_superuser = False
+        response = views.admin_list_opd(request=request)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual('/account-redirector', response.url)
