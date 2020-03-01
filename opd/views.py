@@ -15,6 +15,6 @@ def opd_lowongan(request):
     list_lowongan = Lowongan.objects.all()
     return render(request,'opd_lowongan.html', {'list_lowongan': list_lowongan})
 
-def opd_detail_lowongan(request, id_lowongan):
-    
-    return render(request,'opd_detail_lowongan.html')
+def opd_detail_lowongan(request,id_lowongan):
+    lowongan = Lowongan.objects.get(id = id_lowongan)
+    return render(request,'opd_detail_lowongan.html' , {'lowongan': lowongan})
