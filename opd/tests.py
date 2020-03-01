@@ -3,7 +3,7 @@ from django.urls import resolve
 from django.http import HttpRequest
 from . import views
 from account.models import Account
-
+from .opd_login_form import OpdAuthenticationForm
 
 class OpdUnitTest(TestCase):
     def test_page_title_opd_login(self):

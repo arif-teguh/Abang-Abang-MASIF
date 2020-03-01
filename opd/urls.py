@@ -1,7 +1,11 @@
+from django.contrib.auth.views import LoginView
 from django.urls import path
+
+from opd.opd_login_form import OpdAuthenticationForm
 
 from . import views
 
 urlpatterns = [
-    path('login/', views.opd_login, name='opd_login')
+    
+    path('login/', LoginView.as_view(template_name='opd_login.html',form_class=OpdAuthenticationForm,),name='opd_login'),
 ]
