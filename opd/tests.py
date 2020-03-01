@@ -83,23 +83,32 @@ class OpdRedirectUnitTest(TestCase):
 
     def test_using_opd_index_func(self):
         found = resolve('/opd/')
-        self.assertEqual(found.func, views.admin_index)
+        self.assertEqual(found.func, views.opd_index)
 
 
-
-
-
-
-    def test_opd_lowongan_template(self):
-        response = self.client.get('/opd/lowongan/')
-        self.assertTemplateUsed(response,'opd_lowongan.html')
-
-    def test_using_opd_index_func(self):
-        found = resolve('/opd/lowongan/')
-        self.assertEqual(found.func, views.opd_lowongan)
-
-    
 class LowonganOpdUnitTest(TestCase):
+    def setUp(self):
+        self.account1 = Account.objects.create_superuser(email="test@mail.com", password="1234")
+        self.opd1 = Account.objects.all()[0]
+        '''
+        opd_profile = OpdProfile(user=self.opd1,
+                                 unique_opd_attribute="opd")
+        opd_profile.save()
+        '''
+
+        self.client.force_login(self.account1)
+        self.lowongan1 = Lowongan.objects.create(
+            judul = 'judul1',
+            penyedia = 'opd1',
+            jumlah_tersedia = 10,
+            durasi_magang = 10,
+            jangka_waktu_lamaran = 10,
+            berkas = 'berkas1',
+            deskripsi = 'deskripsi1',
+            requirement = 'requirement1',
+            opd_foreign_key_id = self.opd1.id
+        )
+
     def test_click_lowongan_button_exist(self):
         request = HttpRequest()
         response = views.opd_lowongan(request)
@@ -111,4 +120,19 @@ class LowonganOpdUnitTest(TestCase):
         response = views.opd_lowongan(request)
         html_response = response.content.decode('utf8')
         self.assertIn('<title>lowongan</title>', html_response)
+
+    
+    def test_opd_lowongan_template(self):
+        response = self.client.get('/opd/lowongan/')
+        self.assertTemplateUsed(response,'opd_lowongan.html')
+
+    def test_using_opd_index_func(self):
+        found = resolve('/opd/lowongan/')
+        self.assertEqual(found.func, views.opd_lowongan)
+
+    def test_get_lowongan_item(self):
+        result = views.opd_get_lowongan
+        self.assertEqual(result, self.lowongan1.objects.all())
+
+
 
