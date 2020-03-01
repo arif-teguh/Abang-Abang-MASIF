@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'landing',
     'base',
     'cari_lowongan',
+    'detail_lowongan',
 ]
 
 MIDDLEWARE = [
