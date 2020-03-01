@@ -9,3 +9,6 @@ def opd_index(request):
         return HttpResponse("<h1>opd PAGE, Under Construction</h1>")
     else:
         return redirect('/account-redirector')
+
+def opd_lowongan(request):
+    return render(request,'opd_lowongan.html')
