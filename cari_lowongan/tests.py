@@ -19,7 +19,7 @@ class testing_landing(TestCase):
     def test_cari_lowongan_content(self):
         response = Client().get('/cari-lowongan/')
         html_response = response.content.decode('utf8')
-        self.assertIn('<title>Daftar Lowongan</title>', html_response)
+        self.assertIn('<title>Cari Lowongan</title>', html_response)
 
     def test_cari_lowongan_func(self):
         found = resolve('/cari-lowongan/')
