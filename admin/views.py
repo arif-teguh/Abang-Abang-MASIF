@@ -1,6 +1,9 @@
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 
+def get_all_opd():
+    pass
+
 def user_is_admin(request):
     return request.user.is_authenticated and request.user.is_admin and not request.user.is_opd and not request.user.is_user
 
