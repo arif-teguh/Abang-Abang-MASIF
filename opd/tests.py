@@ -138,10 +138,22 @@ class LowonganOpdUnitTest(TestCase):
 
 
 class DetailLowonganOpdUnitTest(TestCase):
-    def test_opd_lowongan_template(self):
+    def test_opd_detail_lowongan_template(self):
         response = self.client.get('/opd/lowongan/detail-1')
         self.assertTemplateUsed(response,'opd_detail_lowongan.html')
 
-    def test_using_opd_index_func(self):
+    def test_using_opd_detail_lowongan_func(self):
         found = resolve('/opd/lowongan/detail-1')
         self.assertEqual(found.func, views.opd_detail_lowongan)
+
+    def test_click_detail_lowongan_button_exist(self):
+        request = HttpRequest()
+        response = views.opd_lowongan(request)
+        html_response = response.content.decode('utf8')
+        self.assertIn('<button ', html_response)
+
+    def test_page_title_opd_detail_lowngan_lowongan(self):
+        request = HttpRequest()
+        response = views.opd_lowongan(request)
+        html_response = response.content.decode('utf8')
+        self.assertIn('<title>Detail Lowongan</title>', html_response)
