@@ -20,7 +20,7 @@ def admin_index(request):
         return render(request, 'admin/admin_index.html')
     else:
         return redirect('/account-redirector')
-#aaaaaaa
+    
 def admin_list_opd(request):
     if user_is_admin(request):
         return render(request, 'admin/admin_list_opd.html', {'list_opd' : get_all_opd()})
