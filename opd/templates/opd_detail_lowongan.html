@@ -1,49 +1,72 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
-    <style>
-        #submit-btn {
-            width: 100%
-        }
-
-        .admin-login-items {
-            margin-bottom: 2em;
-        }
-    </style>
-
-
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-            crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
-            integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
-            crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
-            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
-            crossorigin="anonymous"></script>
-
-    <!-- Belom bisa pake static file -->
-    <link rel="stylesheet" type="text/css" href="./style.css">
-
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" type="text/css" href='{% static "/css/detail_lowongan.css" %}'>
     <title>Detail Lowongan</title>
 </head>
 <body>
-<div class="container-fluid">
-    <div class="row justify-content-center" style="height: 100vh">
-        <div class="col-4 align-self-center">
-        <button type="button" class="btn btn-primary mt-auto">Edit Lowongan</button>
-         {{ lowongan.judul }}
-          {{lowongan.deskripsi}}
-           {{ lowongan.penyedia}}
-            {{ lowongan.requirement}}
-             {{ lowongan.durasi_magang}}
+
+
+
+<div class="pg-container">
+    <div class="outer-box">
+        <div class="row inner-box">
+            <div class="col-2 col1">
+                <img>
+                <p>Dinas Depok</p>
+            </div>
+            <div class="col-9 align-self-center col2">
+                <p id="judul-lowongan">{{ lowongan.judul }}</p>
+                <p>{{ lowongan.penyedia}}</p>
+            </div>
+            <div class="col-1 d-flex align-items-end flex-column col3">
+                <button type="button" class="btn btn-primary mt-auto">Lihat Daftar pelamar</button>
+            </div>
         </div>
     </div>
 </div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-8" style="text-align: left">
+            <b id="bold-text">Deskripsi Job</b>
+            <p>  {{lowongan.deskripsi}}  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+                tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
+                veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
+                commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
+                velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+                cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id
+                est laborum.</p>
+        </div>
+        <div class="col-4" style="text-align: left">
+            <b id="bold-text">Detail</b>
+            <p>{{ lowongan.jumlah_tersedia}}<br>
+                {{ lowongan.durasi_magang}}
+            </p>
+            <button type="button" class="btn btn-primary mt-auto">Edit Lowongan</button>
+            <button type="button" class="btn btn-primary mt-auto">Tutup Lowongan</button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <b id="bold-text">Syarat</b>
+            <p>1{{ lowongan.requirement}}<br>
+                2.<br>
+                3.<br>
+                4.
+            </p>
+        </div>
+    </div>
+
+</div>
+
 </body>
 </html>
+
+         
+         
+           
+            
+             
