@@ -96,3 +96,17 @@ class OpdUnitTest(TestCase):
         found = resolve('/opd/lowongan/')
         self.assertEqual(found.func, views.opd_lowongan)
 
+    
+
+    def test_click_lowongan_button_exist(self):
+        request = HttpRequest()
+        response = views.opd_lowongan(request)
+        html_response = response.content.decode('utf8')
+        self.assertIn('<button ', html_response)
+
+    def test_page_title_opd_lowongan(self):
+        request = HttpRequest()
+        response = views.opd_lowongan(request)
+        html_response = response.content.decode('utf8')
+        self.assertIn('<title>Lowongan</title>', html_response)
+
