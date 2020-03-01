@@ -138,6 +138,27 @@ class LowonganOpdUnitTest(TestCase):
 
 
 class DetailLowonganOpdUnitTest(TestCase):
+    def setUp(self):
+        self.account1 = Account.objects.create_superuser(email="test@mail.com", password="1234")
+        self.opd1 = Account.objects.all()[0]
+        '''
+        opd_profile = OpdProfile(user=self.opd1,
+                                 unique_opd_attribute="opd")
+        opd_profile.save()
+        '''
+
+        self.client.force_login(self.account1)
+        self.lowongan1 = Lowongan.objects.create(
+            judul = 'judul1',
+            penyedia = 'opd1',
+            jumlah_tersedia = 10,
+            durasi_magang = 10,
+            jangka_waktu_lamaran = 10,
+            berkas = 'berkas1',
+            deskripsi = 'deskripsi1',
+            requirement = 'requirement1',
+            opd_foreign_key_id = self.opd1.id
+        )
     def test_opd_detail_lowongan_template(self):
         response = self.client.get('/opd/lowongan/detail-1/')
         self.assertTemplateUsed(response,'opd_detail_lowongan.html')
@@ -157,3 +178,18 @@ class DetailLowonganOpdUnitTest(TestCase):
         response = views.opd_detail_lowongan(request,1)
         html_response = response.content.decode('utf8')
         self.assertIn('<title>Detail Lowongan</title>', html_response)
+    
+    def test_get_lowongan_item(self):
+        url = '/opd/lowongan/detail-' + self.lowongan1.id
+        response = self.client.get(url)
+        self.assertContains(response,self.lowongan1.judul)
+        self.assertContains(response,self.lowongan1.penyedia)
+        self.assertContains(response,self.lowongan1.requirement)
+        self.assertContains(response,self.lowongan1.deskripsi)
+        self.assertContains(response,self.durasi_magang)
+        
+
+
+
+
+    
