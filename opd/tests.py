@@ -137,3 +137,11 @@ class LowonganOpdUnitTest(TestCase):
             
 
 
+class DetailLowonganOpdUnitTest(TestCase):
+    def test_opd_lowongan_template(self):
+        response = self.client.get('/opd/lowongan/detail-1')
+        self.assertTemplateUsed(response,'opd_detail_lowongan.html')
+
+    def test_using_opd_index_func(self):
+        found = resolve('/opd/lowongan/detail-1')
+        self.assertEqual(found.func, views.opd_lowongan)
