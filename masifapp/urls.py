@@ -16,12 +16,9 @@ Including another URLconf
 from django.urls import path, include
 
 urlpatterns = [
-<<<<<<< HEAD
     path('opd/', include('opd.urls')),
-=======
     path('admin/', include('admin.urls')),
     path('', include('hello.urls')),
     path('account-redirector', include('account_redirector.urls')),
 
->>>>>>> 2d2b3783f3fc3ea3fc5ef308004755abb0295b27
 ]
