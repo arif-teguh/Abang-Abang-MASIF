@@ -131,8 +131,9 @@ class LowonganOpdUnitTest(TestCase):
         self.assertEqual(found.func, views.opd_lowongan)
 
     def test_get_lowongan_item(self):
-        result = views.opd_get_lowongan
-        self.assertEqual(result, self.lowongan1.objects.all())
-
+        response = self.client.get('/opd/lowongan/')
+        self.assertContains(response,self.lowongan1.judul)
+        self.assertContains(response,self.lowongan1.penyedia)
+            
 
 
