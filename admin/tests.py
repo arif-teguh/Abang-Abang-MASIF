@@ -130,7 +130,6 @@ class AdminUnitTest(TestCase):
         self.assertEqual('/account-redirector', response.url)
 
     def test_function_get_all_opd_database_has_opd(self):
-        all_opd = views.get_all_opd()
         Account.objects.create_user(email='test@mail.com', password='12345678')
         created_mock_user = Account.objects.all()[0]
         created_mock_user.is_opd = True
@@ -138,6 +137,8 @@ class AdminUnitTest(TestCase):
         created_mock_user.is_admin = False
         created_mock_user.is_user = False
         created_mock_user.is_staff = False
+        created_mock_user.save()
+        all_opd = views.get_all_opd()
         self.assertEqual([created_mock_user], all_opd)
 
     def test_function_get_all_opd_database_empty(self):
