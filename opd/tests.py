@@ -134,6 +134,11 @@ class LowonganOpdUnitTest(TestCase):
         response = self.client.get('/opd/lowongan/')
         self.assertContains(response,self.lowongan1.judul)
         self.assertContains(response,self.lowongan1.penyedia)
+
+    def test_response(self):
+        response = self.client.get('/opd/lowongan/')
+        self.assertEqual(response.status_code,200)
+
             
 
 
@@ -188,8 +193,11 @@ class DetailLowonganOpdUnitTest(TestCase):
         self.assertContains(response,self.lowongan1.requirement)
         self.assertContains(response,self.lowongan1.deskripsi)
         self.assertContains(response,self.lowongan1.durasi_magang)
-        
 
+
+    def test_response(self):
+        response = self.client.get('/opd/lowongan/detail-' + str(self.lowongan1.id)+'/')
+        self.assertEqual(response.status_code,200)
 
 
 
