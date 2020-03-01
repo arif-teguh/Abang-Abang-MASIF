@@ -7,6 +7,7 @@ from .opd_login_form import OpdAuthenticationForm
 
 
 class OpdUnitTest(TestCase):
+    #login
     def test_page_title_opd_login(self):
         request = HttpRequest()
         response = views.opd_login(request)
@@ -78,7 +79,20 @@ class OpdUnitTest(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual('/account-redirector', response.url)
 
+    def test_using_opd_index_func(self):
+        found = resolve('/opd/')
+        self.assertEqual(found.func, views.admin_index)
 
 
 
+
+
+#lowongan
+    def test_opd_lowongan_template(self):
+        response = self.client.get('/opd/lowongan/')
+        self.assertTemplateUsed(response,'opd_login.html')
+
+    def test_using_opd_index_func(self):
+        found = resolve('/opd/lowongan/')
+        self.assertEqual(found.func, views.opd_lowongan)
 
