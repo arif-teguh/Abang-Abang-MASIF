@@ -9,7 +9,7 @@ def admin_login(request):
 
 
 def admin_index(request):
-    if request.user.is_authenticated and request.user.is_admin and not request.user.is_opd and not request.user.is_user:
+    if user_is_admin(request):
         return render(request, 'admin/admin_index.html')
     else:
         return redirect('/account-redirector')
