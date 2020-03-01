@@ -10,4 +10,5 @@ urlpatterns = [
                                      form_class=AdminAuthenticationForm,
                                      ),
          name='admin_login'),
+    path('listopd/', views.admin_list_opd, name='admin_list_opd')
 ]
