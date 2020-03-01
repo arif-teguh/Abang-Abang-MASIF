@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'lowongan',
+    'admin.apps.AdminConfig',
     'account',
 ]
 
@@ -70,6 +71,8 @@ TEMPLATES = [
         },
     },
 ]
+
+AUTH_USER_MODEL = 'account.Account'
 
 WSGI_APPLICATION = 'masifapp.wsgi.application'
 
@@ -132,3 +135,5 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATIC_ROOT = os.getcwd()+"/static"
+
+LOGIN_REDIRECT_URL = '/account-redirector'
