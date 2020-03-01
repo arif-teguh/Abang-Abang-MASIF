@@ -23,7 +23,7 @@ class testing_landing(TestCase):
     def test_landing_content(self):
         response = Client().get('/landing/')
         html_response = response.content.decode('utf8')
-        self.assertIn('<title>Home</title>', html_response)
+        self.assertIn('<title>Beranda</title>', html_response)
 
     def test_landing_func(self):
         found = resolve('/landing/')
