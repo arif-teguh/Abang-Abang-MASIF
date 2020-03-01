@@ -1,5 +1,6 @@
 from django.http import HttpRequest
 from django.test import TestCase, Client
+from django.urls import resolve
 
 from account.models import Account
 from . import views
@@ -76,3 +77,7 @@ class AdminUnitTest(TestCase):
         response = views.admin_index(request=request)
         self.assertEqual(response.status_code, 302)
         self.assertEqual('/account-redirector', response.url)
+
+    def test_using_admin_index_func(self):
+        found = resolve('/admin/')
+        self.assertEqual(found.func, views.admin_index)
