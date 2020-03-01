@@ -5,6 +5,7 @@ from . import views
 from account.models import Account
 from .opd_login_form import OpdAuthenticationForm
 
+
 class OpdUnitTest(TestCase):
     def test_page_title_opd_login(self):
         request = HttpRequest()
@@ -33,3 +34,51 @@ class OpdUnitTest(TestCase):
     def test_displays_opd_login_form(self):
         response = Client().get('/opd/login/')
         self.assertIsInstance(response.context["form"], OpdAuthenticationForm)
+
+    def test_opd_page_not_authenticated(self):
+        response = Client().get('/opd/')
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual('/account-redirector', response.url)
+
+    def test_opd_access_opd_page(self):
+        request = HttpRequest()
+        Account.objects.create_user(email='test@mail.com', password='12345678')
+        created_mock_user = Account.objects.all()[0]
+        request.user = created_mock_user
+        request.user.is_admin = False
+        request.user.is_opd = True
+        request.user.is_user = False
+        request.user.is_superuser = False
+        response = views.opd_index(request=request)
+        self.assertEqual(response.status_code, 200)
+
+    def test_admin_access_opd_page(self):
+        request = HttpRequest()
+        Account.objects.create_user(email='test@mail.com', password='12345678')
+        created_mock_user = Account.objects.all()[0]
+        request.user = created_mock_user
+        request.user.is_admin = True
+        request.user.is_opd = False
+        request.user.is_user = False
+        request.user.is_superuser = False
+        response = views.opd_index(request=request)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual('/account-redirector', response.url)
+
+    def test_user_access_opd_page(self):
+        request = HttpRequest()
+        Account.objects.create_user(email='test@mail.com', password='12345678')
+        created_mock_user = Account.objects.all()[0]
+        request.user = created_mock_user
+        request.user.is_admin = False
+        request.user.is_opd = False
+        request.user.is_user = True
+        request.user.is_superuser = False
+        response = views.opd_index(request=request)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual('/account-redirector', response.url)
+
+
+
+
+
