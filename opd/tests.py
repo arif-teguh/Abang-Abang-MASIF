@@ -108,5 +108,5 @@ class OpdUnitTest(TestCase):
         request = HttpRequest()
         response = views.opd_lowongan(request)
         html_response = response.content.decode('utf8')
-        self.assertIn('<title>Lowongan</title>', html_response)
+        self.assertIn('<title>lowongan</title>', html_response)
 
