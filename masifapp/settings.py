@@ -38,9 +38,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+<<<<<<< masifapp/settings.py
     'admin.apps.AdminConfig',
     'opd',
     'lowongan',
+    'admin.apps.AdminConfig',
     'account',
 ]
 
