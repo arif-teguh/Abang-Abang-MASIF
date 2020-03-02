@@ -236,3 +236,54 @@ class AdminUnitTest(TestCase):
         admin_auth_form = AdminAuthenticationForm()
         with self.assertRaises(forms.ValidationError):
             admin_auth_form.confirm_login_allowed(user=self.created_mock_user)
+
+    def test_delete_opd_account_correct_pk(self):
+        self.created_mock_user.is_opd = True
+        self.created_mock_user.is_superuser = False
+        self.created_mock_user.is_admin = False
+        self.created_mock_user.is_user = False
+        self.created_mock_user.is_staff = False
+        self.created_mock_user.is_active = False
+        self.client.get('/admin/listopd/deleteopd/{}/'.format(self.created_mock_user.pk))
+        all_test_opd = list(Account.objects.all())
+        self.assertEqual([], all_test_opd)
+
+    def test_delete_opd_account_wrong_pk(self):
+        self.created_mock_user.is_opd = True
+        self.created_mock_user.is_superuser = False
+        self.created_mock_user.is_admin = False
+        self.created_mock_user.is_user = False
+        self.created_mock_user.is_staff = False
+        self.created_mock_user.is_active = False
+        with self.assertRaises(TypeError):
+            self.client.get('/admin/listopd/deleteopd/{}/'.format(int(self.created_mock_user.pk) + 1))
+
+    def test_delete_opd_account_string_pk(self):
+        self.created_mock_user.is_opd = True
+        self.created_mock_user.is_superuser = False
+        self.created_mock_user.is_admin = False
+        self.created_mock_user.is_user = False
+        self.created_mock_user.is_staff = False
+        self.created_mock_user.is_active = False
+        with self.assertRaises(TypeError):
+            self.client.get('/admin/listopd/deleteopd/{}/'.format('abcdef'))
+
+    def test_delete_opd_account_mix_string_int_pk(self):
+        self.created_mock_user.is_opd = True
+        self.created_mock_user.is_superuser = False
+        self.created_mock_user.is_admin = False
+        self.created_mock_user.is_user = False
+        self.created_mock_user.is_staff = False
+        self.created_mock_user.is_active = False
+        with self.assertRaises(TypeError):
+            self.client.get('/admin/listopd/deleteopd/{}/'.format('g4bung4n123asdzxc'))
+
+    def test_delete_opd_account_no_pk(self):
+        self.created_mock_user.is_opd = True
+        self.created_mock_user.is_superuser = False
+        self.created_mock_user.is_admin = False
+        self.created_mock_user.is_user = False
+        self.created_mock_user.is_staff = False
+        self.created_mock_user.is_active = False
+        with self.assertRaises(TypeError):
+            self.client.get('/admin/listopd/deleteopd/{}/'.format(''))
