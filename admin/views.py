@@ -2,7 +2,10 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
 
-from account.models import Account
+from account.models import Account, OpdProfile
+from admin.opd_registration_form import OpdRegistrationForm
+from .models import OpdVerificationList
+from .token import generate_opd_token
 
 
 def get_all_opd():
@@ -19,9 +22,9 @@ def get_all_opd():
 
 def user_is_admin(request):
     return request.user.is_authenticated and \
-           request.user.is_admin and \
-           not request.user.is_opd \
-           and not request.user.is_user
+        request.user.is_admin and \
+        not request.user.is_opd \
+        and not request.user.is_user
 
 
 def admin_login(request):
@@ -45,6 +48,33 @@ def admin_list_opd(request):
 
     else:
         return redirect('/admin/login/')
+
+def admin_register_opd(request):
+    if user_is_admin(request):
+        if request.method == 'POST':
+            form = OpdRegistrationForm(request.POST)
+            if form.is_valid():
+                name = form.cleaned_data['opd_name']
+                email = form.cleaned_data['email']
+                phone = form.cleaned_data['phone']
+                secret = generate_opd_token()
+                new_account = OpdVerificationList(
+                    secret=secret, 
+                    name=name, 
+                    email=email, 
+                    phone=phone
+                )
+                new_account.save()
+                return render(request,'admin/admin_activation_link.html', {'secret': secret})
+        else:
+            form = OpdRegistrationForm()
+        return render(
+            request,
+            'admin/admin_register_opd.html',
+            {'form': form}
+        )
+    else:
+        return redirect('/admin/login')
 
 
 @csrf_exempt

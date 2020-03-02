@@ -11,5 +11,7 @@ urlpatterns = [
                                      ),
          name='admin_login'),
     path('listopd/', views.admin_list_opd, name='admin_list_opd'),
+    path('listopd/register/', views.admin_register_opd,
+         name='admin_register_opd'),
     path('listopd/deleteopd/', views.admin_delete_opd, name='admin_delete_opd'),
 ]
