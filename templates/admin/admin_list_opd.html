@@ -100,11 +100,15 @@
 
 <script>
     function deleteOPD(pk) {
-        console.log(">>>> " + pk)
+        $.post("/admin/listopd/deleteopd/", {'pk': pk.toString()}, function (result) {
+            location.reload();
+            console.log('POST>> ' + result);
+        })
+
     }
 
     function deleteButton(pk, name) {
-        console.log(pk, name)
+        console.log(pk, name);
         $('.modal-title').text("HAPUS");
         $('.modal-body').text("Yakin Hapus " + name + "?");
         $('#deleteOPD').attr("onclick", "deleteOPD(" + pk + ")")

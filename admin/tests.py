@@ -105,7 +105,7 @@ class AdminUnitTest(TestCase):
         found = resolve('/admin/')
         self.assertEqual(found.func, views.admin_index)
 
-    def test_admin_list_opd_not_authenticated_redirect_to_admin_login_page(self):
+    def test_admin_list_opd_not_authenticated_redirect_to_admin_login(self):
         response = Client().get('/admin/listopd/')
         self.assertEqual(response.status_code, 302)
         self.assertEqual('/admin/login/', response.url)
@@ -174,7 +174,7 @@ class AdminUnitTest(TestCase):
         all_opd = views.get_all_opd()
         self.assertEqual([], all_opd)
 
-    def test_confirm_login_allowed_function_in_admin_login_form_as_admin_is_active(self):
+    def test_confirm_login_allowed_function_as_admin_is_active(self):
         self.created_mock_user.is_opd = False
         self.created_mock_user.is_superuser = False
         self.created_mock_user.is_admin = True
@@ -182,10 +182,12 @@ class AdminUnitTest(TestCase):
         self.created_mock_user.is_staff = False
         self.created_mock_user.save()
         admin_auth_form = AdminAuthenticationForm()
-        result = admin_auth_form.confirm_login_allowed(user=self.created_mock_user)
+        result = admin_auth_form.confirm_login_allowed(
+            user=self.created_mock_user
+        )
         self.assertEqual(None, result)
 
-    def test_confirm_login_allowed_function_in_admin_login_form_as_opd_is_active(self):
+    def test_confirm_login_allowed_function_as_opd_is_active(self):
         self.created_mock_user.is_opd = True
         self.created_mock_user.is_superuser = False
         self.created_mock_user.is_admin = False
@@ -196,7 +198,7 @@ class AdminUnitTest(TestCase):
         with self.assertRaises(forms.ValidationError):
             admin_auth_form.confirm_login_allowed(user=self.created_mock_user)
 
-    def test_confirm_login_allowed_function_in_admin_login_form_as_user_is_active(self):
+    def test_confirm_login_allowed_function_as_user_is_active(self):
         self.created_mock_user.is_opd = False
         self.created_mock_user.is_superuser = False
         self.created_mock_user.is_admin = False
@@ -207,7 +209,7 @@ class AdminUnitTest(TestCase):
         with self.assertRaises(forms.ValidationError):
             admin_auth_form.confirm_login_allowed(user=self.created_mock_user)
 
-    def test_confirm_login_allowed_function_in_admin_login_form_as_admin_is_not_active(self):
+    def test_confirm_login_allowed_function_as_admin_is_not_active(self):
         self.created_mock_user.is_opd = False
         self.created_mock_user.is_superuser = False
         self.created_mock_user.is_admin = True
@@ -219,7 +221,7 @@ class AdminUnitTest(TestCase):
         with self.assertRaises(forms.ValidationError):
             admin_auth_form.confirm_login_allowed(user=self.created_mock_user)
 
-    def test_confirm_login_allowed_function_in_admin_login_form_as_opd_is_not_active(self):
+    def test_confirm_login_allowed_function_as_opd_is_not_active(self):
         self.created_mock_user.is_opd = True
         self.created_mock_user.is_superuser = False
         self.created_mock_user.is_admin = False
@@ -231,7 +233,7 @@ class AdminUnitTest(TestCase):
         with self.assertRaises(forms.ValidationError):
             admin_auth_form.confirm_login_allowed(user=self.created_mock_user)
 
-    def test_confirm_login_allowed_function_in_admin_login_form_as_user_is_not_active(self):
+    def test_confirm_login_allowed_function_as_user_is_not_active(self):
         self.created_mock_user.is_opd = False
         self.created_mock_user.is_superuser = False
         self.created_mock_user.is_admin = False
@@ -251,9 +253,14 @@ class AdminUnitTest(TestCase):
         self.created_mock_user.is_staff = False
         self.created_mock_user.is_active = False
         self.created_mock_user.save()
-        response = self.client.post('/admin/listopd/deleteopd/', {'pk': self.created_mock_user.pk})
+        response = self.client.post(
+            '/admin/listopd/deleteopd/',
+            {'pk': self.created_mock_user.pk}
+        )
         all_test_opd = list(Account.objects.all())
-        self.assertEqual('Delete OPD Success', response.content.decode('utf8'))
+        self.assertEqual(
+            'Delete OPD Success', response.content.decode('utf8')
+        )
         self.assertEqual(all_test_opd, [])
 
     def test_delete_opd_account_wrong_pk(self):
@@ -265,7 +272,10 @@ class AdminUnitTest(TestCase):
         self.created_mock_user.is_active = False
         self.created_mock_user.save()
         with self.assertRaises(IndexError):
-            self.client.post('/admin/listopd/deleteopd/', {'pk': int(self.created_mock_user.pk) + 1})
+            self.client.post(
+                '/admin/listopd/deleteopd/',
+                {'pk': int(self.created_mock_user.pk) + 1}
+            )
 
     def test_delete_opd_account_string_pk(self):
         self.created_mock_user.is_opd = False
@@ -276,7 +286,10 @@ class AdminUnitTest(TestCase):
         self.created_mock_user.is_active = False
         self.created_mock_user.save()
         with self.assertRaises(ValueError):
-            self.client.post('/admin/listopd/deleteopd/', {'pk': 'abcdef'})
+            self.client.post(
+                '/admin/listopd/deleteopd/',
+                {'pk': 'abcdef'}
+            )
 
     def test_delete_opd_account_mix_string_int_pk(self):
         self.created_mock_user.is_opd = False
@@ -308,9 +321,15 @@ class AdminUnitTest(TestCase):
         self.created_mock_user.is_staff = False
         self.created_mock_user.is_active = False
         self.created_mock_user.save()
-        self.client.post('/admin/listopd/deleteopd/', {'pk': self.created_mock_user.pk})
+        self.client.post(
+            '/admin/listopd/deleteopd/',
+            {'pk': self.created_mock_user.pk}
+        )
         all_test_opd = list(Account.objects.all())
-        self.assertEqual([self.created_mock_user], all_test_opd)
+        self.assertEqual(
+            [self.created_mock_user],
+            all_test_opd
+        )
 
     def test_get_method_in_delete_opd_for_admin(self):
         response = self.client.get('/admin/listopd/deleteopd/')

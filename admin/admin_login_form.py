@@ -13,9 +13,6 @@ class AdminAuthenticationForm(AuthenticationForm):
         ,
         'inactive': "This account is inactive."
     }
-    # widget = forms.TextInput(attrs={'class': 'myfieldclass'})
-    # username = UsernameField(
-    #     widget= forms.TextInput(attrs={'autofocus': True, 'class': 'form-control', 'type': 'email'}))
 
     username = UsernameField(
         widget=forms.TextInput(
@@ -44,6 +41,7 @@ class AdminAuthenticationForm(AuthenticationForm):
             )
         elif not user.is_admin:
             raise forms.ValidationError(
-                'Anda bukan Admin MASIF, Silahkan login menggunakan akun admin MASIF',
+                'Anda bukan Admin MASIF, '
+                'Silahkan login menggunakan akun admin MASIF',
                 code='notadmin'
             )
