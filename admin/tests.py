@@ -1,3 +1,4 @@
+from django.forms import forms
 from django.http import HttpRequest
 from django.test import TestCase, Client
 from django.urls import resolve
@@ -172,3 +173,66 @@ class AdminUnitTest(TestCase):
         self.created_mock_user.save()
         all_opd = views.get_all_opd()
         self.assertEqual([], all_opd)
+
+    def test_confirm_login_allowed_function_in_admin_login_form_as_admin_is_active(self):
+        self.created_mock_user.is_opd = False
+        self.created_mock_user.is_superuser = False
+        self.created_mock_user.is_admin = True
+        self.created_mock_user.is_user = False
+        self.created_mock_user.is_staff = False
+        admin_auth_form = AdminAuthenticationForm()
+        result = admin_auth_form.confirm_login_allowed(user=self.created_mock_user)
+        self.assertEqual(None, result)
+
+    def test_confirm_login_allowed_function_in_admin_login_form_as_opd_is_active(self):
+        self.created_mock_user.is_opd = True
+        self.created_mock_user.is_superuser = False
+        self.created_mock_user.is_admin = False
+        self.created_mock_user.is_user = False
+        self.created_mock_user.is_staff = False
+        admin_auth_form = AdminAuthenticationForm()
+        with self.assertRaises(forms.ValidationError):
+            admin_auth_form.confirm_login_allowed(user=self.created_mock_user)
+
+    def test_confirm_login_allowed_function_in_admin_login_form_as_user_is_active(self):
+        self.created_mock_user.is_opd = False
+        self.created_mock_user.is_superuser = False
+        self.created_mock_user.is_admin = False
+        self.created_mock_user.is_user = True
+        self.created_mock_user.is_staff = False
+        admin_auth_form = AdminAuthenticationForm()
+        with self.assertRaises(forms.ValidationError):
+            admin_auth_form.confirm_login_allowed(user=self.created_mock_user)
+
+    def test_confirm_login_allowed_function_in_admin_login_form_as_admin_is_not_active(self):
+        self.created_mock_user.is_opd = False
+        self.created_mock_user.is_superuser = False
+        self.created_mock_user.is_admin = True
+        self.created_mock_user.is_user = False
+        self.created_mock_user.is_staff = False
+        self.created_mock_user.is_active = False
+        admin_auth_form = AdminAuthenticationForm()
+        with self.assertRaises(forms.ValidationError):
+            admin_auth_form.confirm_login_allowed(user=self.created_mock_user)
+
+    def test_confirm_login_allowed_function_in_admin_login_form_as_opd_is_not_active(self):
+        self.created_mock_user.is_opd = True
+        self.created_mock_user.is_superuser = False
+        self.created_mock_user.is_admin = False
+        self.created_mock_user.is_user = False
+        self.created_mock_user.is_staff = False
+        self.created_mock_user.is_active = False
+        admin_auth_form = AdminAuthenticationForm()
+        with self.assertRaises(forms.ValidationError):
+            admin_auth_form.confirm_login_allowed(user=self.created_mock_user)
+
+    def test_confirm_login_allowed_function_in_admin_login_form_as_user_is_not_active(self):
+        self.created_mock_user.is_opd = False
+        self.created_mock_user.is_superuser = False
+        self.created_mock_user.is_admin = False
+        self.created_mock_user.is_user = True
+        self.created_mock_user.is_staff = False
+        self.created_mock_user.is_active = False
+        admin_auth_form = AdminAuthenticationForm()
+        with self.assertRaises(forms.ValidationError):
+            admin_auth_form.confirm_login_allowed(user=self.created_mock_user)
