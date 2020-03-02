@@ -50,7 +50,7 @@ class AdminUnitTest(TestCase):
     def test_admin_page_not_authenticated(self):
         response = Client().get('/admin/')
         self.assertEqual(response.status_code, 302)
-        self.assertEqual('admin/login/', response.url)
+        self.assertEqual('/admin/login/', response.url)
 
     def test_admin_access_admin_page(self):
         self.request.user.is_admin = True
@@ -107,7 +107,7 @@ class AdminUnitTest(TestCase):
     def test_admin_list_opd_not_authenticated_redirect_to_admin_login_page(self):
         response = Client().get('/admin/listopd/')
         self.assertEqual(response.status_code, 302)
-        self.assertEqual('admin/login/', response.url)
+        self.assertEqual('/admin/login/', response.url)
 
     def test_using_admin_list_opd_func(self):
         found = resolve('/admin/listopd/')
