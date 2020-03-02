@@ -29,3 +29,8 @@ def admin_list_opd(request):
     else:
         return redirect('/admin/login/')
 
+def admin_delete_opd(request):
+
+    pass
+
+
