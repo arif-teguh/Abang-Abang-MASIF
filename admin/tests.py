@@ -2,10 +2,12 @@ from django.forms import forms
 from django.http import HttpRequest
 from django.test import TestCase, Client
 from django.urls import resolve
+from django.core import mail
 
 from account.models import Account
 from admin import views
 from admin.admin_login_form import AdminAuthenticationForm
+from . import mailing
 
 
 class AdminUnitTest(TestCase):
@@ -335,3 +337,32 @@ class AdminUnitTest(TestCase):
         response = self.client.get('/admin/listopd/deleteopd/')
         html_response = response.content.decode('utf8')
         self.assertEqual("Forbidden", html_response)
+        
+class EmailTest(TestCase):
+    verification_url = 'masif.com/abcdefg'
+    recipient_email = 'test@test.com'
+
+    def test_send_email_sent(self):
+        mailing.send_verification_email(
+            self.verification_url,
+            self.recipient_email)
+        self.assertEqual(len(mail.outbox), 1)
+        mail.outbox = []
+
+    def test_email_subject(self):
+        mailing.send_verification_email(
+            self.verification_url,
+            self.recipient_email)
+        self.assertEqual(mail.outbox[0].subject, 'Verifikasi OPD')
+        mail.outbox = []
+
+    def test_email_body(self):
+        mailing.send_verification_email(
+            self.verification_url,
+            self.recipient_email)
+        self.assertIn(self.verification_url, mail.outbox[0].body)
+        mail.outbox = []
+
+    def test_invalid_email(self):
+        with self.assertRaises(ValueError):
+            mailing.send_verification_email(self.verification_url, "test.com")
