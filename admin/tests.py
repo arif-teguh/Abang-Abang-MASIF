@@ -3,14 +3,23 @@ from django.test import TestCase, Client
 from django.urls import resolve
 
 from account.models import Account
-from . import views
-from .admin_login_form import AdminAuthenticationForm
+from admin import views
+from admin.admin_login_form import AdminAuthenticationForm
 
 
 class AdminUnitTest(TestCase):
+    def setUp(self):
+        # Setup run before every test method.
+        self.request = HttpRequest()
+        Account.objects.create_user(email='test@mail.com', password='12345678')
+        self.created_mock_user = Account.objects.all()[0]
+
+    def tearDown(self):
+        # Clean up run after every test method.
+        pass
+
     def test_page_title_admin_login(self):
-        request = HttpRequest()
-        response = views.admin_login(request)
+        response = views.admin_login(self.request)
         html_response = response.content.decode('utf8')
         self.assertIn('<title>Admin Login</title>', html_response)
 
@@ -41,40 +50,34 @@ class AdminUnitTest(TestCase):
         self.assertEqual('/account-redirector', response.url)
 
     def test_admin_access_admin_page(self):
-        request = HttpRequest()
-        Account.objects.create_user(email='test@mail.com', password='12345678')
         created_mock_user = Account.objects.all()[0]
-        request.user = created_mock_user
-        request.user.is_admin = True
-        request.user.is_opd = False
-        request.user.is_user = False
-        request.user.is_superuser = False
-        response = views.admin_index(request=request)
+        self.request.user = created_mock_user
+        self.request.user.is_admin = True
+        self.request.user.is_opd = False
+        self.request.user.is_user = False
+        self.request.user.is_superuser = False
+        response = views.admin_index(request=self.request)
         self.assertEqual(response.status_code, 200)
 
     def test_opd_access_admin_page(self):
-        request = HttpRequest()
-        Account.objects.create_user(email='test@mail.com', password='12345678')
         created_mock_user = Account.objects.all()[0]
-        request.user = created_mock_user
-        request.user.is_admin = False
-        request.user.is_opd = True
-        request.user.is_user = False
-        request.user.is_superuser = False
-        response = views.admin_index(request=request)
+        self.request.user = created_mock_user
+        self.request.user.is_admin = False
+        self.request.user.is_opd = True
+        self.request.user.is_user = False
+        self.request.user.is_superuser = False
+        response = views.admin_index(request=self.request)
         self.assertEqual(response.status_code, 302)
         self.assertEqual('/account-redirector', response.url)
 
     def test_user_access_admin_page(self):
-        request = HttpRequest()
-        Account.objects.create_user(email='test@mail.com', password='12345678')
         created_mock_user = Account.objects.all()[0]
-        request.user = created_mock_user
-        request.user.is_admin = False
-        request.user.is_opd = False
-        request.user.is_user = True
-        request.user.is_superuser = False
-        response = views.admin_index(request=request)
+        self.request.user = created_mock_user
+        self.request.user.is_admin = False
+        self.request.user.is_opd = False
+        self.request.user.is_user = True
+        self.request.user.is_superuser = False
+        response = views.admin_index(request=self.request)
         self.assertEqual(response.status_code, 302)
         self.assertEqual('/account-redirector', response.url)
 
@@ -92,45 +95,38 @@ class AdminUnitTest(TestCase):
         self.assertEqual(found.func, views.admin_list_opd)
 
     def test_admin_access_admin_opd_list_page(self):
-        request = HttpRequest()
-        Account.objects.create_user(email='test@mail.com', password='12345678')
         created_mock_user = Account.objects.all()[0]
-        request.user = created_mock_user
-        request.user.is_admin = True
-        request.user.is_opd = False
-        request.user.is_user = False
-        request.user.is_superuser = False
-        response = views.admin_list_opd(request=request)
+        self.request.user = created_mock_user
+        self.request.user.is_admin = True
+        self.request.user.is_opd = False
+        self.request.user.is_user = False
+        self.request.user.is_superuser = False
+        response = views.admin_list_opd(request=self.request)
         self.assertEqual(response.status_code, 200)
 
     def test_opd_access_admin_opd_list_page(self):
-        request = HttpRequest()
-        Account.objects.create_user(email='test@mail.com', password='12345678')
         created_mock_user = Account.objects.all()[0]
-        request.user = created_mock_user
-        request.user.is_admin = False
-        request.user.is_opd = True
-        request.user.is_user = False
-        request.user.is_superuser = False
-        response = views.admin_list_opd(request=request)
+        self.request.user = created_mock_user
+        self.request.user.is_admin = False
+        self.request.user.is_opd = True
+        self.request.user.is_user = False
+        self.request.user.is_superuser = False
+        response = views.admin_list_opd(request=self.request)
         self.assertEqual(response.status_code, 302)
         self.assertEqual('/account-redirector', response.url)
 
     def test_user_access_admin_opd_list_page(self):
-        request = HttpRequest()
-        Account.objects.create_user(email='test@mail.com', password='12345678')
         created_mock_user = Account.objects.all()[0]
-        request.user = created_mock_user
-        request.user.is_admin = False
-        request.user.is_opd = False
-        request.user.is_user = True
-        request.user.is_superuser = False
-        response = views.admin_list_opd(request=request)
+        self.request.user = created_mock_user
+        self.request.user.is_admin = False
+        self.request.user.is_opd = False
+        self.request.user.is_user = True
+        self.request.user.is_superuser = False
+        response = views.admin_list_opd(request=self.request)
         self.assertEqual(response.status_code, 302)
         self.assertEqual('/account-redirector', response.url)
 
     def test_function_get_all_opd_database_has_opd(self):
-        Account.objects.create_user(email='test@mail.com', password='12345678')
         created_mock_user = Account.objects.all()[0]
         created_mock_user.is_opd = True
         created_mock_user.is_superuser = False
@@ -146,26 +142,21 @@ class AdminUnitTest(TestCase):
         self.assertEqual([], all_opd)
 
     def test_function_get_all_opd_database_has_admin(self):
+        self.created_mock_user.is_opd = False
+        self.created_mock_user.is_superuser = False
+        self.created_mock_user.is_admin = True
+        self.created_mock_user.is_user = False
+        self.created_mock_user.is_staff = False
+        self.created_mock_user.save()
         all_opd = views.get_all_opd()
-        Account.objects.create_user(email='test@mail.com', password='12345678')
-        created_mock_user = Account.objects.all()[0]
-        created_mock_user.is_opd = False
-        created_mock_user.is_superuser = False
-        created_mock_user.is_admin = True
-        created_mock_user.is_user = False
-        created_mock_user.is_staff = False
-        created_mock_user.save()
         self.assertEqual([], all_opd)
 
     def test_function_get_all_opd_database_has_user(self):
+        self.created_mock_user.is_opd = False
+        self.created_mock_user.is_superuser = False
+        self.created_mock_user.is_admin = False
+        self.created_mock_user.is_user = True
+        self.created_mock_user.is_staff = False
+        self.created_mock_user.save()
         all_opd = views.get_all_opd()
-        Account.objects.create_user(email='test@mail.com', password='12345678')
-        created_mock_user = Account.objects.all()[0]
-        created_mock_user.is_opd = False
-        created_mock_user.is_superuser = False
-        created_mock_user.is_admin = False
-        created_mock_user.is_user = True
-        created_mock_user.is_staff = False
-        created_mock_user.save()
         self.assertEqual([], all_opd)
-
