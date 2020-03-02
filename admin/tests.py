@@ -244,7 +244,7 @@ class AdminUnitTest(TestCase):
         self.created_mock_user.is_user = False
         self.created_mock_user.is_staff = False
         self.created_mock_user.is_active = False
-        self.client.get('/admin/listopd/deleteopd/{}/'.format(self.created_mock_user.pk))
+        self.client.post('/admin/listopd/deleteopd/', {'pk' : self.created_mock_user.pk})
         all_test_opd = list(Account.objects.all())
         self.assertEqual([], all_test_opd)
 
@@ -256,7 +256,7 @@ class AdminUnitTest(TestCase):
         self.created_mock_user.is_staff = False
         self.created_mock_user.is_active = False
         with self.assertRaises(TypeError):
-            self.client.get('/admin/listopd/deleteopd/{}/'.format(int(self.created_mock_user.pk) + 1))
+            self.client.post('/admin/listopd/deleteopd/', {'pk' : self.created_mock_user.pk + 1})
 
     def test_delete_opd_account_string_pk(self):
         self.created_mock_user.is_opd = True
@@ -266,7 +266,7 @@ class AdminUnitTest(TestCase):
         self.created_mock_user.is_staff = False
         self.created_mock_user.is_active = False
         with self.assertRaises(TypeError):
-            self.client.get('/admin/listopd/deleteopd/{}/'.format('abcdef'))
+            self.client.post('/admin/listopd/deleteopd/', {'pk' : 'abcdef'})
 
     def test_delete_opd_account_mix_string_int_pk(self):
         self.created_mock_user.is_opd = True
@@ -276,7 +276,7 @@ class AdminUnitTest(TestCase):
         self.created_mock_user.is_staff = False
         self.created_mock_user.is_active = False
         with self.assertRaises(TypeError):
-            self.client.get('/admin/listopd/deleteopd/{}/'.format('g4bung4n123asdzxc'))
+            self.client.post('/admin/listopd/deleteopd/',{'pk' : 'g4bung'})
 
     def test_delete_opd_account_no_pk(self):
         self.created_mock_user.is_opd = True
@@ -286,4 +286,4 @@ class AdminUnitTest(TestCase):
         self.created_mock_user.is_staff = False
         self.created_mock_user.is_active = False
         with self.assertRaises(TypeError):
-            self.client.get('/admin/listopd/deleteopd/{}/'.format(''))
+            self.client.post('/admin/listopd/deleteopd/', {'pk' : ''})
