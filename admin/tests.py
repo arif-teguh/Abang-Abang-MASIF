@@ -7,6 +7,7 @@ from django.core import mail
 from account.models import Account
 from admin import views
 from admin.admin_login_form import AdminAuthenticationForm
+from admin.opd_registration_form import OpdRegistrationForm
 from . import mailing
 
 
@@ -366,3 +367,38 @@ class EmailTest(TestCase):
     def test_invalid_email(self):
         with self.assertRaises(ValueError):
             mailing.send_verification_email(self.verification_url, "test.com")
+
+class OpdRegistrationTest(TestCase):
+    def setUp(self):
+        # Setup run before every test method.
+        self.client = Client()
+        self.request = HttpRequest()
+        Account.objects.create_superuser(email='test@mail.com', password='12345678')
+        self.created_mock_user = Account.objects.all()[0]
+        self.client.login(username='test@mail.com', password='12345678')
+        self.request.user = self.created_mock_user
+
+    def tearDown(self):
+        # Clean up run after every test method.
+        pass
+
+    def test_page_title_register_opd_page(self):
+        response = views.admin_register_opd(self.request)
+        html_response = response.content.decode('utf8')
+        self.assertIn('<title>Daftar OPD</title>', html_response)
+
+    def test_submit_button_exist(self):
+        response = views.admin_register_opd(self.request)
+        html_response = response.content.decode('utf8')
+        self.assertIn('<button type="submit"', html_response)
+
+    def test_using_admin_register_opd_html(self):
+        with self.assertTemplateUsed('admin/admin_register_opd.html'):
+            response = self.client.get('/admin/listopd/register/')
+            self.assertEqual(response.status_code, 200)
+
+    def test_register_opd_page_not_authenticated(self):
+        response = Client().get('/admin/listopd/register/')
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual('/admin/login', response.url)
+    
