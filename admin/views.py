@@ -16,13 +16,17 @@ def admin_login(request):
 
 
 def admin_index(request):
-    if user_is_admin(request):
+    if not request.user.is_authenticated:
+        return redirect('/admin/login/')
+    elif user_is_admin(request):
         return render(request, 'admin/admin_index.html')
     else:
         return redirect('/account-redirector')
     
 def admin_list_opd(request):
-    if user_is_admin(request):
+    if not request.user.is_authenticated:
+        return redirect('/admin/login/')
+    elif user_is_admin(request):
         return render(request, 'admin/admin_list_opd.html', {'list_opd' : get_all_opd()})
     else:
         return redirect('/account-redirector')
