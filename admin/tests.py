@@ -180,6 +180,7 @@ class AdminUnitTest(TestCase):
         self.created_mock_user.is_admin = True
         self.created_mock_user.is_user = False
         self.created_mock_user.is_staff = False
+        self.created_mock_user.save()
         admin_auth_form = AdminAuthenticationForm()
         result = admin_auth_form.confirm_login_allowed(user=self.created_mock_user)
         self.assertEqual(None, result)
@@ -191,6 +192,7 @@ class AdminUnitTest(TestCase):
         self.created_mock_user.is_user = False
         self.created_mock_user.is_staff = False
         admin_auth_form = AdminAuthenticationForm()
+        self.created_mock_user.save()
         with self.assertRaises(forms.ValidationError):
             admin_auth_form.confirm_login_allowed(user=self.created_mock_user)
 
@@ -200,6 +202,7 @@ class AdminUnitTest(TestCase):
         self.created_mock_user.is_admin = False
         self.created_mock_user.is_user = True
         self.created_mock_user.is_staff = False
+        self.created_mock_user.save()
         admin_auth_form = AdminAuthenticationForm()
         with self.assertRaises(forms.ValidationError):
             admin_auth_form.confirm_login_allowed(user=self.created_mock_user)
@@ -211,6 +214,7 @@ class AdminUnitTest(TestCase):
         self.created_mock_user.is_user = False
         self.created_mock_user.is_staff = False
         self.created_mock_user.is_active = False
+        self.created_mock_user.save()
         admin_auth_form = AdminAuthenticationForm()
         with self.assertRaises(forms.ValidationError):
             admin_auth_form.confirm_login_allowed(user=self.created_mock_user)
@@ -222,6 +226,7 @@ class AdminUnitTest(TestCase):
         self.created_mock_user.is_user = False
         self.created_mock_user.is_staff = False
         self.created_mock_user.is_active = False
+        self.created_mock_user.save()
         admin_auth_form = AdminAuthenticationForm()
         with self.assertRaises(forms.ValidationError):
             admin_auth_form.confirm_login_allowed(user=self.created_mock_user)
@@ -233,6 +238,7 @@ class AdminUnitTest(TestCase):
         self.created_mock_user.is_user = True
         self.created_mock_user.is_staff = False
         self.created_mock_user.is_active = False
+        self.created_mock_user.save()
         admin_auth_form = AdminAuthenticationForm()
         with self.assertRaises(forms.ValidationError):
             admin_auth_form.confirm_login_allowed(user=self.created_mock_user)
@@ -244,9 +250,11 @@ class AdminUnitTest(TestCase):
         self.created_mock_user.is_user = False
         self.created_mock_user.is_staff = False
         self.created_mock_user.is_active = False
-        self.client.post('/admin/listopd/deleteopd/', {'pk' : self.created_mock_user.pk})
+        self.created_mock_user.save()
+        response = self.client.post('/admin/listopd/deleteopd/', {'pk': self.created_mock_user.pk})
         all_test_opd = list(Account.objects.all())
-        self.assertEqual([], all_test_opd)
+        self.assertEqual('Delete OPD Success', response.content.decode('utf8'))
+        self.assertEqual(all_test_opd, [])
 
     def test_delete_opd_account_wrong_pk(self):
         self.created_mock_user.is_opd = False
@@ -255,8 +263,9 @@ class AdminUnitTest(TestCase):
         self.created_mock_user.is_user = False
         self.created_mock_user.is_staff = False
         self.created_mock_user.is_active = False
-        with self.assertRaises(TypeError):
-            self.client.post('/admin/listopd/deleteopd/', {'pk' : self.created_mock_user.pk + 1})
+        self.created_mock_user.save()
+        with self.assertRaises(IndexError):
+            self.client.post('/admin/listopd/deleteopd/', {'pk': int(self.created_mock_user.pk) + 1})
 
     def test_delete_opd_account_string_pk(self):
         self.created_mock_user.is_opd = False
@@ -265,8 +274,9 @@ class AdminUnitTest(TestCase):
         self.created_mock_user.is_user = False
         self.created_mock_user.is_staff = False
         self.created_mock_user.is_active = False
-        with self.assertRaises(TypeError):
-            self.client.post('/admin/listopd/deleteopd/', {'pk' : 'abcdef'})
+        self.created_mock_user.save()
+        with self.assertRaises(ValueError):
+            self.client.post('/admin/listopd/deleteopd/', {'pk': 'abcdef'})
 
     def test_delete_opd_account_mix_string_int_pk(self):
         self.created_mock_user.is_opd = False
@@ -275,8 +285,9 @@ class AdminUnitTest(TestCase):
         self.created_mock_user.is_user = False
         self.created_mock_user.is_staff = False
         self.created_mock_user.is_active = False
-        with self.assertRaises(TypeError):
-            self.client.post('/admin/listopd/deleteopd/',{'pk' : 'g4bung'})
+        self.created_mock_user.save()
+        with self.assertRaises(ValueError):
+            self.client.post('/admin/listopd/deleteopd/', {'pk': 'g4bung'})
 
     def test_delete_opd_account_no_pk(self):
         self.created_mock_user.is_opd = False
@@ -285,8 +296,9 @@ class AdminUnitTest(TestCase):
         self.created_mock_user.is_user = False
         self.created_mock_user.is_staff = False
         self.created_mock_user.is_active = False
-        with self.assertRaises(TypeError):
-            self.client.post('/admin/listopd/deleteopd/', {'pk' : ''})
+        self.created_mock_user.save()
+        with self.assertRaises(ValueError):
+            self.client.post('/admin/listopd/deleteopd/', {'pk': ''})
 
     def test_delete_opd_account_correct_pk_not_admin(self):
         self.created_mock_user.is_opd = True
@@ -295,6 +307,12 @@ class AdminUnitTest(TestCase):
         self.created_mock_user.is_user = False
         self.created_mock_user.is_staff = False
         self.created_mock_user.is_active = False
-        self.client.post('/admin/listopd/deleteopd/', {'pk' : self.created_mock_user.pk})
+        self.created_mock_user.save()
+        self.client.post('/admin/listopd/deleteopd/', {'pk': self.created_mock_user.pk})
         all_test_opd = list(Account.objects.all())
         self.assertEqual([self.created_mock_user], all_test_opd)
+
+    def test_get_method_in_delete_opd_for_admin(self):
+        response = self.client.get('/admin/listopd/deleteopd/')
+        html_response = response.content.decode('utf8')
+        self.assertEqual("Forbidden", html_response)
