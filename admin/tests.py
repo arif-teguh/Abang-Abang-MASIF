@@ -67,7 +67,7 @@ class AdminUnitTest(TestCase):
         self.request.user.is_superuser = False
         response = views.admin_index(request=self.request)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual('/account-redirector', response.url)
+        self.assertEqual('/admin/login/', response.url)
 
     def test_user_access_admin_page(self):
         self.request.user.is_admin = False
@@ -76,7 +76,7 @@ class AdminUnitTest(TestCase):
         self.request.user.is_superuser = False
         response = views.admin_index(request=self.request)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual('/account-redirector', response.url)
+        self.assertEqual('/admin/login/', response.url)
 
     def test_admin_access_admin_page_through_url(self):
         self.created_mock_user.is_admin = True
@@ -90,7 +90,7 @@ class AdminUnitTest(TestCase):
         self.created_mock_user.save()
         response = self.client.get('/admin/')
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, '/account-redirector')
+        self.assertEqual('/admin/login/', response.url)
 
     def test_user_access_admin_page_through_url(self):
         self.created_mock_user.is_admin = False
@@ -98,7 +98,7 @@ class AdminUnitTest(TestCase):
         self.created_mock_user.save()
         response = self.client.get('/admin/')
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, '/account-redirector')
+        self.assertEqual('/admin/login/', response.url)
 
     def test_using_admin_index_func(self):
         found = resolve('/admin/')
@@ -128,7 +128,7 @@ class AdminUnitTest(TestCase):
         self.request.user.is_superuser = False
         response = views.admin_list_opd(request=self.request)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual('/account-redirector', response.url)
+        self.assertEqual('/admin/login/', response.url)
 
     def test_user_access_admin_opd_list_page(self):
         self.request.user.is_admin = False
@@ -137,7 +137,7 @@ class AdminUnitTest(TestCase):
         self.request.user.is_superuser = False
         response = views.admin_list_opd(request=self.request)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual('/account-redirector', response.url)
+        self.assertEqual('/admin/login/', response.url)
 
     def test_function_get_all_opd_database_has_opd(self):
         self.created_mock_user.is_opd = True
