@@ -9,7 +9,6 @@ from .models import Lowongan
 from . import views
 
 url_form_lowongan = '/lowongan/opd/form/'
-'''
 class LowonganFormTest(TestCase):
 
     def setUp(self):
