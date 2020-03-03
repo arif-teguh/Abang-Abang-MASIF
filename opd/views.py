@@ -2,20 +2,33 @@ from django.shortcuts import render , redirect
 from django.contrib.auth.hashers import check_password
 from django.http import HttpResponse
 
+from lowongan.models import Lowongan
 from admin.models import OpdVerificationList
 from account.models import Account, OpdProfile
 from .opd_confirmation_form import OpdConfirmationForm
 
-# Create your views here.
 def opd_login(request):
-    return render(request,'opd_login.html')
+    return render(request, 'opd_login.html')
+
 
 def opd_index(request):
     if request.user.is_authenticated and not request.user.is_admin and request.user.is_opd and not request.user.is_user:
-        return HttpResponse("<h1>opd PAGE, Under Construction</h1>")
+        return render(request, 'opddashboard.html', {'user': request.user})
     else:
         return redirect('/account-redirector')
 
+def opd_lowongan(request):
+    list_lowongan = Lowongan.objects.all()
+    return render(request,'opd_lowongan.html', {'list_lowongan': list_lowongan})
+
+def opd_detail_lowongan(request,id_lowongan):
+    lowongan = Lowongan.objects.get(id = id_lowongan)
+    return render(request,'opd_detail_lowongan.html' , {'lowongan': lowongan})
+
+def opd_detail_dummy(request):
+    lowongan = {'judul' : 'judul' , 'deskripsi' : 'deskripsi', 'penyedia' : 'penyedia' , 'requirement' :'requirement' ,'durasi_magang' : 'durasi_magang','jumlah_tersedia':'jumlah_tersedia'}
+    return render(request,'opd_detail_lowongan.html' , {'lowongan': lowongan})
+    
 def opd_verification(request, token):
     try:
         opd_from_verification_list = OpdVerificationList.objects.get(
