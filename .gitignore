@@ -7,7 +7,6 @@ Pipfile.lock
 # Django dep
 .coverage
 **/__pycache__/
-static/
 coverage.xml
 pylint_report.txt
 
