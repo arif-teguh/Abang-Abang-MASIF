@@ -1,5 +1,6 @@
 from django.test import TestCase
-from account.models import Account, AdminProfile, OpdProfile, AccountManager
+
+from account.models import Account, AdminProfile, OpdProfile
 
 
 # Create your tests here.
@@ -76,7 +77,7 @@ class AccountUnitTest(TestCase):
         newly_created_user = Account.objects.all()[0]
         admin_profile = AdminProfile(
             user=newly_created_user,
-                                     unique_admin_attribute="admin")
+            unique_admin_attribute="admin")
         admin_profile.save()
         self.assertEqual(
             newly_created_user.adminprofile.unique_admin_attribute,
@@ -87,7 +88,7 @@ class AccountUnitTest(TestCase):
 
         self.assertEqual(
             newly_created_user.adminprofile.user.email,
-                         "test@mail.com")
+            "test@mail.com")
 
     def test_create_user_admin_no_user(self):
         admin_profile = AdminProfile(user=None, unique_admin_attribute="admin")

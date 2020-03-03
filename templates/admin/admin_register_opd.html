@@ -3,19 +3,13 @@
 <head>
 
     <style>
-        #admin-masif-title {
-            text-align: center;
-            margin-bottom: 2em;
+        #submit-btn {
+            width: 100%
         }
 
-        .btn-lg {
-            width: 100%;
-            height: 15vh;
-            margin-left: 2em;
-            margin-right: 2em;
+        .admin-login-items {
             margin-bottom: 2em;
         }
-
     </style>
 
 
@@ -31,30 +25,33 @@
             integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
             crossorigin="anonymous"></script>
 
-    <!-- Belom bisa pake static file -->
-    <link rel="stylesheet" type="text/css" href="./style.css">
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Admin Home</title>
+    <title>Daftar OPD</title>
 </head>
 <body>
 <div class="container-fluid">
     <div class="row justify-content-center" style="height: 100vh">
-        <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12 align-self-center">
-            <h1 id="admin-masif-title">Admin MASIF</h1>
+        <div class="col-4 align-self-center">
+            <form method="POST" action="{% url 'admin_register_opd' %}">
+                {% csrf_token %}
+                <h1 class="admin-login-items">Pembuatan Akun OPD</h1>
+                <label>Nama OPD : </label>
+                {{ form.opd_name }}
+                <label>Email : </label>
+                {{ form.email }}
+                <label>Telepon : </label>
+                {{ form.phone}}
 
-            <div class="row justify-content-center tombol">
-                <button onclick="window.location.href='#'" type="button" class="btn btn-primary btn-lg">Tambahkan
-                    Informasi Magang
-                </button>
-            </div>
-            <div class="tombol row justify-content-center">
-                <button onclick="window.location.href='/admin/listopd/'" type="button" class="btn btn-primary btn-lg">
-                    Buat Akun OPD
-                </button>
-            </div>
+            <br>
+                <!-- {% for error in form.non_field_errors %}
+                    <div class="alert alert-danger" role="alert">
+                        {{ error }}
+                    </div>
+                {% endfor %} -->
+                <button type="submit" class="btn btn-primary admin-login-items" id="submit-btn">Submit</button>
 
+            </form>
         </div>
     </div>
 </div>
