@@ -1,6 +1,6 @@
-from django.shortcuts import render, redirect
-
-
+from django.shortcuts import render , redirect
+from django.http import HttpResponse
+from lowongan.models import Lowongan
 # Create your views here.
 def opd_login(request):
     return render(request, 'opd_login.html')
@@ -14,4 +14,13 @@ def opd_index(request):
 
 
 def opd_lowongan(request):
-    return render(request, 'opd_lowongan.html')
+    list_lowongan = Lowongan.objects.all()
+    return render(request,'opd_lowongan.html', {'list_lowongan': list_lowongan})
+
+def opd_detail_lowongan(request,id_lowongan):
+    lowongan = Lowongan.objects.get(id = id_lowongan)
+    return render(request,'opd_detail_lowongan.html' , {'lowongan': lowongan})
+
+def opd_detail_dummy(request):
+    lowongan = {'judul' : 'judul' , 'deskripsi' : 'deskripsi', 'penyedia' : 'penyedia' , 'requirement' :'requirement' ,'durasi_magang' : 'durasi_magang','jumlah_tersedia':'jumlah_tersedia'}
+    return render(request,'opd_detail_lowongan.html' , {'lowongan': lowongan})

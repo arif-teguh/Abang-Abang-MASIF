@@ -23,6 +23,5 @@ urlpatterns = [
     path('admin/', include('admin.urls')),
     path('account-redirector', include('account_redirector.urls')),
     path('superuser/', admin.site.urls),
-    path('lowongan/', include('lowongan.urls'))
-
+    path('lowongan/', include('lowongan.urls')),
 ]
