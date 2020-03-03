@@ -1,0 +1,68 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href='{% static "/css/cari_lowongan.css" %}'>
+
+    <title>Cari Lowongan</title>
+</head>
+<body>
+
+{% include 'navbar.html' %}
+
+<div class="pg-container">
+    <div class="outer-box">
+        <div class="row inner-box">
+            <div class="col-2 col1">
+                <img src="{% static 'img/image 6.png' %}">
+                <p>Dinas Depok</p>
+            </div>
+            <div class="col-9 align-self-center col2">
+                <p id="judul-lowongan">Mobile Developer Intern</p>
+                <p>IT | Magang</p>
+                <p>10 Januari 2020</p>
+            </div>
+            <div class="col-1 d-flex align-items-end flex-column col3">
+                <button type="button" class="btn btn-primary mt-auto">Lamar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="outer-box">
+        <div class="row inner-box">
+            <div class="col-2 col1">
+                <img src="{% static 'img/image 6.png' %}">
+                <p>Dinas Depok</p>
+            </div>
+            <div class="col-9 align-self-center col2">
+                <p id="judul-lowongan">Backend Developer Intern</p>
+                <p>IT | Magang</p>
+                <p>10 Januari 2020</p>
+            </div>
+            <div class="col-1 d-flex align-items-end flex-column col3">
+                <button type="button" class="btn btn-primary mt-auto">Lamar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="outer-box">
+        <div class="row inner-box">
+            <div class="col-2 col1">
+                <img src="{% static 'img/image 6.png' %}">
+                <p>Dinas Depok</p>
+            </div>
+            <div class="col-9 align-self-center col2">
+                <p id="judul-lowongan">Frontend Developer Intern</p>
+                <p>IT | Magang</p>
+                <p>10 Januari 2020</p>
+            </div>
+            <div class="col-1 d-flex align-items-end flex-column col3">
+                <button type="button" class="btn btn-primary mt-auto">Lamar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
