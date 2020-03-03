@@ -9,6 +9,7 @@ variables:
   POSTGRES_DB: postgres
   POSTGRES_USER: postgres
   POSTGRES_PASSWORD: "postgres"
+  DOCKER_DRIVER: overlay
 
 Lint:
   stage: lint
@@ -32,6 +33,8 @@ Test:
   script:
     - apt-get install -y python-dev python-pip
     - pip install -r requirements.txt
+    - python manage.py makemigrations
+    - python manage.py migrate
     - coverage run --source='.' manage.py test
     - coverage xml -i
     - coverage report
