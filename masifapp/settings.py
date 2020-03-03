@@ -42,6 +42,10 @@ INSTALLED_APPS = [
     'base',
     'cari_lowongan',
     'detail_lowongan',
+    'admin.apps.AdminConfig',
+    'opd',
+    'lowongan',
+    'account',
 ]
 
 MIDDLEWARE = [
@@ -60,7 +64,7 @@ ROOT_URLCONF = 'masifapp.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -72,6 +76,8 @@ TEMPLATES = [
         },
     },
 ]
+
+AUTH_USER_MODEL = 'account.Account'
 
 WSGI_APPLICATION = 'masifapp.wsgi.application'
 
@@ -133,8 +139,8 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-# STATIC_ROOT = os.getcwd()+"/static"
-
 STATICFILES_DIRS = [
     'static'
 ]
+
+LOGIN_REDIRECT_URL = '/account-redirector'
