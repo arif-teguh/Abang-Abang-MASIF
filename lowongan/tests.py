@@ -11,6 +11,41 @@ from . import views
 url_form_lowongan = '/lowongan/opd/form/'
 
 class LowonganFormTest(TestCase):
+
+    def setUp(self):
+        self.client = Client()
+        self.user = Account.objects.create_user('test_user', password='test_user')
+        self.client.login(username='test_user', password='test_user')
+
+        self.lowongan_obj = Lowongan.objects.create(
+            judul='judul1',
+            penyedia='opd1',
+            jumlah_tersedia=10,
+            durasi_magang=10,
+            jangka_waktu_lamaran=10,
+            berkas='berkas1',
+            deskripsi='deskripsi1',
+            requirement='requirement1',
+            opd_foreign_key_id=self.user.id
+        )
+    def test_form_lowongan_url_exist(self):
+        Account.objects.filter(pk=self.user.id).update(is_opd=True)
+        response = self.client.get(url_form_lowongan)
+        self.assertEqual(response.status_code, 200)
+
+    def test_form_lowongan_url_for_non_opd(self):
+        Account.objects.filter(pk=self.user.id).update(is_opd=False)
+        response = self.client.get(url_form_lowongan)
+        self.assertEqual(response.status_code, 302)
+
+    def test_form_lowongan_using_form_lowongan_function(self):
+        function_used = resolve(url_form_lowongan)
+        self.assertEqual(function_used.func, views.show_form_lowongan)
+
+    def test_form_lowongan_using_template_form_lowongan(self):
+        Account.objects.filter(pk=self.user.id).update(is_opd=True)
+        response = self.client.get(url_form_lowongan)
+        self.assertTemplateUsed(response, 'lowongan/form_lowongan.html')
   
     def test_post_form_lowongan_failed_and_redirect(self):
         Account.objects.filter(pk=self.user.id).update(is_opd=True)
