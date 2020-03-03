@@ -8,4 +8,10 @@ from . import views
 urlpatterns = [
     path('', views.opd_index, name='opd'),
     path('login/', LoginView.as_view(template_name='opd_login.html',form_class=OpdAuthenticationForm,),name='opd_login'),
+    path('verification/404', views.opd_verification_not_found,
+         name='opd_verification_not_found'),
+    path('verification/<str:token>',
+         views.opd_verification, name='opd_verification'),
+    path('verification/',
+         views.opd_verification_redirect, name='opd_verification_redirect'),
 ]
