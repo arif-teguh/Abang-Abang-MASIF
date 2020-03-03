@@ -13,18 +13,18 @@ from . import views
 class testing_landing(TestCase):
 
     def test_landing_page(self):
-        response = Client().get('/landing/')
+        response = Client().get('/')
         self.assertEqual(response.status_code, 200)
 
     def test_landing_template(self):
-        response = Client().get('/landing/')
+        response = Client().get('/')
         self.assertTemplateUsed(response, 'landing_page.html')
 
     def test_landing_content(self):
-        response = Client().get('/landing/')
+        response = Client().get('/')
         html_response = response.content.decode('utf8')
         self.assertIn('<title>Beranda</title>', html_response)
 
     def test_landing_func(self):
-        found = resolve('/landing/')
+        found = resolve('/')
         self.assertEqual(found.func, views.landing)
