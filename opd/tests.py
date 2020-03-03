@@ -1,7 +1,10 @@
 from django.test import TestCase, Client
 from django.urls import resolve
 from django.http import HttpRequest
-from . import views
+import secrets
+
+from admin.models import OpdVerificationList
+from opd import views
 from account.models import Account
 from lowongan.models import Lowongan
 from .opd_login_form import OpdAuthenticationForm
@@ -194,11 +197,27 @@ class DetailLowonganOpdUnitTest(TestCase):
         self.assertContains(response,self.lowongan1.deskripsi)
         self.assertContains(response,self.lowongan1.durasi_magang)
 
-
     def test_response(self):
         response = self.client.get('/opd/lowongan/detail-' + str(self.lowongan1.id)+'/')
         self.assertEqual(response.status_code,200)
 
 
+class OpdConfirmationTest(TestCase):
+    def setUp(self):
+        # Setup run before every test method.
+        self.client = Client()
+        self.request = HttpRequest()
+        self.secret = secrets.token_urlsafe(16)
+        opd_verif = OpdVerificationList(secret=self.secret,
+             name="AbangAbang",
+             email="abang@abang.com", 
+             phone="081312213")
+        opd_verif.save()
 
-    
+    def tearDown(self):
+        # Clean up run after every test method.
+        pass
+
+    def test_verification_without_token_redirect(self):
+        response = self.client.get('/opd/verification/')
+        self.assertEqual('/', response.url)

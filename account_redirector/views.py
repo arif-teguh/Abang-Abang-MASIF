@@ -1,8 +1,6 @@
-from django.http import HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect
 
 
-# Create your views here.
 def account_redirector(request):
     if request.user.is_authenticated:
         if request.user.is_opd:
@@ -11,4 +9,3 @@ def account_redirector(request):
             return redirect('/admin')
 
     return redirect('/')
-

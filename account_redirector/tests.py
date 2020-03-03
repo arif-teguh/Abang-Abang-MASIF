@@ -8,7 +8,9 @@ from . import views
 class AccountRedirectorUnitTest(TestCase):
     def setUp(self):
         # Setup run before every test method.
-        pass
+        self.request = HttpRequest()
+        Account.objects.create_user(email='test@mail.com', password='12345678')
+        self.created_mock_user = Account.objects.all()[0]
 
     def tearDown(self):
         # Clean up run after every test method.
@@ -19,73 +21,55 @@ class AccountRedirectorUnitTest(TestCase):
         self.assertEqual(response.status_code, 302)
 
     def test_redirect_admin(self):
-        request = HttpRequest()
-        Account.objects.create_user(email='test@mail.com', password='12345678')
-        created_mock_user = Account.objects.all()[0]
-        request.user = created_mock_user
-        request.user.is_admin = True
-        request.user.is_opd = False
-        request.user.is_user = False
-        request.user.is_superuser = False
-        response = views.account_redirector(request=request)
+        self.request.user = self.created_mock_user
+        self.request.user.is_admin = True
+        self.request.user.is_opd = False
+        self.request.user.is_user = False
+        self.request.user.is_superuser = False
+        response = views.account_redirector(request=self.request)
         self.assertEqual(response.url, '/admin')
 
     def test_redirect_not_admin(self):
-        request = HttpRequest()
-        Account.objects.create_user(email='test@mail.com', password='12345678')
-        created_mock_user = Account.objects.all()[0]
-        request.user = created_mock_user
-        request.user.is_admin = False
-        request.user.is_opd = True
-        request.user.is_user = False
-        request.user.is_superuser = False
-        response = views.account_redirector(request=request)
+        self.request.user = self.created_mock_user
+        self.request.user.is_admin = False
+        self.request.user.is_opd = True
+        self.request.user.is_user = False
+        self.request.user.is_superuser = False
+        response = views.account_redirector(request=self.request)
         self.assertNotEqual(response.url, '/admin')
 
     def test_redirect_opd(self):
-        request = HttpRequest()
-        Account.objects.create_user(email='test@mail.com', password='12345678')
-        created_mock_user = Account.objects.all()[0]
-        request.user = created_mock_user
-        request.user.is_admin = False
-        request.user.is_opd = True
-        request.user.is_user = False
-        request.user.is_superuser = False
-        response = views.account_redirector(request=request)
+        self.request.user = self.created_mock_user
+        self.request.user.is_admin = False
+        self.request.user.is_opd = True
+        self.request.user.is_user = False
+        self.request.user.is_superuser = False
+        response = views.account_redirector(request=self.request)
         self.assertEqual(response.url, '/opd')
 
     def test_redirect_not_opd(self):
-        request = HttpRequest()
-        Account.objects.create_user(email='test@mail.com', password='12345678')
-        created_mock_user = Account.objects.all()[0]
-        request.user = created_mock_user
-        request.user.is_admin = True
-        request.user.is_opd = False
-        request.user.is_user = False
-        request.user.is_superuser = False
-        response = views.account_redirector(request=request)
+        self.request.user = self.created_mock_user
+        self.request.user.is_admin = True
+        self.request.user.is_opd = False
+        self.request.user.is_user = False
+        self.request.user.is_superuser = False
+        response = views.account_redirector(request=self.request)
         self.assertNotEqual(response.url, '/opd')
 
     def test_redirect_user(self):
-        request = HttpRequest()
-        Account.objects.create_user(email='test@mail.com', password='12345678')
-        created_mock_user = Account.objects.all()[0]
-        request.user = created_mock_user
-        request.user.is_admin = False
-        request.user.is_opd = False
-        request.user.is_user = True
-        request.user.is_superuser = False
-        response = views.account_redirector(request=request)
+        self.request.user = self.created_mock_user
+        self.request.user.is_admin = False
+        self.request.user.is_opd = False
+        self.request.user.is_user = True
+        self.request.user.is_superuser = False
+        response = views.account_redirector(request=self.request)
         self.assertEqual(response.url, '/')
 
     def test_redirect_not_user(self):
-        request = HttpRequest()
-        Account.objects.create_user(email='test@mail.com', password='12345678')
-        created_mock_user = Account.objects.all()[0]
-        request.user = created_mock_user
-        request.user.is_admin = True
-        request.user.is_opd = False
-        request.user.is_user = False
-        request.user.is_superuser = False
-        response = views.account_redirector(request=request)
+        self.request.user = self.created_mock_user
+        self.request.user.is_admin = True
+        self.request.user.is_opd = False
+        self.request.user.is_user = False
+        self.request.user.is_superuser = False
+        response = views.account_redirector(request=self.request)
         self.assertNotEqual(response.url, '/')
