@@ -17,11 +17,12 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
+    path('opd/', include('opd.urls')),
     path('', include('hello.urls')),
     path('lowongan/', include('lowongan.urls')),
     path('admin/', include('admin.urls')),
-    path('', include('hello.urls')),
     path('account-redirector', include('account_redirector.urls')),
     path('superuser/', admin.site.urls),
+    path('lowongan/', include('lowongan.urls'))
 
 ]
