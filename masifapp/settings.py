@@ -24,7 +24,7 @@ SECRET_KEY = os.getenv(
     "SECRET_KEY", "2=t-_dm)m_1&_fw&e^trsauh_zkjagkhwe#-bd^ouv6fd35^2v")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ["localhost", "0.0.0.0", "127.0.0.1", "masif.herokuapp.com"]
 
@@ -38,6 +38,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'landing',
+    'base',
+    'cari_lowongan',
+    'detail_lowongan',
 ]
 
 MIDDLEWARE = [
@@ -48,6 +52,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'masifapp.urls'
@@ -128,4 +133,8 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-STATIC_ROOT = os.getcwd()+"/static"
+# STATIC_ROOT = os.getcwd()+"/static"
+
+STATICFILES_DIRS = [
+    'static'
+]

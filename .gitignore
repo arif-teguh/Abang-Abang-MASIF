@@ -1,13 +1,14 @@
 # Visual Studio Code dep
 .vscode
-
+venv/
 # Pipenv dep
 Pipfile.lock
 
 # Django dep
 .coverage
 **/__pycache__/
-static/
+coverage.xml
+pylint_report.txt
 
 # Gitlab runner dep
 builds/
