@@ -9,6 +9,7 @@ Pipfile.lock
 **/__pycache__/
 coverage.xml
 pylint_report.txt
+**/migrations/*
 
 # Gitlab runner dep
 builds/
