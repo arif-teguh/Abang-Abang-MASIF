@@ -59,13 +59,13 @@ def admin_register_opd(request):
                 phone = form.cleaned_data['phone']
                 secret = generate_opd_token()
                 new_account = OpdVerificationList(
-                    secret=secret, 
-                    name=name, 
-                    email=email, 
+                    secret=secret,
+                    name=name,
+                    email=email,
                     phone=phone
                 )
                 new_account.save()
-                return render(request,'admin/admin_activation_link.html', {'secret': secret})
+                return render(request, 'admin/admin_activation_link.html', {'secret': secret})
         else:
             form = OpdRegistrationForm()
         return render(
