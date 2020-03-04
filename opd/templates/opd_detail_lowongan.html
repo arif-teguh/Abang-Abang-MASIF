@@ -8,7 +8,7 @@
 </head>
 <body>
 
-
+{% include 'navbar.html' %}
 
 <div class="pg-container">
     <div class="outer-box">
@@ -45,7 +45,7 @@
             <p>{{ lowongan.jumlah_tersedia}}<br>
                 {{ lowongan.durasi_magang}}
             </p>
-            <a href='opd/form/edit/{{lowongan.id}}/'>
+            <a href='/lowongan/opd/form/edit/{{lowongan.id}}/'>
             <button type="button" class="btn btn-primary mt-auto">Edit Lowongan</button>
             </a>
             <button type="button" class="btn btn-primary mt-auto">Tutup Lowongan</button>

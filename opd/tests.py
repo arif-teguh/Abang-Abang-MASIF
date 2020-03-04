@@ -43,7 +43,7 @@ class LoginOpdUnitTest(TestCase):
     def test_opd_page_not_authenticated(self):
         response = Client().get('/opd/')
         self.assertEqual(response.status_code, 302)
-        self.assertEqual('/account-redirector', response.url)
+        self.assertEqual('/opd/login/', response.url)
 
 class OpdRedirectUnitTest(TestCase):
     def test_opd_access_opd_page(self):
@@ -55,7 +55,7 @@ class OpdRedirectUnitTest(TestCase):
         request.user.is_opd = True
         request.user.is_user = False
         request.user.is_superuser = False
-        response = views.opd_index(request=request)
+        response = views.opd_lowongan(request=request)
         self.assertEqual(response.status_code, 200)
 
     def test_admin_access_opd_page(self):
@@ -67,9 +67,9 @@ class OpdRedirectUnitTest(TestCase):
         request.user.is_opd = False
         request.user.is_user = False
         request.user.is_superuser = False
-        response = views.opd_index(request=request)
+        response = views.opd_lowongan(request=request)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual('/account-redirector', response.url)
+        self.assertEqual('/opd/login/', response.url)
 
     def test_user_access_opd_page(self):
         request = HttpRequest()
@@ -80,13 +80,26 @@ class OpdRedirectUnitTest(TestCase):
         request.user.is_opd = False
         request.user.is_user = True
         request.user.is_superuser = False
-        response = views.opd_index(request=request)
+        response = views.opd_lowongan(request=request)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual('/account-redirector', response.url)
+        self.assertEqual('/opd/login/', response.url)
+    
+    def test_user_access_opd_page(self):
+        request = HttpRequest()
+        Account.objects.create_user(email='test@mail.com', password='12345678')
+        created_mock_user = Account.objects.all()[0]
+        request.user = created_mock_user
+        request.user.is_admin = False
+        request.user.is_opd = False
+        request.user.is_user = True
+        request.user.is_superuser = False
+        response = views.opd_lowongan(request=request)
+        self.assertEqual(response.status_code, 302)
+        self.assertNotEqual('/opd/lowongan/detail-3/', response.url)
 
-    def test_using_opd_index_func(self):
+    def test_using_opd_lowongan_func(self):
         found = resolve('/opd/')
-        self.assertEqual(found.func, views.opd_index)
+        self.assertEqual(found.func, views.opd_lowongan)
 
 
 class LowonganOpdUnitTest(TestCase):
@@ -98,7 +111,8 @@ class LowonganOpdUnitTest(TestCase):
                                  unique_opd_attribute="opd")
         opd_profile.save()
         '''
-
+        self.account1.is_opd = True
+        self.account1.save()
         self.client.force_login(self.account1)
         self.lowongan1 = Lowongan.objects.create(
             judul = 'judul1',
@@ -114,34 +128,36 @@ class LowonganOpdUnitTest(TestCase):
 
     def test_click_lowongan_button_exist(self):
         request = HttpRequest()
+        request.user = self.account1
         response = views.opd_lowongan(request)
         html_response = response.content.decode('utf8')
         self.assertIn('<button ', html_response)
 
     def test_page_title_opd_lowongan(self):
         request = HttpRequest()
+        request.user = self.account1
         response = views.opd_lowongan(request)
         html_response = response.content.decode('utf8')
-        self.assertIn('<title>lowongan</title>', html_response)
+        self.assertIn('<title>OPD Dashboard</title>', html_response)
 
     
     def test_opd_lowongan_template(self):
-        response = self.client.get('/opd/lowongan/')
+        response = self.client.get('/opd/')
         self.assertTemplateUsed(response,'opd_lowongan.html')
 
-    def test_using_opd_index_func(self):
-        found = resolve('/opd/lowongan/')
+    def test_using_opd_lowongan_func(self):
+        found = resolve('/opd/')
         self.assertEqual(found.func, views.opd_lowongan)
 
-    #def test_response(self):
-    #    response = self.client.get('/opd/lowongan/')
-    #    self.assertEqual(response.status_code,200)
+    def test_response(self):
+        response = self.client.get('/opd/')
+        self.assertEqual(response.status_code,200)
 
 
-    # def test_get_lowongan_item(self):
-    #     response = self.client.get('/opd/lowongan/')
-    #     self.assertContains(response,self.lowongan1.judul)
-    #     self.assertContains(response,self.lowongan1.penyedia)
+    def test_get_lowongan_item(self):
+         response = self.client.get('/opd/')
+         self.assertContains(response,self.lowongan1.judul)
+         self.assertContains(response,self.lowongan1.penyedia)
             
 
 
@@ -154,7 +170,8 @@ class DetailLowonganOpdUnitTest(TestCase):
                                  unique_opd_attribute="opd")
         opd_profile.save()
         '''
-
+        self.account1.is_opd = True
+        self.account1.save()
         self.client.force_login(self.account1)
         self.lowongan1 = Lowongan.objects.create(
             judul = 'judul1',
@@ -167,7 +184,9 @@ class DetailLowonganOpdUnitTest(TestCase):
             requirement = 'requirement1',
             opd_foreign_key_id = self.opd1.id
         )
-        
+
+
+
     def test_opd_detail_lowongan_template(self):
         response = self.client.get('/opd/lowongan/detail-' + str(self.lowongan1.id)+'/')
         self.assertTemplateUsed(response,'opd_detail_lowongan.html')
@@ -178,12 +197,14 @@ class DetailLowonganOpdUnitTest(TestCase):
 
     def test_click_detail_lowongan_button_exist(self):
         request = HttpRequest()
+        request.user = self.account1
         response = views.opd_detail_lowongan(request,self.lowongan1.id)
         html_response = response.content.decode('utf8')
         self.assertIn('<button ', html_response)
 
     def test_page_title_opd_detail_lowngan_lowongan(self):
         request = HttpRequest()
+        request.user = self.account1
         response = views.opd_detail_lowongan(request, self.lowongan1.id)
         html_response = response.content.decode('utf8')
         self.assertIn('<title>Detail Lowongan</title>', html_response)
