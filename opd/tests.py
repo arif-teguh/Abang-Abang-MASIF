@@ -83,6 +83,19 @@ class OpdRedirectUnitTest(TestCase):
         response = views.opd_lowongan(request=request)
         self.assertEqual(response.status_code, 302)
         self.assertEqual('/opd/login/', response.url)
+    
+    def test_user_access_opd_page(self):
+        request = HttpRequest()
+        Account.objects.create_user(email='test@mail.com', password='12345678')
+        created_mock_user = Account.objects.all()[0]
+        request.user = created_mock_user
+        request.user.is_admin = False
+        request.user.is_opd = False
+        request.user.is_user = True
+        request.user.is_superuser = False
+        response = views.opd_lowongan(request=request)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual('/opd/lowongan/detail-3', response.url)
 
     def test_using_opd_lowongan_func(self):
         found = resolve('/opd/')
@@ -171,7 +184,9 @@ class DetailLowonganOpdUnitTest(TestCase):
             requirement = 'requirement1',
             opd_foreign_key_id = self.opd1.id
         )
-        
+
+
+
     def test_opd_detail_lowongan_template(self):
         response = self.client.get('/opd/lowongan/detail-' + str(self.lowongan1.id)+'/')
         self.assertTemplateUsed(response,'opd_detail_lowongan.html')
