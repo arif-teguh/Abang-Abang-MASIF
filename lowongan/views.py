@@ -10,6 +10,7 @@ def show_form_lowongan(request):
     if request.user.is_opd == True:
         return render(request, 'lowongan/form_lowongan.html', {'form': LowonganForm(), 'type_form': 'post'})
     return redirect("/")
+#
 
 @login_required
 def post_form_lowongan(request):
@@ -33,7 +34,7 @@ def post_form_lowongan(request):
             )
 
             data_lowongan.save()
-            return redirect("/")
+            return redirect("/opd/")
 
     return redirect('/lowongan/opd/form/')
 
@@ -48,7 +49,7 @@ def update_form_lowongan(request, id_lowongan):
         form = LowonganForm(request.POST or None, instance=lowongan_data)
         if form.is_valid():
             form.save()
-            return redirect("/")
+            return redirect("/opd/")
 
     else:
         return render(request, 'lowongan/form_lowongan.html', {'form': form, 'type_form': 'update'})
