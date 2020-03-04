@@ -9,7 +9,9 @@ from account.models import Account
 from lowongan.models import Lowongan
 from .opd_login_form import OpdAuthenticationForm
 
-
+url_opd_login = '/opd/login/'
+url_opd_index = '/opd/'
+url_opd_lowongan_detail = '/opd/lowongan/detail'
 class LoginOpdUnitTest(TestCase):
     #login
     def test_page_title_opd_login(self):
@@ -19,7 +21,7 @@ class LoginOpdUnitTest(TestCase):
         self.assertIn('<title>OPD Login</title>', html_response)
 
     def test_opd_login_template(self):
-        response = self.client.get('/opd/login/')
+        response = self.client.get(url_opd_login)
         self.assertTemplateUsed(response,'opd_login.html')
         
 
