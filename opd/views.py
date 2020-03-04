@@ -10,25 +10,22 @@ from .opd_confirmation_form import OpdConfirmationForm
 def opd_login(request):
     return render(request, 'opd_login.html')
 
-
-def opd_index(request):
-    if request.user.is_authenticated and not request.user.is_admin and request.user.is_opd and not request.user.is_user:
-        return render(request, 'opddashboard.html', {'user': request.user})
-    else:
-        return redirect('/account-redirector')
-
 def opd_lowongan(request):
-    list_lowongan = Lowongan.objects.all()
-    return render(request,'opd_lowongan.html', {'list_lowongan': list_lowongan})
+    if request.user.is_authenticated and request.user.is_opd:
+        list_lowongan = Lowongan.objects.filter(opd_foreign_key = request.user.id)
+        return render(request,'opd_lowongan.html', {'list_lowongan': list_lowongan})
+    else:
+        return redirect('/opd/login/')
+
 
 def opd_detail_lowongan(request,id_lowongan):
-    lowongan = Lowongan.objects.get(id = id_lowongan)
-    return render(request,'opd_detail_lowongan.html' , {'lowongan': lowongan})
+    if request.user.is_authenticated and request.user.is_opd:
+        list_lowongan = Lowongan.objects.filter(opd_foreign_key = request.user.id)
+        lowongan = Lowongan.objects.get(id = id_lowongan)
+        return render(request,'opd_detail_lowongan.html' , {'lowongan': lowongan})
+    else:
+        return redirect('/opd/login/')
 
-def opd_detail_dummy(request):
-    lowongan = {'judul' : 'judul' , 'deskripsi' : 'deskripsi', 'penyedia' : 'penyedia' , 'requirement' :'requirement' ,'durasi_magang' : 'durasi_magang','jumlah_tersedia':'jumlah_tersedia'}
-    return render(request,'opd_detail_lowongan.html' , {'lowongan': lowongan})
-    
 def opd_verification(request, token):
     try:
         opd_from_verification_list = OpdVerificationList.objects.get(

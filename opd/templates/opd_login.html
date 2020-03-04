@@ -33,10 +33,11 @@
     <title>OPD Login</title>
 </head>
 <body>
+{% include 'navbar.html' %}
 <div class="container-fluid">
     <div class="row justify-content-center" style="height: 100vh">
         <div class="col-4 align-self-center">
-            <form method="POST" action="{% url 'opd_login' %}" >
+            <form method="POST" action="{% url 'opd_login' %}">
                 {% csrf_token %}
                 <h1 class="admin-login-items">Masuk Sebagai OPD</h1>
                 <label>Email : </label>
