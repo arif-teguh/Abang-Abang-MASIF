@@ -95,7 +95,7 @@ class OpdRedirectUnitTest(TestCase):
         request.user.is_superuser = False
         response = views.opd_lowongan(request=request)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual('/opd/lowongan/detail-3', response.url)
+        self.assertNotEqual('/opd/lowongan/detail-3/', response.url)
 
     def test_using_opd_lowongan_func(self):
         found = resolve('/opd/')
