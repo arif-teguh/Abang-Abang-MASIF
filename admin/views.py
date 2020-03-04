@@ -22,10 +22,7 @@ def get_all_opd():
 
 def user_is_admin(request):
     return request.user.is_authenticated and \
-        request.user.is_admin and \
-        not request.user.is_opd \
-        and not request.user.is_user
-
+        request.user.is_admin
 
 def admin_login(request):
     return render(request, 'admin/admin_login.html')
