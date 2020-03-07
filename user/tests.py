@@ -21,4 +21,3 @@ class fun_test(TestCase):
 # This function is just to make sure that chromedriver is properly installed on gitlab pipeline
     def test_input_status_selenium(self):
         self.driver.get(url='http://localhost:8000/')
-        self.driver.get_screenshot_as_file('/code/scrshoot.png')

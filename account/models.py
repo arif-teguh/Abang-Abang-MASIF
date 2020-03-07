@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.db import models
 
@@ -83,3 +85,32 @@ class AdminProfile(models.Model):
 
     def __str__(self):
         return "<ADMIN Profile> {}".format(self.unique_admin_attribute)
+
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(
+        Account,
+        on_delete=models.CASCADE,
+        primary_key=True,
+        null=False,
+        blank=False,
+    )
+
+    born_date = models.DateField(default=datetime(1945, 8, 17))
+    born_city = models.CharField(default='Not set', max_length=120)
+    address = models.CharField(default='Not set', max_length=120)
+
+    '''
+    sex types
+    m = male
+    f = female
+    n = not set
+    '''
+
+    sex = models.CharField(default='n', max_length=1)
+    education = models.CharField(default='Not set', max_length=120)
+    institution = models.CharField(default='Not set', max_length=120)
+    major = models.CharField(default='Not set', max_length=120)
+
+    def __str__(self):
+        return "<USER Profile> Account : {}".format(self.user.email)
