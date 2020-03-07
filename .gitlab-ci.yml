@@ -35,7 +35,7 @@ Test:
     - apt-get install -y google-chrome-stable
     - apt-get install -y xvfb
     - wget https://chromedriver.storage.googleapis.com/2.43/chromedriver_linux64.zip
-    - unzip chromedriver_linux64.zip
+    - unzip -o chromedriver_linux64.zip
   script:
     - apt-get install -y python-dev python-pip
     - pip install -r requirements.txt
