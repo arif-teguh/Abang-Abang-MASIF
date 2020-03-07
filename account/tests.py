@@ -208,12 +208,30 @@ class AccountUnitTest(TestCase):
             born_date="1945-08-17",
         )
 
-        self.assertNotEqual(user_profile.born_date, datetime(1945,8,17))
+        self.assertNotEqual(user_profile.born_date, datetime(1945, 8, 17))
 
     def test_user_profile_born_date_datetime_data_type_assert_string(self):
         user_profile = UserProfile(
             user=self.user_test_account,
-            born_date=datetime(1945,8,17),
+            born_date=datetime(1945, 8, 17),
         )
 
         self.assertNotEqual(user_profile.born_date, "1945-08-17")
+
+    def test_call_userprofile_from_user(self):
+        user_profile = UserProfile(
+            user=self.user_test_account,
+        )
+
+        self.assertEqual(self.user_test_account, user_profile.user)
+        self.assertEqual(self.user_test_account.userprofile.sex, 'n')
+        self.assertEqual(self.user_test_account.userprofile.born_date, datetime(1945, 8, 17))
+        self.assertEqual(self.user_test_account.userprofile.address, 'Not set')
+
+    def test_call_user_from_userprofile(self):
+        user_profile = UserProfile(
+            user=self.user_test_account,
+        )
+
+        self.assertEqual(user_profile.user, self.user_test_account)
+        self.assertEqual(user_profile.user.userprofile.user, self.user_test_account)
