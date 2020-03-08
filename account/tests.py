@@ -30,6 +30,7 @@ class AccountUnitTest(TestCase):
         self.assertEqual(self.user_test_account.email, "test@mail.com")
 
     def test_create_superuser_using_create_superuser_function_complete(self):
+        self.assertEqual(self.superuser_test_account.profile_picture, None)
         self.assertEqual(self.superuser_test_account.name, "SuperUser")
         self.assertEqual(self.superuser_test_account.phone, "000")
         self.assertEqual(self.superuser_test_account.is_superuser, True)
@@ -134,6 +135,11 @@ class AccountUnitTest(TestCase):
         )
 
         self.assertEqual(
+            user_profile.cv,
+            None
+        )
+
+        self.assertEqual(
             self.user_test_account.userprofile.__str__(),
             "<USER Profile> Account : test@mail.com",
         )
@@ -188,6 +194,7 @@ class AccountUnitTest(TestCase):
             self.user_test_account.userprofile.__str__(),
             None,
         )
+
 
     def test_create_user_pelamar_no_user(self):
         user_profile = UserProfile(user=None)
