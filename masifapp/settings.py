@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'opd',
     'lowongan',
     'account',
+    'user',
 ]
 
 MIDDLEWARE = [
