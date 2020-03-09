@@ -25,7 +25,7 @@ class LowonganFormTest(TestCase):
             waktu_awal_magang = mock_date,
             waktu_akhir_magang = mock_date,
             batas_akhir_pendaftaran = mock_date,
-            berkas_persyaratan='berkas_persyaratan1',
+            berkas_persyaratan=['Kartu Keluarga'],
             deskripsi='deskripsi1',
             requirement='requirement1',
             opd_foreign_key_id=self.user.id
@@ -69,7 +69,7 @@ class LowonganFormTest(TestCase):
             "waktu_awal_magang" : mock_date,
             "waktu_akhir_magang" : mock_date,
             "batas_akhir_pendaftaran" : mock_date,
-            "berkas_persyaratan" :'berkas_persyaratan1',
+            "berkas_persyaratan" :['Kartu Keluarga'],
             "deskripsi" :'deskripsi1',
             "requirement" :'requirement1',
             "opd_foreign_key_id" :self.user.id
@@ -100,7 +100,7 @@ class LowonganFormTest(TestCase):
             "waktu_awal_magang" : mock_date,
             "waktu_akhir_magang" : mock_date,
             "batas_akhir_pendaftaran" : mock_date,
-            "berkas_persyaratan" :'berkas_persyaratan1',
+            "berkas_persyaratan" :['Kartu Keluarga'],
             "deskripsi" :'deskripsi1',
             "requirement" :'requirement1',
             "opd_foreign_key_id" :self.user.id
@@ -118,6 +118,7 @@ class LowonganModelTest(TestCase):
         opd_profile.save()
 
         self.client.force_login(self.account1)
+        
         self.lowongan1 = Lowongan.objects.create(
             judul='judul1',
              kategori='kat1',
@@ -125,7 +126,7 @@ class LowonganModelTest(TestCase):
              waktu_awal_magang=mock_date,
              waktu_akhir_magang=mock_date,
              batas_akhir_pendaftaran=mock_date,
-             berkas_persyaratan='berkas_persyaratan1',
+             berkas_persyaratan=['Kartu Keluarga'],
              deskripsi='deskripsi1',
              requirement='requirement1',
              opd_foreign_key_id=self.opd1.id
@@ -138,7 +139,7 @@ class LowonganModelTest(TestCase):
              waktu_awal_magang=mock_date2,
              waktu_akhir_magang=mock_date2,
              batas_akhir_pendaftaran=mock_date2,
-             berkas_persyaratan='berkas_persyaratan2',
+             berkas_persyaratan=['Surat Izin Sekolah'],
              deskripsi='deskripsi2',
              requirement='requirement2',
              opd_foreign_key_id=self.opd1.id
@@ -165,7 +166,7 @@ class LowonganModelTest(TestCase):
         self.assertEqual(self.lowongan1.kuota_peserta, 10)
 
     def test_berkas_persyaratan_is_berkas_persyaratan1(self):
-        self.assertEqual(self.lowongan1.berkas_persyaratan, "berkas_persyaratan1")
+        self.assertEqual(self.lowongan1.berkas_persyaratan, ["Kartu Keluarga"])
 
     def test_deskripsi_is_deskripsi1(self):
         self.assertEqual(self.lowongan1.deskripsi, "deskripsi1")
@@ -187,6 +188,9 @@ class LowonganModelTest(TestCase):
 
     def test_batas_akhir_pendaftaran_is_2012_12_12(self):
         self.assertEqual(self.lowongan1.batas_akhir_pendaftaran, mock_date)
+
+    def test_is_lowongan_masih_berlaku_is_true(self):
+        self.assertTrue(self.lowongan1.is_lowongan_masih_berlaku, True)
 
     def test_judul_lowongan1_and_lowongan2_is_not_equal(self):
         self.assertNotEqual(self.lowongan1.judul, self.lowongan2.judul)

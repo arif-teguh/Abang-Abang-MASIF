@@ -122,7 +122,7 @@ class LowonganOpdUnitTest(TestCase):
             waktu_awal_magang = mock_date,
             waktu_akhir_magang = mock_date,
             batas_akhir_pendaftaran = mock_date,
-            berkas_persyaratan='berkas_persyaratan1',
+            berkas_persyaratan=['Kartu Keluarga'],
             deskripsi='deskripsi1',
             requirement='requirement1',
             opd_foreign_key_id=self.account1.id
@@ -181,7 +181,7 @@ class DetailLowonganOpdUnitTest(TestCase):
             waktu_awal_magang = mock_date,
             waktu_akhir_magang = mock_date,
             batas_akhir_pendaftaran = mock_date,
-            berkas_persyaratan='berkas_persyaratan1',
+            berkas_persyaratan=['Kartu Keluarga'],
             deskripsi='deskripsi1',
             requirement='requirement1',
             opd_foreign_key_id=self.account1.id
