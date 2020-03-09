@@ -288,4 +288,4 @@ class TestCekListPelamar(TestCase):
         response = Client().get('/opd/lowongan/list-pendaftar-' + str(self.lowongan1.id) +'/')
         self.assertNotEqual(response.status_code,200)
     
-
+    
