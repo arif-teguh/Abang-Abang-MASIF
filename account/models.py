@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.db import models
 
@@ -30,8 +32,9 @@ class AccountManager(BaseUserManager):
 
 class Account(AbstractBaseUser):
     profile_picture = models.FileField(
-        default="static/default-profile.png",
-        max_length=500)
+        null=True,
+        blank=True,
+    )
     name = models.CharField(max_length=128)
     email = models.EmailField(
         verbose_name="email", max_length=254, unique=True)
@@ -63,7 +66,7 @@ class OpdProfile(models.Model):
     user = models.OneToOneField(
         Account,
         on_delete=models.CASCADE,
-        primary_key=True, null=False, blank="False"
+        primary_key=True, null=False, blank=False
     )
     # Temporary Attribute
     unique_opd_attribute = models.CharField(max_length=60)
@@ -76,10 +79,41 @@ class AdminProfile(models.Model):
     user = models.OneToOneField(
         Account,
         on_delete=models.CASCADE,
-        primary_key=True, null=False, blank="False"
+        primary_key=True, null=False, blank=False
     )
     # Temporary Attribute
     unique_admin_attribute = models.CharField(max_length=60)
 
     def __str__(self):
         return "<ADMIN Profile> {}".format(self.unique_admin_attribute)
+
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(
+        Account,
+        on_delete=models.CASCADE,
+        primary_key=True,
+        null=False,
+        blank=False,
+    )
+
+    born_date = models.DateField(default=datetime(1945, 8, 17))
+    born_city = models.CharField(default='Not set', max_length=120)
+    address = models.CharField(default='Not set', max_length=120)
+    '''
+    *sex types*
+    m = male
+    f = female
+    n = not set
+    '''
+    sex = models.CharField(default='n', max_length=1)
+    education = models.CharField(default='Not set', max_length=120)
+    institution = models.CharField(default='Not set', max_length=120)
+    major = models.CharField(default='Not set', max_length=120)
+    cv = models.FileField(
+        null=True,
+        blank=True,
+    )
+
+    def __str__(self):
+        return "<USER Profile> Account : {}".format(self.user.email)
