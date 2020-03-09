@@ -1,3 +1,4 @@
+import datetime
 from django.test import TestCase, Client
 from django.urls import resolve
 from django.http import HttpRequest
@@ -9,7 +10,7 @@ from account.models import Account
 from lowongan.models import Lowongan
 from .opd_login_form import OpdAuthenticationForm
 
-
+mock_date = datetime.date(2012, 12, 12)
 class LoginOpdUnitTest(TestCase):
     #login
     def test_page_title_opd_login(self):
@@ -115,15 +116,16 @@ class LowonganOpdUnitTest(TestCase):
         self.account1.save()
         self.client.force_login(self.account1)
         self.lowongan1 = Lowongan.objects.create(
-            judul = 'judul1',
-            penyedia = 'opd1',
-            jumlah_tersedia = 10,
-            durasi_magang = 10,
-            jangka_waktu_lamaran = 10,
-            berkas = 'berkas1',
-            deskripsi = 'deskripsi1',
-            requirement = 'requirement1',
-            opd_foreign_key_id = self.opd1.id
+            judul='judul1',
+            kategori='kat1',
+            kuota_peserta=10,
+            waktu_awal_magang = mock_date,
+            waktu_akhir_magang = mock_date,
+            batas_akhir_pendaftaran = mock_date,
+            berkas_persyaratan='berkas_persyaratan1',
+            deskripsi='deskripsi1',
+            requirement='requirement1',
+            opd_foreign_key_id=self.account1.id
         )
 
     def test_click_lowongan_button_exist(self):
@@ -157,7 +159,6 @@ class LowonganOpdUnitTest(TestCase):
     def test_get_lowongan_item(self):
          response = self.client.get('/opd/')
          self.assertContains(response,self.lowongan1.judul)
-         self.assertContains(response,self.lowongan1.penyedia)
             
 
 
@@ -174,15 +175,16 @@ class DetailLowonganOpdUnitTest(TestCase):
         self.account1.save()
         self.client.force_login(self.account1)
         self.lowongan1 = Lowongan.objects.create(
-            judul = 'judul1',
-            penyedia = 'opd1',
-            jumlah_tersedia = 10,
-            durasi_magang = 10,
-            jangka_waktu_lamaran = 10,
-            berkas = 'berkas1',
-            deskripsi = 'deskripsi1',
-            requirement = 'requirement1',
-            opd_foreign_key_id = self.opd1.id
+            judul='judul1',
+            kategori='kat1',
+            kuota_peserta=10,
+            waktu_awal_magang = mock_date,
+            waktu_akhir_magang = mock_date,
+            batas_akhir_pendaftaran = mock_date,
+            berkas_persyaratan='berkas_persyaratan1',
+            deskripsi='deskripsi1',
+            requirement='requirement1',
+            opd_foreign_key_id=self.account1.id
         )
 
 
@@ -213,10 +215,8 @@ class DetailLowonganOpdUnitTest(TestCase):
         url = '/opd/lowongan/detail-' + str(self.lowongan1.id)+'/'
         response = self.client.get(url)
         self.assertContains(response,self.lowongan1.judul)
-        self.assertContains(response,self.lowongan1.penyedia)
         self.assertContains(response,self.lowongan1.requirement)
         self.assertContains(response,self.lowongan1.deskripsi)
-        self.assertContains(response,self.lowongan1.durasi_magang)
 
     def test_response(self):
         response = self.client.get('/opd/lowongan/detail-' + str(self.lowongan1.id)+'/')
