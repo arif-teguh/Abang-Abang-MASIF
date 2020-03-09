@@ -11,7 +11,10 @@ def opd_login(request):
     return render(request, 'opd_login.html')
 
 def opd_list_pendaftar(request, id_lowongan):
-    return render(request,'opd_list_pendaftar.html')
+    if request.user.is_authenticated and request.user.is_opd:
+        return render(request,'opd_list_pendaftar.html')
+    else:
+        return redirect('/opd/login/')
   
 
 def opd_lowongan(request):
