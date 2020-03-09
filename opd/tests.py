@@ -249,16 +249,17 @@ class OpdConfirmationTest(TestCase):
 class TestCekListPelamar(TestCase):
     def setUp(self):
         self.account1 = Account.objects.create_superuser(email="test@mail.com", password="1234")
-        self.account2 = Account.objects.create_superuser(email="test2@mail.com", password="1234")
         self.opd1 = Account.objects.all()[0]
+        self.account1.is_opd = True
+        self.account1.save()
+        self.account2 = Account.objects.create_superuser(email="test2@mail.com", password="1234")
         self.opd2 = Account.objects.all()[1]
         '''
         opd_profile = OpdProfile(user=self.opd1,
                                  unique_opd_attribute="opd")
         opd_profile.save()
         '''
-        self.account1.is_opd = True
-        self.account1.save()
+        
         self.account2.is_opd = True
         self.account2.save()
         self.client.force_login(self.account1)
