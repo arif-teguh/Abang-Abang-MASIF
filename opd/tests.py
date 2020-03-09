@@ -249,7 +249,9 @@ class OpdConfirmationTest(TestCase):
 class TestCekListPelamar(TestCase):
     def setUp(self):
         self.account1 = Account.objects.create_superuser(email="test@mail.com", password="1234")
+        self.account2 = Account.objects.create_superuser(email="test2@mail.com", password="1234")
         self.opd1 = Account.objects.all()[0]
+        self.opd2 = Account.objects.all()[1]
         '''
         opd_profile = OpdProfile(user=self.opd1,
                                  unique_opd_attribute="opd")
@@ -257,6 +259,8 @@ class TestCekListPelamar(TestCase):
         '''
         self.account1.is_opd = True
         self.account1.save()
+        self.account2.is_opd = True
+        self.account2.save()
         self.client.force_login(self.account1)
         self.lowongan1 = Lowongan.objects.create(
             judul = 'judul1',
@@ -269,6 +273,17 @@ class TestCekListPelamar(TestCase):
             requirement = 'requirement1',
             opd_foreign_key_id = self.opd1.id
         )
+        self.lowongan2 = Lowongan.objects.create(
+            judul = 'judul1',
+            penyedia = 'opd1',
+            jumlah_tersedia = 10,
+            durasi_magang = 10,
+            jangka_waktu_lamaran = 10,
+            berkas = 'berkas1',
+            deskripsi = 'deskripsi1',
+            requirement = 'requirement1',
+            opd_foreign_key_id = self.opd2.id
+        )
 
 
     def test_opd_pendaftar_lowongan_template(self):
@@ -280,7 +295,7 @@ class TestCekListPelamar(TestCase):
         self.assertEqual(found.func, views.opd_list_pendaftar)
 
     
-    def test_response_jika_sudah_login(self):
+    def test_response_jika_sudah_login_dan__list_pendaftar_yang_miliknya(self):
         response = self.client.get('/opd/lowongan/list-pendaftar-' + str(self.lowongan1.id) +'/')
         self.assertEqual(response.status_code,200)
 
@@ -288,4 +303,8 @@ class TestCekListPelamar(TestCase):
         response = Client().get('/opd/lowongan/list-pendaftar-' + str(self.lowongan1.id) +'/')
         self.assertNotEqual(response.status_code,200)
     
-    
+
+    def test_response_jika_melihat_list_pendaftar_yang_tidak_miliknya(self):
+        response = self.client.get('/opd/lowongan/list-pendaftar-' + str(self.lowongan2.id) +'/')
+        self.assertNotEqual(response.status_code,200)
+ 
