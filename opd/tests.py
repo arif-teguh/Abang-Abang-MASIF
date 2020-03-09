@@ -278,3 +278,5 @@ class TestCekListPelamar(TestCase):
     def test_using_opd_detail_lowongan_func(self):
         found = resolve('/opd/lowongan/list-pendaftar-' + str(self.lowongan1.id) +'/')
         self.assertEqual(found.func, views.opd_list_pendaftar)
+
+    

@@ -10,6 +10,10 @@ from .opd_confirmation_form import OpdConfirmationForm
 def opd_login(request):
     return render(request, 'opd_login.html')
 
+def opd_list_pendaftar(request, id_lowongan):
+    return render(request,'opd_list_pendaftar.html')
+  
+
 def opd_lowongan(request):
     if request.user.is_authenticated and request.user.is_opd:
         list_lowongan = Lowongan.objects.filter(opd_foreign_key = request.user.id)
