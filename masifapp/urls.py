@@ -19,16 +19,14 @@ from django.contrib.auth import logout
 from django.urls import path, include
 
 urlpatterns = [
-    path('opd/', include('opd.urls')),
+    path('', include('landing.urls')),
+    path('cari-lowongan/', include('cari_lowongan.urls')),
     path('admin/', include('admin.urls')),
     path('opd/', include('opd.urls')),
-    path('', include('hello.urls')),
+    path('lowongan/', include('lowongan.urls')),
     path('account-redirector', include('account_redirector.urls')),
     path('superuser/', admin.site.urls),
     # path('auth/', include('social_django.urls')),
     # TESTING PATH dibawah ini
-    path('test/', include('google_oauth2.urls')),
-    path('', include('social_django.urls', namespace='social')),
-    path('logout/', logout, {'next_page': settings.LOGOUT_REDIRECT_URL},
-         name='logout'),
+    path('user/', include('google_oauth2.urls')),
 ]
