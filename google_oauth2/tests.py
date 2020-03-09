@@ -13,7 +13,6 @@ from social_django.views import get_session_timeout
 @override_settings(SOCIAL_AUTH_GOOGLE_KEY='1',
                    SOCIAL_AUTH_GOOGLE_SECRET='2')
 class TestViews(TestCase):
-    base_url = 'http://testserver'
 
     def setUp(self):
         session = self.client.session
