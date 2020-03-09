@@ -6,6 +6,9 @@
 </head>
 <body>
 <h1>hello world</h1>
-<button onclick="window.location.href={% url 'social:begin=' 'google-oauth2' %}">LOGIN</button>
+<br>
+<a href="{% url 'social:begin' 'google-oauth2' %}" id="google_login">
+    Masuk dengan Google
+</a>
 </body>
 </html>
