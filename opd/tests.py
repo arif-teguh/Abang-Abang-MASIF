@@ -271,12 +271,25 @@ class TestCekListPelamar(TestCase):
         )
 
 
-    def test_opd_detail_lowongan_template(self):
+    def test_opd_pendaftar_lowongan_template(self):
         response = self.client.get('/opd/lowongan/list-pendaftar-' + str(self.lowongan1.id)+'/')
         self.assertTemplateUsed(response,'opd_list_pendaftar.html')
 
-    def test_using_opd_detail_lowongan_func(self):
+    def test_using_opd_pendaftar_lowongan_func(self):
         found = resolve('/opd/lowongan/list-pendaftar-' + str(self.lowongan1.id) +'/')
         self.assertEqual(found.func, views.opd_list_pendaftar)
 
     
+    def test_response_jika_sudah_login(self):
+        response = self.client.get('/opd/lowongan/list-pendaftar-' + str(self.lowongan1.id) +'/')
+        self.assertEqual(response.status_code,200)
+        
+    def test_response_jika_belum_login(self):
+        response = Client().get('/opd/lowongan/list-pendaftar-' + str(self.lowongan1.id) +'/')
+        self.assertNotEqual(response.status_code,200)
+
+    def test_template_jika_belum_login(self):
+        response = self.client.get('/opd/lowongan/list-pendaftar-' + str(self.lowongan1.id) +'/')
+        self.assertTemplateUsed(response,'opd_login.html')
+    
+
