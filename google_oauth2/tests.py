@@ -3,7 +3,7 @@ from unittest import mock
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractBaseUser
 
-from django.test import TestCase, override_settings
+from django.test import TestCase, override_settings, Client
 
 from social_django.compat import reverse
 from social_django.models import UserSocialAuth
@@ -26,3 +26,11 @@ class TestViews(TestCase):
         url = reverse('social:begin', kwargs={'backend': 'blabla'})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
+
+    def test_page_response_status(self):
+        response = Client().get('/user/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_page_template(self):
+        response = Client().get('/user/')
+        self.assertTemplateUsed(response, 'page_test.html')
