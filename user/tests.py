@@ -350,6 +350,24 @@ class UserUnitTest(TestCase):
         result = self.client.post('/user/dashboard/edit/', data=form_data)
         self.assertEqual('major', result.content.decode('utf-8'))
 
+    def test_logged_in_post_to_edit_profile_url_wrong_born_date_data_shouldnt_work(self):
+        self.created_mock_user.is_user = True
+        self.created_mock_user.save()
+        self.client.login(username='test@mail.com', password='12345678')
+        form_data = {
+            'name': 'test',
+            'address': 'rumah',
+            'born_date': '1708/1945',
+            'born_city': 'Depok',
+            'phone': '0812345678',
+            'sex': 'm',
+            'institution': 'uwiw',
+            'education': 'smk',
+            'major': 'CS',
+        }
+        result = self.client.post('/user/dashboard/edit/', data=form_data)
+        self.assertEqual('Tanggal lahir salah', result.content.decode('utf-8'))
+
     def test_not_logged_in_post_to_edit_profile_url_should_redirect(self):
         form_data = {
             'name': 'test',
@@ -364,6 +382,8 @@ class UserUnitTest(TestCase):
         }
         result = self.client.post('/user/dashboard/edit/', data=form_data)
         self.assertEqual(result.status_code, 302)
+
+
 
 # class UserFunctionalTest(TestCase):
 #     def setUp(self):
