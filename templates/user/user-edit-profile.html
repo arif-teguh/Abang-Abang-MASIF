@@ -14,73 +14,98 @@
             integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
             crossorigin="anonymous"></script>
 
-    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/static/css/bootstrap-datepicker3.standalone.min.css">
+    <script src="/static/js/bootstrap-datepicker.min.js"></script>
+
+    <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Edit Profile</title>
 </head>
 <body>
 
 
 <div class="container">
-    <form action="{% url 'user_edit_profile' %}" method="post">
-        <div class="form-group">
-            {% csrf_token %}
 
-            <div class="form-group">
-                <label>Nama </label>
-                {{ form.name }}
-            </div>
+    <div class="row">
+        <div class="col-2">
 
-            <div class="form-group">
-                <label>Tempat Lahir </label>
-                {{ form.born_city }}
-            </div>
-
-            <div class="form-group">
-                <label>Tanggal Lahir </label>
-                {{ form.born_date }}
-            </div>
-
-            <div class="form-group">
-                <label>Alamat </label>
-                {{ form.address }}
-            </div>
-
-            <div class="form-group">
-                <label>Sex </label>
-                {{ form.sex }}
-            </div>
-
-            <div class="form-group">
-                <label>Pendidikan </label>
-                {{ form.education }}
-            </div>
-
-            <div class="form-group">
-                <label>Asal Institusi </label>
-                {{ form.institution }}
-            </div>
-
-            <div class="form-group">
-                <label>Jurusan </label>
-                {{ form.major }}
-            </div>
-
-            <div class="form-group">
-                <label>Nomor Telepon </label>
-                {{ form.phone }}
-            </div>
+        </div>
 
 
+        <div class="col-8">
+            <form action="{% url 'user_edit_profile' %}" method="post">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label>Nama </label>
+                    {{ form.name }}
+                </div>
+
+                <div class="form-group">
+                    <label>Kota Lahir </label>
+                    {{ form.born_city }}
+                </div>
+
+                <div class="form-group">
+                    <label>Tanggal Lahir </label><br>
+                    {{ form.born_date }}
+                </div>
+
+                <div class="form-group">
+                    <label>Alamat </label>
+                    {{ form.address }}
+                </div>
+
+                <div class="form-group">
+                    <label>Jenis Kelamin </label>
+                    {{ form.sex }}
+                </div>
+
+                <div class="form-group">
+                    <label>Pendidikan </label>
+                    {{ form.education }}
+                </div>
+
+                <div class="form-group">
+                    <label>Asal Institusi </label>
+                    {{ form.institution }}
+                </div>
+
+                <div class="form-group">
+                    <label>Jurusan </label>
+                    {{ form.major }}
+                </div>
+
+                <div class="form-group">
+                    <label>Nomor Telepon </label>
+                    {{ form.phone }}
+                </div>
 
 
                 <label>Email : </label>
                 {{ request.user.email }}
-            <br>
-            <br>
-            <input type="submit" class="btn btn-primary" value="Ubah Profil">
-        </div>
-    </form>
-</div>
+                <br>
+                <br>
+                <input type="submit" class="btn btn-primary" value="Ubah Profil">
 
+
+            </form>
+        </div>
+        <div class="col-2">
+
+        </div>
+    </div>
+
+</div>
+<script>
+
+    $('.datepicker').datepicker({
+        format: 'dd/mm/yyyy',
+        startView: 2,
+        startDate: '1/1/1900',
+        endDate: 'today',
+        autoclose: true,
+    });
+
+</script>
 </body>
 </html>
