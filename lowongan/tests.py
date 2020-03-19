@@ -10,7 +10,9 @@ from .form import LowonganForm
 
 url_form_lowongan = '/lowongan/opd/form/'
 url_post_lowongan = url_form_lowongan + "post/"
-list_berkas = ["Kartu Keluarga"]
+str_kartu_keluarga = "Kartu Keluarga"
+str_surat_izin_sekolah = 'Surat Izin Sekolah'
+list_berkas = [str_kartu_keluarga]
 mock_date = datetime.date(2012, 12, 12)
 mock_date2 = datetime.date(2011, 11, 11)
 
@@ -47,9 +49,9 @@ class LowonganFormTest(TestCase):
     
     def test_form_init_form_to_create_choice_update_form(self):
         choice = (
-                ('Kartu Keluarga', 'Kartu Keluarga'),
+                (str_kartu_keluarga, str_kartu_keluarga),
                 ('Kartu Tanda Penduduk', 'Kartu Tanda Penduduk'),
-                ('Surat Izin Sekolah', 'Surat Izin Sekolah'),
+                (str_surat_izin_sekolah, str_surat_izin_sekolah),
             )
         mock_id_lowongan = self.lowongan_obj.id
         form = LowonganForm(instance=self.lowongan_obj, id=mock_id_lowongan)
@@ -154,7 +156,7 @@ class LowonganModelTest(TestCase):
             waktu_awal_magang=mock_date2,
             waktu_akhir_magang=mock_date2,
             batas_akhir_pendaftaran=mock_date2,
-            berkas_persyaratan=['Surat Izin Sekolah'],
+            berkas_persyaratan=[str_surat_izin_sekolah],
             deskripsi='deskripsi2',
             requirement='requirement2',
             opd_foreign_key_id=self.opd1.id
