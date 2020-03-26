@@ -66,12 +66,17 @@ class LowonganFormTest(TestCase):
         Account.objects.filter(pk=self.user.id).update(is_opd=True)
         response = self.client.get(url_form_lowongan)
         self.assertTemplateUsed(response, 'lowongan/form_lowongan.html')
-  
-    def test_post_form_lowongan_failed_and_redirect(self):
+
+    def test_post_form_lowongan_failed_and_reload(self):
         Account.objects.filter(pk=self.user.id).update(is_opd=True)
         response = self.client.post(url_post_lowongan)
+        self.assertEqual(response.status_code, 200)
+
+    def test_post_form_lowongan_open_raw_url_redirect(self):
+        Account.objects.filter(pk=self.user.id).update(is_opd=True)
+        response = self.client.get(url_post_lowongan)
         self.assertEqual(response.status_code, 302)
-    
+
     def test_post_form_lowongan_url_for_non_opd(self):
         Account.objects.filter(pk=self.user.id).update(is_opd=False)
         response = self.client.get(url_post_lowongan)
@@ -94,6 +99,23 @@ class LowonganFormTest(TestCase):
         response = self.client.post(url_post_lowongan, data_form_lowongan)
         self.assertTrue(Lowongan.objects.filter(judul="judul1").exists())
         self.assertEqual(response.status_code, 302)
+
+    def test_post_form_is_not_valid_because_waktu_awal_greater_akhir(self):
+        Account.objects.filter(pk=self.user.id).update(is_opd=True)
+        data_form_lowongan = {
+            "judul" :'judul1',
+            "kategori" :'kat1',
+            "kuota_peserta":10,
+            "waktu_awal_magang" : mock_date,
+            "waktu_akhir_magang" : mock_date2,
+            "batas_akhir_pendaftaran" : mock_date,
+            "berkas_persyaratan" :list_berkas,
+            "deskripsi" :'deskripsi1',
+            "requirement" :'requirement1',
+            "opd_foreign_key_id" :self.user.id
+        }
+        response = self.client.post(url_post_lowongan, data_form_lowongan)
+        self.assertEqual(response.status_code, 200)
 
     def test_update_form_lowongan_url_for_non_opd(self):
         Account.objects.filter(pk=self.user.id).update(is_opd=False)
