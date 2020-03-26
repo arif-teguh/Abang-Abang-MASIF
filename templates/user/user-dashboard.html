@@ -1,13 +1,151 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <script
+            src="https://code.jquery.com/jquery-3.4.1.min.js"
+            integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+            integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+            crossorigin="anonymous"></script>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+
+
     <title>Dashboard</title>
+
+    <style>
+
+    </style>
+
 </head>
 <body>
 <h1>User Dashboard</h1>
 <h1>Under Construction</h1>
 <button onclick="window.location.href = '{% url 'user_edit_profile' %}'">EDIT PROFILE</button>
+
+<h1>BREAK</h1>
+<br>
+<br>
+<br>
+
+{% if user.userprofile.cv %}
+
+
+    <h1>CV ADA</h1>
+    <a href="/media/{{ user.userprofile.cv }}">{{ user.userprofile.cv }}</a>
+
+    <button class="btn btn-primary" onclick="click_upload_cv()">Ubah CV</button>
+    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#delete-cv-modal">
+        Hapus CV
+    </button>
+
+
+
+
+{% else %}
+    <h1>Anda belum upload CV</h1>
+    <button class="btn btn-primary" onclick="click_upload_cv()">Unggah CV</button>
+
+
+{% endif %}
+
+
+
+<form id="form-cv" method="post" enctype="multipart/form-data" action="{% url 'user_edit_upload_cv' %}">
+    {% csrf_token %}
+
+
+    <span style="display: none">{{ form_cv.cv }}</span>
+
+</form>
+<h1>===BATES FOTO===</h1>
+
+
+<div class="image-upload">
+
+    <label for="id_profile_picture">
+        {% if user.profile_picture %}
+            <img style="height: 200px; width: auto" src="/media/{{ user.profile_picture }}">
+        {% else %}
+            <img style="height: 200px; width: auto" src="/static/img/add_photo.png">
+        {% endif %}
+
+    </label>
+    <form id="form-profile-picture" method="post" enctype="multipart/form-data"
+          action="{% url 'user_edit_upload_pp' %}">
+        {% csrf_token %}
+        <span style="display: none">{{ form_pp.profile_picture }}</span>
+
+    </form>
+
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="delete-cv-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Hapus CV</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Yakin Hapus CV?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Tidak</button>
+                <button type="button" id="yes-delete-cv" class="btn btn-primary" onclick="deleteCVButton()"
+                        data-dismiss="modal">Ya
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    function deleteCVButton() {
+        var token = '{{ csrf_token }}'
+        $.ajax(
+            {
+                url: '{% url 'delete_cv' %}',
+                type: 'post',
+                headers: {"X-CSRFToken": token},
+            }
+        );
+        location.reload();
+
+    }
+
+    $(document).ready(function () {
+        console.log('JALANNN');
+    });
+
+
+    function click_upload_cv() {
+        $('#id_cv').click();
+    }
+
+
+    document.getElementById("id_cv").onchange = function () {
+        document.getElementById("form-cv").submit();
+    };
+
+    document.getElementById("id_profile_picture").onchange = function () {
+        document.getElementById("form-profile-picture").submit();
+    };
+
+
+</script>
+
 
 </body>
 </html>

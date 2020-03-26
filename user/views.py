@@ -5,7 +5,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 
 from account.models import UserProfile
-from user.forms import EditUserProfileForm
+from user.forms import EditUserProfileForm, CVForm, ProfilePictureForm
 
 
 def account_is_user(request):
@@ -15,10 +15,43 @@ def account_is_user(request):
         return False
 
 
+def upload_profile_picture(request):
+    if account_is_user(request):
+        if request.method == 'POST':
+            form = ProfilePictureForm(request.POST, request.FILES)
+            if form.is_valid():
+                request.user.profile_picture = request.FILES['profile_picture']
+                request.user.save()
+            return redirect('/user/dashboard/')
+    return HttpResponse('ERROR 404 Page not found')
+
+
+def upload_cv(request):
+    if account_is_user(request):
+
+        if request.method == 'POST':
+            form = CVForm(request.POST, request.FILES)
+            form.instance.user = request.user
+            if form.is_valid():
+                form.save()
+            return redirect('/user/dashboard/')
+    return HttpResponse('ERROR 404 Page not found')
+
+
+def delete_cv(request):
+    if account_is_user(request):
+        if request.method == 'POST':
+            request.user.userprofile.cv.delete()
+    return HttpResponse('ERROR 404 Page not found')
+
+
 def user_dashboard(request):
     if account_is_user(request):
-        return render(request, 'user/user-dashboard.html')
-    return redirect('/user/login/')
+
+        return render(request, 'user/user-dashboard.html',
+                      {'form_pp' : ProfilePictureForm(),'user': request.user, 'form_cv': CVForm()})
+    else:
+        return redirect('/user/login/')
 
 
 def born_date_validator(post):

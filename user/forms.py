@@ -1,5 +1,7 @@
 from django import forms
 
+from account.models import UserProfile, Account
+
 
 class EditUserProfileForm(forms.Form):
     string_field = forms.TextInput(
@@ -91,3 +93,18 @@ class EditUserProfileForm(forms.Form):
         min_length=1,
         widget=phone_field,
     )
+
+
+class CVForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ('cv',)
+
+
+class ProfilePictureForm(forms.ModelForm):
+    class Meta:
+        model = Account
+        fields = ('profile_picture',)
+        widgets = {
+            'profile_picture': forms.FileInput(attrs={'class': 'black'}),
+        }
