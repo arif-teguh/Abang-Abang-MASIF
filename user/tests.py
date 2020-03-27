@@ -1,16 +1,13 @@
 from datetime import datetime
 
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.db.models.fields.files import FieldFile
-from django.forms import FileField
 from django.http import HttpRequest
 from django.test import TestCase, Client
 from selenium import webdriver
 
 from account.models import Account, UserProfile
 from user.forms import EditUserProfileForm
-from user.views import born_date_validator, sex_validator, phone_number_validator, is_data_valid, upload_cv, delete_cv, \
-    upload_profile_picture
+from user.views import born_date_validator, sex_validator, phone_number_validator, is_data_valid
 
 
 # Create your tests here.
@@ -474,7 +471,8 @@ class UserUnitTest(TestCase):
 
         self.client.login(username='test@mail.com', password='12345678')
 
-        response = self.client.post('/user/dashboard/edit/upload_profile_picture/', {'profile_picture': self.test_file_jpg})
+        response = self.client.post('/user/dashboard/edit/upload_profile_picture/',
+                                    {'profile_picture': self.test_file_jpg})
 
         self.assertEqual(response.status_code, 302)
         test_user = Account.objects.get(email='test@mail.com')
