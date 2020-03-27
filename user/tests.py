@@ -411,6 +411,42 @@ class UserUnitTest(TestCase):
         self.assertEqual(test_user.userprofile.cv.name, 'cv.pdf')
         test_user.userprofile.cv.delete()
 
+    def test_user_upload_cv_with_pdf_should_not_change_other_userprofile_data(self):
+        self.assertEqual(self.created_mock_user.userprofile.cv, None)
+        self.created_mock_user.is_user = True
+        self.created_mock_user.name = "test_name"
+        self.created_mock_user.userprofile.sex = "m"
+        self.created_mock_user.userprofile.address = "test_address"
+        self.created_mock_user.userprofile.institution = "test_institution"
+        self.created_mock_user.userprofile.education = "test_education"
+        self.created_mock_user.userprofile.born_city = "test_borncity"
+        self.created_mock_user.userprofile.born_date = "01/01/2000"
+        self.created_mock_user.userprofile.major = "test_major"
+        self.created_mock_user.save()
+
+        self.client.login(username='test@mail.com', password='12345678')
+        self.assertEqual(self.created_mock_user.name, 'test_name')
+        self.assertEqual(self.created_mock_user.userprofile.sex, 'm')
+        self.assertEqual(self.created_mock_user.userprofile.address, 'test_address')
+        self.assertEqual(self.created_mock_user.userprofile.institution, 'test_institution')
+        self.assertEqual(self.created_mock_user.userprofile.education, 'test_education')
+        self.assertEqual(self.created_mock_user.userprofile.born_city, 'test_borncity')
+        self.assertEqual(self.created_mock_user.userprofile.born_date, '01/01/2000')
+        self.assertEqual(self.created_mock_user.userprofile.major, 'test_major')
+        response = self.client.post('/user/dashboard/edit/upload_cv/', {'cv': self.test_file_cv})
+        self.assertEqual(response.status_code, 302)
+        test_user = Account.objects.get(email='test@mail.com')
+        self.assertEqual(test_user.userprofile.cv.name, 'cv.pdf')
+        self.assertEqual(test_user.name, 'test_name')
+        self.assertEqual(test_user.userprofile.sex, 'm')
+        self.assertEqual(test_user.userprofile.address, 'test_address')
+        self.assertEqual(test_user.userprofile.institution, 'test_institution')
+        self.assertEqual(test_user.userprofile.education, 'test_education')
+        self.assertEqual(test_user.userprofile.born_city, 'test_borncity')
+        self.assertEqual(test_user.userprofile.born_date, '01/01/2000')
+        self.assertEqual(test_user.userprofile.major, 'test_major')
+        test_user.userprofile.cv.delete()
+
     def test_user_upload_cv_no_file_shouldnt_work(self):
         self.assertEqual(self.created_mock_user.userprofile.cv, None)
         self.created_mock_user.is_user = True
