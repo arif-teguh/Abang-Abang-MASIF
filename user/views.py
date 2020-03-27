@@ -3,6 +3,7 @@ import re
 
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
+from django.utils.datastructures import MultiValueDictKeyError
 
 from account.models import UserProfile
 from user.forms import EditUserProfileForm, CVForm, ProfilePictureForm
@@ -31,9 +32,13 @@ def upload_cv(request):
 
         if request.method == 'POST':
             form = CVForm(request.POST, request.FILES)
-            form.instance.user = request.user
+            # form.instance.user = request.user
             if form.is_valid():
-                form.save()
+                try:
+                    request.user.userprofile.cv = request.FILES['cv']
+                    request.user.userprofile.save()
+                except MultiValueDictKeyError:
+                    return HttpResponse('ERROR no file sent')
             return redirect('/user/dashboard/')
     return HttpResponse('ERROR 404 Page not found')
 
