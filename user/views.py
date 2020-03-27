@@ -49,7 +49,7 @@ def user_dashboard(request):
     if account_is_user(request):
 
         return render(request, 'user/user-dashboard.html',
-                      {'form_pp' : ProfilePictureForm(),'user': request.user, 'form_cv': CVForm()})
+                      {'form_pp': ProfilePictureForm(), 'user': request.user, 'form_cv': CVForm()})
     else:
         return redirect('/user/login/')
 
