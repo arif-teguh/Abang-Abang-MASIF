@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db.models.fields.files import FieldFile
 from django.forms import FileField
@@ -420,9 +422,10 @@ class UserUnitTest(TestCase):
         self.created_mock_user.userprofile.institution = "test_institution"
         self.created_mock_user.userprofile.education = "test_education"
         self.created_mock_user.userprofile.born_city = "test_borncity"
-        self.created_mock_user.userprofile.born_date = "01/01/2000"
+        self.created_mock_user.userprofile.born_date = datetime(2000, 1, 1)
         self.created_mock_user.userprofile.major = "test_major"
         self.created_mock_user.save()
+        self.created_mock_user.userprofile.save()
 
         self.client.login(username='test@mail.com', password='12345678')
         self.assertEqual(self.created_mock_user.name, 'test_name')
@@ -431,7 +434,7 @@ class UserUnitTest(TestCase):
         self.assertEqual(self.created_mock_user.userprofile.institution, 'test_institution')
         self.assertEqual(self.created_mock_user.userprofile.education, 'test_education')
         self.assertEqual(self.created_mock_user.userprofile.born_city, 'test_borncity')
-        self.assertEqual(self.created_mock_user.userprofile.born_date, '01/01/2000')
+        self.assertEqual(self.created_mock_user.userprofile.born_date, datetime(2000, 1, 1))
         self.assertEqual(self.created_mock_user.userprofile.major, 'test_major')
         response = self.client.post('/user/dashboard/edit/upload_cv/', {'cv': self.test_file_cv})
         self.assertEqual(response.status_code, 302)
@@ -443,7 +446,7 @@ class UserUnitTest(TestCase):
         self.assertEqual(test_user.userprofile.institution, 'test_institution')
         self.assertEqual(test_user.userprofile.education, 'test_education')
         self.assertEqual(test_user.userprofile.born_city, 'test_borncity')
-        self.assertEqual(test_user.userprofile.born_date, '01/01/2000')
+        self.assertEqual(test_user.userprofile.born_date, datetime(2000, 1, 1).date())
         self.assertEqual(test_user.userprofile.major, 'test_major')
         test_user.userprofile.cv.delete()
 
@@ -456,7 +459,7 @@ class UserUnitTest(TestCase):
 
         response = self.client.post('/user/dashboard/edit/upload_cv/', {'cv': ''})
 
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 200)
         test_user = Account.objects.get(email='test@mail.com')
         self.assertEqual(test_user.userprofile.cv.name, '')
 
@@ -487,7 +490,7 @@ class UserUnitTest(TestCase):
 
         response = self.client.post('/user/dashboard/edit/upload_cv/', {'profile_picture': ''})
 
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 200)
         test_user = Account.objects.get(email='test@mail.com')
         self.assertEqual(test_user.profile_picture.name, '')
 
