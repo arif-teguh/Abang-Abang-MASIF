@@ -203,7 +203,9 @@ class UserUnitTest(TestCase):
             'major': 'Computer Science'
         }
         result = self.client.post('/user/dashboard/edit/', data=form_data)
-        self.assertEqual('17/08/1945', result.content.decode('utf-8'))
+        self.assertEqual(302, result.status_code)
+        self.assertEqual('/user/dashboard/', result.url)
+
 
     def test_logged_in_post_to_edit_profile_url_no_name_data_shouldnt_work(self):
         self.created_mock_user.is_user = True
