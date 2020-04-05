@@ -15,7 +15,6 @@ class Lowongan(models.Model):
     deskripsi = models.TextField(max_length=1000)
     requirement = models.TextField(max_length=1000)
     is_lowongan_masih_berlaku = models.BooleanField(default=True)
-
     opd_foreign_key = models.ForeignKey(Account, on_delete=models.CASCADE,
                                         related_name='lowongan')
 
