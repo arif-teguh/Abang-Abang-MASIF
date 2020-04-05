@@ -13,9 +13,13 @@ def opd_login(request):
 def opd_list_pendaftar(request, id_lowongan):
     if request.user.is_authenticated and request.user.is_opd:
         if(cek_id_lowongan_dan_opd(request, id_lowongan)):
-            list_pelamar = Account.objects.filter()
-            list_lowongan = Lowongan.objects.filter(opd_foreign_key = request.user.id)
-            return render(request,'opd_list_pendaftar.html')
+            list_pelamar = Lowongan.list_pendaftar_key.all()
+            jumlah = list_pelamar.count()
+            lowongan = Lowongan.objects.filter(id = id_lowongan)
+            return render(request,'opd_list_pendaftar.html',
+            {'list_pelamar': list_pelamar ,
+             'lowongan': lowongan ,
+              'jumlah' : jumlah } )
         else :
             return redirect('/opd/')
     else:

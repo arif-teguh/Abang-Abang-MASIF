@@ -19,7 +19,7 @@
             </div>
             <div class="col-9 align-self-center col2">
                 <p id="judul-lowongan">{{ lowongan.judul }}</p>
-                <p>{{ lowongan.penyedia}}</p>
+                <p>{{ lowongan.kategori}}</p>
             </div>
             <div class="col-1 d-flex align-items-end flex-column col3">
                 <button type="button" class="btn btn-primary mt-auto">Lihat pelamar</button>
@@ -40,10 +40,11 @@
                 cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id
                 est laborum.</p>
         </div>
-        <div class="col-4" style="text-align: left">
+        <div class="col-4" style="text-align: left">Waktu Mulai  magang : {{ lowongan.waktu_awal_magang}}<br>
             <b id="bold-text">Detail</b>
-            <p>{{ lowongan.jumlah_tersedia}}<br>
-                {{ lowongan.durasi_magang}}
+            <p>Tenaga yang dibutuhkan :{{ lowongan.kuota_peserta}}<br>
+                Waktu mulai  magang : {{ lowongan.waktu_awal_magang}}<br>
+                Waktu akhir magang : {{ lowongan.waktu_akhir_magang}}
             </p>
             <a href='/lowongan/opd/form/edit/{{lowongan.id}}/'>
             <button type="button" class="btn btn-primary mt-auto">Edit Lowongan</button>

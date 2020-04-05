@@ -76,12 +76,13 @@
             </div>
             <div class="col-9 align-self-center col2">
                 <p id="judul-lowongan">{{ each.judul }}</p>
-                <p>{{ each.penyedia }}</p>
-                <p>10 Januari 2020</p>
+                <p>{{ each.kategori }}</p>
+                <p>Jumlah pelamar{{each.list_pendaftar_key.length}}/p>
             </div>
             <div class="col-1 d-flex align-items-end flex-column col3">
-                
+                <a href="/opd/lowongan/list-pendaftar-{{each.id}}/" >
                 <button type="button" class="btn btn-primary mt-auto">Lihat pelamar</button>
+                </a>
                 <a href="/opd/lowongan/detail-{{each.id}}/" >
                 <button type="button" class="btn btn-primary mt-auto">Detail Lowongan</button>
                 </a>

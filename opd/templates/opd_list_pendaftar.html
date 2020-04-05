@@ -39,11 +39,41 @@
 <body>
 
 {% include 'navbar.html' %}     
+<h1>Daftar Pelamar {{ lowongan.judul }}</p>
+<p>Jumlah Pelamar : {{Jumlah}}</p>
 
+<table style="width:100%">
+  <tr>
+    <th>No</th>
+    <th>Nama</th>
+    <th></th>
+  </tr>
+{% for each in list_pelamar%}
 
+  <tr>
+    <td id="count"></td>
+    <td>{{ each.name }}</td>
+    <a href="/opd/lowongan/pendaftar/{{each.id}}/" >
+    <td>Lihat Detail</td>
+    </a>
+  </tr>
+
+{% endfor %}
+
+</table>
 <div class="pg-container">
 
 </div>
 
 </body>
+
+
+<script>
+var count = 0
+function counter() {
+  count = count + 1
+  return count ;
+}
+document.getElementById("count").innerHTML = count();
+</script>
 </html>
