@@ -123,7 +123,7 @@ def user_edit_profile(request):
 
                     request.user.save()
                     profile.save()
-                    return HttpResponse(request.POST['born_date'])
+                    return redirect('/user/dashboard/')
                 return HttpResponse(data_valid['message'])
             return HttpResponse(form.errors)
         else:
