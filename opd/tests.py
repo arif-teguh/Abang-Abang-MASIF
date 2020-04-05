@@ -6,7 +6,7 @@ import secrets
 
 from admin.models import OpdVerificationList
 from opd import views
-from account.models import Account
+from account.models import Account , UserProfile
 from lowongan.models import Lowongan
 from .opd_login_form import OpdAuthenticationForm
 
@@ -115,6 +115,7 @@ class LowonganOpdUnitTest(TestCase):
                                  unique_opd_attribute="opd")
         opd_profile.save()
         '''
+         
         self.account1.is_opd = True
         self.account1.save()
         self.client.force_login(self.account1)
@@ -250,19 +251,20 @@ class OpdConfirmationTest(TestCase):
 class TestCekListPelamar(TestCase):
     def setUp(self):
         self.account1 = Account.objects.create_superuser(email="test@mail.com", password="1234")
-        self.opd1 = Account.objects.all()[0]
         self.account1.is_opd = True
         self.account1.save()
-        self.account2 = Account.objects.create_superuser(email="test2@mail.com", password="1234")
-        self.opd2 = Account.objects.all()[1]
-        '''
-        opd_profile = OpdProfile(user=self.opd1,
-                                 unique_opd_attribute="opd")
-        opd_profile.save()
-        '''
-        
+        self.account2 = Account.objects.create_superuser(email="test2@mail.com", password="xyz")
         self.account2.is_opd = True
         self.account2.save()
+        self.account3 = Account.objects.create_user(email="user3@mail.com", password="dqwqfas")
+        self.account3.name = "testtest"
+        self.account3.is_user = True
+        self.account3.save()
+        self.user1 = UserProfile(user=self.account3)
+        self.user1.save()
+        self.opd1 = Account.objects.all()[0]
+        self.opd2 = Account.objects.all()[1]
+
         self.client.force_login(self.account1)
         self.lowongan1 = Lowongan.objects.create(
             judul='judul1',
@@ -274,8 +276,11 @@ class TestCekListPelamar(TestCase):
             berkas_persyaratan=['Kartu Keluarga'],
             deskripsi='deskripsi1',
             requirement='requirement1',
-            opd_foreign_key_id=self.account1.id
+            opd_foreign_key_id=self.account1.id,
+            
+            
         )
+        self.lowongan1.list_pendaftar_key.add(self.user1)
 
         self.lowongan2 = Lowongan.objects.create(
             judul='judul2',
@@ -287,7 +292,7 @@ class TestCekListPelamar(TestCase):
             berkas_persyaratan=['Kartu Keluarga'],
             deskripsi='deskripsi1',
             requirement='requirement1',
-            opd_foreign_key_id=self.account2.id
+            opd_foreign_key_id = self.account2.id
         )
 
 
@@ -315,7 +320,16 @@ class TestCekListPelamar(TestCase):
  
 
     def test_get_lowongan_dan_pendaftar(self):
-        url = '/opd/lowongan/list-pendaftar--' + str(self.lowongan1.id)+'/'
+        url = '/opd/lowongan/list-pendaftar-' + str(self.lowongan1.id)+'/'
         response = self.client.get(url)
         self.assertContains(response,self.lowongan1.judul)
-        
+        self.assertContains(response,'1')
+
+
+    
+    def test_page_title_opd_detail_lowngan_lowongan(self):
+        request = HttpRequest()
+        request.user = self.account1
+        response = views.opd_list_pendaftar(request, self.lowongan1.id)
+        html_response = response.content.decode('utf8')
+        self.assertIn(self.user1.user.name, html_response)
