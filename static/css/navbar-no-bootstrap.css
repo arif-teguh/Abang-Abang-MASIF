@@ -1,0 +1,95 @@
+#top-logo-row {
+    margin: 0;
+}
+
+.bg-masif-blue {
+    background-color: #242582;
+}
+
+#masif-logo {
+    width: 36px;
+    height: 36px;
+}
+
+.navbar-account {
+    color: #e3e3e3;
+}
+
+.navbar-account:hover {
+    color: white;
+}
+
+#login-wide, #daftar-wide {
+    color: white;
+}
+
+/*#navbar-account:link {*/
+/*    color: #747474;*/
+/*    background-color: transparent;*/
+/*    text-decoration: none;*/
+/*}*/
+
+/*#navbar-account:visited {*/
+/*    color: black;*/
+/*    background-color: transparent;*/
+/*    text-decoration: none;*/
+/*}*/
+
+/*#navbar-account:hover {*/
+/*    color: black;*/
+/*    background-color: transparent;*/
+
+/*}*/
+
+/*#navbar-account:active {*/
+/*    color: black;*/
+/*    background-color: transparent;*/
+/*    text-decoration: underline;*/
+/*}*/
+
+/*// Small devices (landscape phones, 576px and up)*/
+@media (min-width: 576px) {
+    #masif-top-title {
+        height: 60px;
+        width: auto;
+    }
+    #masif-logo-separator {
+        margin-left: 0;
+        margin-right: 0;
+        width: 1px;
+        border-right: black solid thin;
+
+    }
+
+    #masif-logo-pic {
+    }
+
+    .masif-logo {
+        margin: 1.2%;
+
+
+        width: 60px;
+        height: 60px;
+    }
+
+}
+
+/*// Medium devices (tablets, 768px and up)*/
+@media (min-width: 768px) {
+    nav {
+        height: 30px;
+    }
+
+
+}
+
+/*// Large devices (desktops, 992px and up)*/
+@media (min-width: 992px) {
+
+}
+
+/*// Extra large devices (large desktops, 1200px and up)*/
+@media (min-width: 1200px) {
+
+}
+
