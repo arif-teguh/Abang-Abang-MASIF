@@ -1,218 +1,223 @@
+{% extends 'base.html' %}
 {% load static %}
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" type="text/css" href='{% static "/css/landing.css" %}'>
+    {% block head %}
+        <link rel="stylesheet" type="text/css" href='{% static "/css/landing.css" %}'>
 
-    <title>Beranda</title>
+        <title>Beranda</title>
+    {% endblock %}
+
 </head>
 <body>
-
-{% include 'navbar.html' %}
-
-<div>
-    <div class="container-img">
-        <img src="{% static 'img/img2.png' %}">
-        <div class="centered">Alur Mekanisme Magang
-        </div>
-    </div>
+{% block body %}
+{#    {% include 'navbar.html' %}#}
+    {% include 'navbar-no-bootstrap.html' %}
     <div>
-        <div id="lowongan-title">
-            <br>
-            <p>Lowongan Magang Terbaru</p>
+        <div class="container-img">
+            <img src="{% static 'img/img2.png' %}">
+            <div class="centered">Alur Mekanisme Magang
+            </div>
         </div>
-        <div class="card-container d-flex justify-content-center">
-            <div class="card-deck">
-                <div class="card">
-                    <div class="card-body text-center">
-                        <div class="row">
-                            <div class="col">
-                                <img src="{% static 'img/Ellipse 14.png' %}">
-                            </div>
-                            <div class="col">
-                                <div class="row">
-                                    <b>Java Developer</b>
+        <div>
+            <div id="lowongan-title">
+                <br>
+                <p>Lowongan Magang Terbaru</p>
+            </div>
+            <div class="card-container d-flex justify-content-center">
+                <div class="card-deck">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <div class="row">
+                                <div class="col">
+                                    <img src="{% static 'img/Ellipse 14.png' %}">
                                 </div>
-                                <div class="row">
-                                    <p>Diskominfo</p>
+                                <div class="col">
+                                    <div class="row">
+                                        <b>Java Developer</b>
+                                    </div>
+                                    <div class="row">
+                                        <p>Diskominfo</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="description">
+                                <div class="row desc-1">
+                                    <p>IT</p>
+                                </div>
+                                <div class="row desc-2">
+                                    <p>
+                                        Magang
+                                    </p>
                                 </div>
                             </div>
                         </div>
-                        <div class="description">
-                            <div class="row desc-1">
-                                <p>IT</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <div class="row">
+                                <div class="col">
+                                    <img src="{% static 'img/Ellipse 14-2.png' %}">
+                                </div>
+                                <div class="col">
+                                    <div class="row">
+                                        <b>Java Developer</b>
+                                    </div>
+                                    <div class="row">
+                                        Dinas Pendidikan
+                                    </div>
+                                </div>
                             </div>
-                            <div class="row desc-2">
-                                <p>
-                                    Magang
-                                </p>
+                            <div class="description">
+                                <div class="row desc-1">
+                                    <p>IT</p>
+                                </div>
+                                <div class="row desc-2">
+                                    <p>
+                                        Magang
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <div class="row">
+                                <div class="col">
+                                    <img src="{% static 'img/Ellipse 14.png' %}">
+                                </div>
+                                <div class="col">
+                                    <div class="row">
+                                        <b>Java Developer</b>
+                                    </div>
+                                    <div class="row">
+                                        Diskominfo
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="description">
+                                <div class="row desc-1">
+                                    <p>IT</p>
+                                </div>
+                                <div class="row desc-2">
+                                    <p>
+                                        Magang
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <div class="row">
+                                <div class="col">
+                                    <img src="{% static 'img/Ellipse 14.png' %}">
+                                </div>
+                                <div class="col">
+                                    <div class="row">
+                                        <b>Java Developer</b>
+                                    </div>
+                                    <div class="row">
+                                        Diskominfo
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="description">
+                                <div class="row desc-1">
+                                    <p>IT</p>
+                                </div>
+                                <div class="row desc-2">
+                                    <p>
+                                        Magang
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="card">
-                    <div class="card-body text-center">
-                        <div class="row">
-                            <div class="col">
-                                <img src="{% static 'img/Ellipse 14-2.png' %}">
-                            </div>
-                            <div class="col">
-                                <div class="row">
-                                    <b>Java Developer</b>
-                                </div>
-                                <div class="row">
-                                    Dinas Pendidikan
-                                </div>
-                            </div>
+            </div>
+        </div>
+        <br>
+        <div class="contact">
+            <div class="row">
+                <div class="col-8">
+                    <p id="kontak">Kontak</p>
+                    <div class="row">
+                        <div class="col">
+                            <p>Kontak Lorem Ipsum</p>
                         </div>
-                        <div class="description">
-                            <div class="row desc-1">
-                                <p>IT</p>
-                            </div>
-                            <div class="row desc-2">
-                                <p>
-                                    Magang
-                                </p>
-                            </div>
+                        <div class="col">
+                            <p>Kontak Lorem Ipsum</p>
+                        </div>
+                        <div class="col">
+                            <p>Kontak Lorem Ipsum</p>
+                        </div>
+                        <div class="col">
+                            <p>Kontak Lorem Ipsum</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <p>Kontak Lorem Ipsum</p>
+                        </div>
+                        <div class="col">
+                            <p>Kontak Lorem Ipsum</p>
+                        </div>
+                        <div class="col">
+                            <p>Kontak Lorem Ipsum</p>
+                        </div>
+                        <div class="col">
+                            <p>Kontak Lorem Ipsum</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <p>Kontak Lorem Ipsum</p>
+                        </div>
+                        <div class="col">
+                            <p>Kontak Lorem Ipsum</p>
+                        </div>
+                        <div class="col">
+                            <p>Kontak Lorem Ipsum</p>
+                        </div>
+                        <div class="col">
+                            <p>Kontak Lorem Ipsum</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <p>Kontak Lorem Ipsum</p>
+                        </div>
+                        <div class="col">
+                            <p>Kontak Lorem Ipsum</p>
+                        </div>
+                        <div class="col">
+                            <p>Kontak Lorem Ipsum</p>
+                        </div>
+                        <div class="col">
+                            <p>Kontak Lorem Ipsum</p>
                         </div>
                     </div>
                 </div>
-                <div class="card">
-                    <div class="card-body text-center">
-                        <div class="row">
-                            <div class="col">
-                                <img src="{% static 'img/Ellipse 14.png' %}">
-                            </div>
-                            <div class="col">
-                                <div class="row">
-                                    <b>Java Developer</b>
-                                </div>
-                                <div class="row">
-                                    Diskominfo
-                                </div>
-                            </div>
-                        </div>
-                        <div class="description">
-                            <div class="row desc-1">
-                                <p>IT</p>
-                            </div>
-                            <div class="row desc-2">
-                                <p>
-                                    Magang
-                                </p>
-                            </div>
-                        </div>
+                <div class="col-4">
+                    <div id="text-medsos">
+                        <p>Media Sosial</p>
                     </div>
-                </div>
-                <div class="card">
-                    <div class="card-body text-center">
-                        <div class="row">
-                            <div class="col">
-                                <img src="{% static 'img/Ellipse 14.png' %}">
-                            </div>
-                            <div class="col">
-                                <div class="row">
-                                    <b>Java Developer</b>
-                                </div>
-                                <div class="row">
-                                    Diskominfo
-                                </div>
-                            </div>
+                    <div class="row logo-medsos">
+                        <div class="col img-1">
+                            <img src="{% static 'img/image 3.png' %}">
                         </div>
-                        <div class="description">
-                            <div class="row desc-1">
-                                <p>IT</p>
-                            </div>
-                            <div class="row desc-2">
-                                <p>
-                                    Magang
-                                </p>
-                            </div>
+                        <div class="col img-2">
+                            <img src="{% static 'img/image 5.png' %}">
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <br>
-    <div class="contact">
-        <div class="row">
-            <div class="col-8">
-                <p id="kontak">Kontak</p>
-                <div class="row">
-                    <div class="col">
-                        <p>Kontak Lorem Ipsum</p>
-                    </div>
-                    <div class="col">
-                        <p>Kontak Lorem Ipsum</p>
-                    </div>
-                    <div class="col">
-                        <p>Kontak Lorem Ipsum</p>
-                    </div>
-                    <div class="col">
-                        <p>Kontak Lorem Ipsum</p>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col">
-                        <p>Kontak Lorem Ipsum</p>
-                    </div>
-                    <div class="col">
-                        <p>Kontak Lorem Ipsum</p>
-                    </div>
-                    <div class="col">
-                        <p>Kontak Lorem Ipsum</p>
-                    </div>
-                    <div class="col">
-                        <p>Kontak Lorem Ipsum</p>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col">
-                        <p>Kontak Lorem Ipsum</p>
-                    </div>
-                    <div class="col">
-                        <p>Kontak Lorem Ipsum</p>
-                    </div>
-                    <div class="col">
-                        <p>Kontak Lorem Ipsum</p>
-                    </div>
-                    <div class="col">
-                        <p>Kontak Lorem Ipsum</p>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col">
-                        <p>Kontak Lorem Ipsum</p>
-                    </div>
-                    <div class="col">
-                        <p>Kontak Lorem Ipsum</p>
-                    </div>
-                    <div class="col">
-                        <p>Kontak Lorem Ipsum</p>
-                    </div>
-                    <div class="col">
-                        <p>Kontak Lorem Ipsum</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-4">
-                <div id="text-medsos">
-                    <p>Media Sosial</p>
-                </div>
-                <div class="row logo-medsos">
-                    <div class="col img-1">
-                        <img src="{% static 'img/image 3.png' %}">
-                    </div>
-                    <div class="col img-2">
-                        <img src="{% static 'img/image 5.png' %}">
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+{% endblock %}
 
 </body>
 </html>

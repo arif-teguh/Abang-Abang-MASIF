@@ -1,3 +1,7 @@
+#top-logo-row {
+    margin: 0;
+}
+
 .bg-masif-blue {
     background-color: #242582;
 }
@@ -54,7 +58,6 @@
     }
 
     #masif-logo-pic {
-        margin-right: 0.8%;
     }
 
     .masif-logo {
