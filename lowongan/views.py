@@ -8,7 +8,8 @@ from .models import Lowongan
 @login_required
 def show_form_lowongan(request):
     if request.user.is_opd == True:
-        return render(request, 'lowongan/form_lowongan.html', {'form': LowonganForm(), 'type_form': 'post'})
+        return render(request, 'lowongan/form_lowongan.html',
+                      {'form': LowonganForm(), 'type_form': 'post'})
     return redirect("/")
 #
 
@@ -18,16 +19,16 @@ def post_form_lowongan(request):
         return redirect('/')
 
     if request.method == 'POST':
-        form = LowonganForm(request.POST or None)       
+        form = LowonganForm(request.POST or None, request.user.id)       
         if form.is_valid():
-
             data_lowongan = Lowongan.objects.create(
                 judul=request.POST['judul'],
-                penyedia=request.POST['penyedia'],
-                jumlah_tersedia=request.POST['jumlah_tersedia'],
-                durasi_magang=request.POST['durasi_magang'],
-                jangka_waktu_lamaran=request.POST['jangka_waktu_lamaran'],
-                berkas=request.POST['berkas'],
+                kategori=request.POST['kategori'],
+                kuota_peserta=request.POST['kuota_peserta'],
+                waktu_awal_magang=request.POST['waktu_awal_magang'],
+                waktu_akhir_magang=request.POST['waktu_akhir_magang'],
+                batas_akhir_pendaftaran=request.POST['batas_akhir_pendaftaran'],
+                berkas_persyaratan=request.POST.getlist("berkas_persyaratan"),
                 deskripsi=request.POST['deskripsi'],
                 requirement=request.POST['requirement'],
                 opd_foreign_key_id=request.user.id
@@ -44,12 +45,15 @@ def update_form_lowongan(request, id_lowongan):
         return redirect('/lowongan/opd/form/')
 
     lowongan_data = get_object_or_404(Lowongan, pk=id_lowongan)
-    form = LowonganForm(instance=lowongan_data)
+    form = LowonganForm(instance=lowongan_data, id=id_lowongan)
     if request.method == 'POST':
-        form = LowonganForm(request.POST or None, instance=lowongan_data)
+        form = LowonganForm(request.POST or None,
+                            instance=lowongan_data, id=id_lowongan)
         if form.is_valid():
             form.save()
-            return redirect("/opd/")
-
-    else:
-        return render(request, 'lowongan/form_lowongan.html', {'form': form, 'type_form': 'update'})
+            return redirect("/")
+    response = {
+        'form': form, 'type_form': 'update',
+        'choice_select_field': lowongan_data.berkas_persyaratan
+    }
+    return render(request, 'lowongan/form_lowongan.html', response)
