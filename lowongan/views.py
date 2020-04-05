@@ -6,10 +6,14 @@ from .models import Lowongan
 
 
 @login_required
-def show_form_lowongan(request):
-    if request.user.is_opd == True:
-        return render(request, 'lowongan/form_lowongan.html',
-                      {'form': LowonganForm(), 'type_form': 'post'})
+def show_form_lowongan(request, response=None):
+    if request.user.is_opd is True:
+        if response is None:
+            return render(request, 'lowongan/form_lowongan.html',
+                          {'form': LowonganForm(), 'type_form': 'post'})
+        elif response is not None:
+            return render(request, 'lowongan/form_lowongan.html',
+                          response)
     return redirect("/")
 
 @login_required
@@ -18,7 +22,7 @@ def post_form_lowongan(request):
         return redirect('/')
 
     if request.method == 'POST':
-        form = LowonganForm(request.POST or None, request.user.id)       
+        form = LowonganForm(request.POST or None, request.user.id)
         if form.is_valid():
             data_lowongan = Lowongan.objects.create(
                 judul=request.POST['judul'],
@@ -32,10 +36,15 @@ def post_form_lowongan(request):
                 requirement=request.POST['requirement'],
                 opd_foreign_key_id=request.user.id
             )
-
             data_lowongan.save()
             return redirect("/")
-
+        berkas_persyaratan = request.POST.getlist("berkas_persyaratan")
+        if berkas_persyaratan != []:
+            form = LowonganForm(request.POST or None, request.user.id,
+                                list_choice=berkas_persyaratan)
+        return show_form_lowongan(request,
+                                  {'form': form, 'type_form': 'post',
+                                   'choice_select_field': berkas_persyaratan})
     return redirect('/lowongan/opd/form/')
 
 @login_required

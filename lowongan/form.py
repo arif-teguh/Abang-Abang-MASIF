@@ -4,20 +4,34 @@ from .models import Lowongan
 class LowonganForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.id_lowongan = kwargs.pop("id", None)
+        self.list_choice = kwargs.pop("list_choice", None)
+        self.choice = ()
         super(LowonganForm, self).__init__(*args, **kwargs)
         if self.id_lowongan is not None:
             obj_lowongan_by_id = Lowongan.objects.get(pk=self.id_lowongan)
             self.choice = ((i, i)for i in obj_lowongan_by_id.berkas_persyaratan)
-            self.fields['berkas_persyaratan'].choices = self.choice
-            self.fields['berkas_persyaratan'].widget.choices = self.choice
+        elif self.list_choice is not None:
+            self.choice = ((i, i)for i in self.list_choice)
         else:
             self.choice = (
                 ('Kartu Keluarga', 'Kartu Keluarga'),
                 ('Kartu Tanda Penduduk', 'Kartu Tanda Penduduk'),
                 ('Surat Izin Sekolah', 'Surat Izin Sekolah'),
             )
-            self.fields['berkas_persyaratan'].choices = self.choice
-            self.fields['berkas_persyaratan'].widget.choices = self.choice
+        self.fields['berkas_persyaratan'].choices = self.choice
+        self.fields['berkas_persyaratan'].widget.choices = self.choice
+
+    def clean(self):
+        cleaned_data = super(LowonganForm, self).clean()
+        try:
+            if cleaned_data["waktu_awal_magang"] > cleaned_data["waktu_akhir_magang"]:
+                self.add_error('waktu_awal_magang',
+                               "Tanggal awal lebih besar dari tanggal akhir")
+                self.add_error('waktu_akhir_magang',
+                               "Tanggal awal lebih besar dari tanggal akhir")
+                return cleaned_data
+        except KeyError:
+            pass
 
     class Meta:
         attribute_text_input = {
