@@ -99,7 +99,7 @@ class UserProfile(models.Model):
 
     born_date = models.DateField(default=datetime(1945, 8, 17))
     born_city = models.CharField(default='Not set', max_length=120)
-    address = models.CharField(default='Not set', max_length=120)
+    address = models.CharField(default='Not set', max_length=300)
     '''
     *sex types*
     m = male
