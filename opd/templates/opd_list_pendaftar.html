@@ -51,9 +51,9 @@
 {% for each in list_pelamar%}
 
   <tr>
-    <td id="count"></td>
-    <td>{{ each.name }}</td>
-    <a href="/opd/lowongan/pendaftar/{{each.id}}/" >
+    <td id="count">{{ each.name }}</td>
+    <td>{{ each.user.name }}</td>
+    <a href="/opd/lowongan/pendaftar/{{each.user.id}}/" >
     <td>Lihat Detail</td>
     </a>
   </tr>

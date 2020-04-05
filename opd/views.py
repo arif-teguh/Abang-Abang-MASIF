@@ -13,13 +13,14 @@ def opd_login(request):
 def opd_list_pendaftar(request, id_lowongan):
     if request.user.is_authenticated and request.user.is_opd:
         if(cek_id_lowongan_dan_opd(request, id_lowongan)):
-            lowongan = Lowongan.objects.filter(id = id_lowongan)
+            lowongan = Lowongan.objects.get(id = id_lowongan)
             list_pelamar = lowongan.list_pendaftar_key.all()
             jumlah = list_pelamar.count()
             return render(request,'opd_list_pendaftar.html',
-            {'list_pelamar': list_pelamar ,
-             'lowongan': lowongan ,
-              'jumlah' : jumlah } )
+            {'lowongan': lowongan ,
+            'list_pelamar' : list_pelamar,
+            'jumlah' : jumlah,
+               } )
         else :
             return redirect('/opd/')
     else:
@@ -35,6 +36,7 @@ def cek_id_lowongan_dan_opd(request, id_lowongan):
 def opd_lowongan(request):
     if request.user.is_authenticated and request.user.is_opd:
         list_lowongan = Lowongan.objects.filter(opd_foreign_key = request.user.id)
+        
         return render(request,'opd_lowongan.html', {'list_lowongan': list_lowongan})
     else:
         return redirect('/opd/login/')
