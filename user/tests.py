@@ -1,3 +1,6 @@
+from datetime import datetime
+
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.http import HttpRequest
 from django.test import TestCase, Client
 from selenium import webdriver
@@ -21,6 +24,8 @@ class UserUnitTest(TestCase):
         self.request.user = self.created_mock_user
         self.mock_user_profile = UserProfile(user=self.created_mock_user)
         self.mock_user_profile.save()
+        self.test_file_cv = SimpleUploadedFile("cv.pdf", b"file_content")
+        self.test_file_jpg = SimpleUploadedFile("pp.jpg", b"file_content")
 
     def tearDown(self):
         pass
@@ -386,6 +391,130 @@ class UserUnitTest(TestCase):
         }
         result = self.client.post('/user/dashboard/edit/', data=form_data)
         self.assertEqual(result.status_code, 302)
+
+    def test_access_user_dashboard_upload_cv_page_should_be_accessible(self):
+        response = self.client.get('/user/dashboard/edit/upload_cv/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_user_upload_cv_with_pdf_should_work(self):
+        self.assertEqual(self.created_mock_user.userprofile.cv, None)
+        self.created_mock_user.is_user = True
+        self.created_mock_user.save()
+
+        self.client.login(username='test@mail.com', password='12345678')
+
+        response = self.client.post('/user/dashboard/edit/upload_cv/', {'cv': self.test_file_cv})
+
+        self.assertEqual(response.status_code, 302)
+        test_user = Account.objects.get(email='test@mail.com')
+        self.assertEqual(test_user.userprofile.cv.name, 'cv.pdf')
+        test_user.userprofile.cv.delete()
+
+    def test_user_upload_cv_with_pdf_should_not_change_other_userprofile_data(self):
+        self.assertEqual(self.created_mock_user.userprofile.cv, None)
+        self.created_mock_user.is_user = True
+        self.created_mock_user.name = "test_name"
+        self.created_mock_user.userprofile.sex = "m"
+        self.created_mock_user.userprofile.address = "test_address"
+        self.created_mock_user.userprofile.institution = "test_institution"
+        self.created_mock_user.userprofile.education = "test_education"
+        self.created_mock_user.userprofile.born_city = "test_borncity"
+        self.created_mock_user.userprofile.born_date = datetime(2000, 1, 1)
+        self.created_mock_user.userprofile.major = "test_major"
+        self.created_mock_user.save()
+        self.created_mock_user.userprofile.save()
+
+        self.client.login(username='test@mail.com', password='12345678')
+        self.assertEqual(self.created_mock_user.name, 'test_name')
+        self.assertEqual(self.created_mock_user.userprofile.sex, 'm')
+        self.assertEqual(self.created_mock_user.userprofile.address, 'test_address')
+        self.assertEqual(self.created_mock_user.userprofile.institution, 'test_institution')
+        self.assertEqual(self.created_mock_user.userprofile.education, 'test_education')
+        self.assertEqual(self.created_mock_user.userprofile.born_city, 'test_borncity')
+        self.assertEqual(self.created_mock_user.userprofile.born_date, datetime(2000, 1, 1))
+        self.assertEqual(self.created_mock_user.userprofile.major, 'test_major')
+        response = self.client.post('/user/dashboard/edit/upload_cv/', {'cv': self.test_file_cv})
+        self.assertEqual(response.status_code, 302)
+        test_user = Account.objects.get(email='test@mail.com')
+        self.assertEqual(test_user.userprofile.cv.name, 'cv.pdf')
+        self.assertEqual(test_user.name, 'test_name')
+        self.assertEqual(test_user.userprofile.sex, 'm')
+        self.assertEqual(test_user.userprofile.address, 'test_address')
+        self.assertEqual(test_user.userprofile.institution, 'test_institution')
+        self.assertEqual(test_user.userprofile.education, 'test_education')
+        self.assertEqual(test_user.userprofile.born_city, 'test_borncity')
+        self.assertEqual(test_user.userprofile.born_date, datetime(2000, 1, 1).date())
+        self.assertEqual(test_user.userprofile.major, 'test_major')
+        test_user.userprofile.cv.delete()
+
+    def test_user_upload_cv_no_file_shouldnt_work(self):
+        self.assertEqual(self.created_mock_user.userprofile.cv, None)
+        self.created_mock_user.is_user = True
+        self.created_mock_user.save()
+
+        self.client.login(username='test@mail.com', password='12345678')
+
+        response = self.client.post('/user/dashboard/edit/upload_cv/', {'cv': ''})
+
+        self.assertEqual(response.status_code, 200)
+        test_user = Account.objects.get(email='test@mail.com')
+        self.assertEqual(test_user.userprofile.cv.name, '')
+
+    def test_access_user_dashboard_delete_cv_should_be_accessible(self):
+        response = self.client.get('/user/dashboard/edit/delete_cv/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_user_upload_profile_picture_with_jpg_should_work(self):
+        self.assertEqual(self.created_mock_user.profile_picture, None)
+        self.created_mock_user.is_user = True
+        self.created_mock_user.save()
+
+        self.client.login(username='test@mail.com', password='12345678')
+
+        response = self.client.post('/user/dashboard/edit/upload_profile_picture/',
+                                    {'profile_picture': self.test_file_jpg})
+
+        self.assertEqual(response.status_code, 302)
+        test_user = Account.objects.get(email='test@mail.com')
+        self.assertEqual(test_user.profile_picture.name, 'pp.jpg')
+        test_user.profile_picture.delete()
+
+    def test_user_upload_profile_picture_no_file_shouldnt_work(self):
+        self.assertEqual(self.created_mock_user.profile_picture, None)
+        self.created_mock_user.is_user = True
+        self.created_mock_user.save()
+
+        self.client.login(username='test@mail.com', password='12345678')
+
+        response = self.client.post('/user/dashboard/edit/upload_cv/', {'profile_picture': ''})
+
+        self.assertEqual(response.status_code, 200)
+        test_user = Account.objects.get(email='test@mail.com')
+        self.assertEqual(test_user.profile_picture.name, '')
+
+    def test_access_user_dashboard_upload_profile_pic_should_be_accessible(self):
+        response = self.client.get('/user/dashboard/edit/upload_profile_picture/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_delete_cv_user_has_cv_should_work(self):
+        self.created_mock_user.is_user = True
+        self.client.login(username='test@mail.com', password='12345678')
+        self.created_mock_user.save()
+        self.client.post('/user/dashboard/edit/upload_cv/', {'cv': self.test_file_cv})
+        self.assertEqual(Account.objects.get(email='test@mail.com').userprofile.cv.name, 'cv.pdf')
+
+        self.client.post('/user/dashboard/edit/delete_cv/')
+        self.assertEqual(Account.objects.get(email='test@mail.com').userprofile.cv, '')
+        Account.objects.get(email='test@mail.com').userprofile.cv.delete()
+
+    def test_delete_cv_user_no_cv_should_work(self):
+        self.created_mock_user.is_user = True
+        self.created_mock_user.save()
+        self.assertEqual(self.created_mock_user.userprofile.cv.name, None)
+
+        self.client.login(username='test@mail.com', password='12345678')
+        self.client.post('/user/dashboard/edit/delete_cv/')
+        self.assertEqual(self.created_mock_user.userprofile.cv.name, None)
 
 
 class UserFunctionalTest(TestCase):
