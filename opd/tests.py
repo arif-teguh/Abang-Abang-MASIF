@@ -309,3 +309,7 @@ class TestCekListPelamar(TestCase):
         response = self.client.get('/opd/lowongan/list-pendaftar-' + str(self.lowongan2.id) +'/')
         self.assertNotEqual(response.status_code,200)
  
+
+    def test_isi_response(self):
+        response = self.client.get('/opd/lowongan/list-pendaftar-' + str(self.lowongan2.id) +'/')
+        self.assertEqual(response.content, self.lowongan1)

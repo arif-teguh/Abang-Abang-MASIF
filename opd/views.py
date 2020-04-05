@@ -4,7 +4,7 @@ from django.http import HttpResponse
 
 from lowongan.models import Lowongan
 from admin.models import OpdVerificationList
-from account.models import Account, OpdProfile
+from account.models import Account, OpdProfile  , UserProfile
 from .opd_confirmation_form import OpdConfirmationForm
 
 def opd_login(request):
@@ -13,6 +13,8 @@ def opd_login(request):
 def opd_list_pendaftar(request, id_lowongan):
     if request.user.is_authenticated and request.user.is_opd:
         if(cek_id_lowongan_dan_opd(request, id_lowongan)):
+            list_pelamar = Account.objects.filter()
+            list_lowongan = Lowongan.objects.filter(opd_foreign_key = request.user.id)
             return render(request,'opd_list_pendaftar.html')
         else :
             return redirect('/opd/')
