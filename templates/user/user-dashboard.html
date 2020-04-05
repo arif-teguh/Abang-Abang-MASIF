@@ -1,12 +1,9 @@
+{% extends 'base.html' %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    {% block head %}
     <link rel="stylesheet" href="/static/css/user/user-dashboard.css">
-
-    <script src="/static/jquery/jquery-3.4.1.min.js"></script>
-    <link rel="stylesheet" href="/static/bootstrap-4.3.1-dist/css/bootstrap.min.css">
-    <script src="/static/popperjs/popper.min.js"></script>
-    <script src="/static/bootstrap-4.3.1-dist/js/bootstrap.min.js"></script>
 
     <!-- DataTables -->
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.css">
@@ -14,14 +11,13 @@
     <script type="text/javascript" charset="utf8"
             src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js"></script>
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-
     <title>Dashboard</title>
+    {% endblock %}
 
 
 </head>
 <body>
+{% block body %}
 <div class="container">
     <br>
     <div class="row justify-content-start">
@@ -65,7 +61,7 @@
     </div>
 
 
-    {#    <button onclick="window.location.href = '{% url 'user_edit_profile' %}'">EDIT PROFILE</button>#}
+        <button class="btn btn-outline-primary" onclick="window.location.href = '{% url 'user_edit_profile' %}'">Edit Profil</button>
 
     <span class="widescreen-only">
         <div class="row">
@@ -199,6 +195,6 @@
 
 </script>
 
-
+{% endblock %}
 </body>
 </html>
