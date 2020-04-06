@@ -96,3 +96,10 @@ class LowonganForm(forms.ModelForm):
             "deskripsi" : "Deskripsi Magang",
             "requirement" : "Requirement Magang",
         }
+
+class UserLamarMagangForm(forms.Form):
+    file_cv = forms.FileField(widget=forms.FileInput(), required=False)
+    file_berkas_tambahan = forms.FileField(widget=forms.FileInput(), required=False)
+    application_letter = forms.CharField(max_length=2000,
+                                         widget=forms.Textarea(),
+                                         required=False)
