@@ -13,11 +13,11 @@ class LowonganForm(forms.ModelForm):
         elif self.list_choice is not None:
             self.choice = ((i, i)for i in self.list_choice)
         else:
-            self.choice = (
-                ('Kartu Keluarga', 'Kartu Keluarga'),
-                ('Kartu Tanda Penduduk', 'Kartu Tanda Penduduk'),
-                ('Surat Izin Sekolah', 'Surat Izin Sekolah'),
-            )
+            default_choice = [
+                'Kartu Keluarga (KK)', 'Kartu Tanda Penduduk (KTP)',
+                'Surat Izin Sekolah', 'Surat Keterangan Catatan Kepolisian (SKCK)'
+            ]
+            self.choice = ((i, i)for i in default_choice)
         self.fields['berkas_persyaratan'].choices = self.choice
         self.fields['berkas_persyaratan'].widget.choices = self.choice
 
@@ -31,7 +31,7 @@ class LowonganForm(forms.ModelForm):
                                "Tanggal awal lebih besar dari tanggal akhir")
                 return cleaned_data
         except KeyError:
-            pass
+            print("")
 
     class Meta:
         attribute_text_input = {
@@ -97,9 +97,20 @@ class LowonganForm(forms.ModelForm):
             "requirement" : "Requirement Magang",
         }
 
+attribute_text_lamar = {
+    'class' : 'form-control col-8'
+}
+attribute_file_lamar = {
+    'class' : 'form-control col-5'
+}
 class UserLamarMagangForm(forms.Form):
-    file_cv = forms.FileField(widget=forms.FileInput(), required=False)
-    file_berkas_tambahan = forms.FileField(widget=forms.FileInput(), required=False)
-    application_letter = forms.CharField(max_length=2000,
-                                         widget=forms.Textarea(),
+    file_cv = forms.FileField(label="CV (format NamaAnda_CV.pdf)",
+                              widget=forms.FileInput(attrs=attribute_file_lamar),
+                              required=False)
+    file_berkas_tambahan = forms.FileField(label="Berkas Tambahan (format NamaAnda_JudulLowongan.zip)",
+                                           widget=forms.FileInput(attrs=attribute_file_lamar),
+                                           required=False)
+    application_letter = forms.CharField(label="Application Letter",
+                                         max_length=2000,
+                                         widget=forms.Textarea(attrs=attribute_text_lamar),
                                          required=False)

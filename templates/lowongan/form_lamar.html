@@ -6,6 +6,10 @@
             #submit-btn {
                 width: 100%
             }
+            .card-horizontal {
+                display: flex;
+                flex: 1 1 auto;
+            }
         </style>
 
 
@@ -18,15 +22,31 @@
         <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <title>Form Pembuatan Lowongan</title>
+        <title>Form Lamar Lowongan</title>
     </head>
     <body>
         <div class="container-fluid">
-            <div class="row-12">
-                    <form method="POST" action="/lowongan/user/lamar/{{id_lowongan}}/" enctype="multipart/form-data">
+                <div class="row">
+                    <div class="col-12 mt-3">
+                        <div class="card">
+                            <div class="card-horizontal">
+                                <div class="img-square-wrapper">
+                                    <img class="" src="http://via.placeholder.com/180x180" alt="Card image cap" height="180px" width="180px">
+                                </div>
+                                <div class="card-body">
+                                    <h4 class="card-title">{{lowongan.judul}}</h4>
+                                    <p class="card-text">Dinas : {{opd.name}} | Kategori : {{lowongan.kategori}}</p>
+                                    <p class="card-text">Batas Akhir : {{lowongan.batas_akhir_pendaftaran}}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br><br><br>
+                <div class="row-12 form-lamar">
+                    <form method="POST" action="/lowongan/user/lamar/{{lowongan.id}}/" enctype="multipart/form-data">
                         {% csrf_token %}
-                        <h1 class="admin-login-items">Formulir Lamar Lowongan Magang
-                        </h1>
+                        
                         {{ form.as_p }}
                         <br>
                         <button type="submit" class="btn btn-primary">Kirim Lamaran</button>

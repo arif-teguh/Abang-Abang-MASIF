@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, render, redirect
 from django.utils.datastructures import MultiValueDictKeyError
 from django.core.exceptions import ObjectDoesNotExist
-from account.models import Account, UserProfile
+from account.models import Account
 from .form import LowonganForm, UserLamarMagangForm
 from .models import Lowongan, UserLamarMagang
 
@@ -77,6 +77,7 @@ def form_lamar_lowongan(request, id_lowongan):
         user = request.user
         lowongan = Lowongan.objects.get(pk=id_lowongan)
         user_profile = user.userprofile
+        opd = lowongan.opd_foreign_key
     except ObjectDoesNotExist:
         return redirect("/")
 
@@ -101,8 +102,9 @@ def form_lamar_lowongan(request, id_lowongan):
 
     response = {
         'form': UserLamarMagangForm(),
-        'id_lowongan':id_lowongan
+        'lowongan':lowongan,
+        'opd':opd
     }
-    print(user_profile.cv == "")
+    print(opd.name)
 
     return render(request, 'lowongan/form_lamar.html', response)
