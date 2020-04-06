@@ -346,7 +346,7 @@ class UserLamarMagangModelTest(TestCase):
         id_user = self.user1.id
         self.client.force_login(self.account1)
         Account.objects.filter(pk=id_user).update(is_user=True)
-        data_form_lamar= {
+        data_form_lamar = {
             "application_letter":"hei",
             "lowongan_foreign_key_id":self.lowongan3.id,
             "user_foreign_key_id":self.user1.id,
@@ -357,4 +357,18 @@ class UserLamarMagangModelTest(TestCase):
 
     def test_is_not_user_to_lamar(self):
         response = self.client.get(url_form_lamar+str(self.lowongan3.id)+"/")
-        self.assertEqual(response.status_code, 302)         
+        self.assertEqual(response.status_code, 302)
+
+    def test_redirect_is_lowongan_is_none(self):
+        id_user = self.user1.id
+        self.client.force_login(self.account1)
+        Account.objects.filter(pk=id_user).update(is_user=True)
+        data_form_lamar = {
+            "application_letter":"hei",
+            "lowongan_foreign_key_id":self.lowongan3.id,
+            "user_foreign_key_id":self.user1.id,
+            "file_berkas_tambahan":self.test_file_cv
+        }
+        response = self.client.post(url_form_lamar+"12800/", enctype="multipart/form-data", data=data_form_lamar)
+        self.assertEqual(response.status_code, 302)
+
