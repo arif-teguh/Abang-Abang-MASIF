@@ -172,7 +172,9 @@
         }
 
         $(document).ready(function () {
-            $('#daftar-lamaran-table').DataTable();
+            $('#daftar-lamaran-table').DataTable({
+                "ajax" : '/user/dashboard/api/get-all-lamaran-for-dashboard-table/'
+            });
             {#$('#daftar-lamaran-table').wrap('<div id="daftar-lamaran-wrapper" class="shadow bg-white rounded"></div>');#}
 
 
