@@ -26,7 +26,8 @@ urlpatterns = [
     path('lowongan/', include('lowongan.urls')),
     path('account-redirector', include('account_redirector.urls')),
     path('superuser/', admin.site.urls),
-    # path('auth/', include('social_django.urls')),
-    # TESTING PATH dibawah ini
+#     # path('auth/', include('social_django.urls')),
+#     # TESTING PATH dibawah ini
     path('user/', include('google_oauth2.urls')),
+    path('user/', include('user.urls')),
 ]

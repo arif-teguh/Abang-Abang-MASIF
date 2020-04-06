@@ -83,3 +83,15 @@ class AdminProfile(models.Model):
 
     def __str__(self):
         return "<ADMIN Profile> {}".format(self.unique_admin_attribute)
+
+class PelamarProfile(models.Model):
+    user = models.OneToOneField(
+        Account,
+        on_delete=models.CASCADE,
+        primary_key=True, null=False, blank="False"
+    )
+    # Temporary Attribute
+    unique_pelamar_attribute = models.CharField(max_length=60)
+
+    def __str__(self):
+        return "<PELAMAR Profile> {}".format(self.unique_pelamar_attribute)

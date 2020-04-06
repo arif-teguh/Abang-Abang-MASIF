@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'google_oauth2',
     'lowongan',
     'account',
+    'user'
 ]
 
 AUTHENTICATION_BACKENDS = (

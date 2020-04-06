@@ -8,7 +8,8 @@ from account.models import Account
 from admin import views
 from admin.admin_login_form import AdminAuthenticationForm
 from admin.opd_registration_form import OpdRegistrationForm
-from . import mailing
+from .models import OpdVerificationList
+from . import mailing, token
 
 
 class AdminUnitTest(TestCase):
@@ -368,6 +369,11 @@ class EmailTest(TestCase):
         with self.assertRaises(ValueError):
             mailing.send_verification_email(self.verification_url, "test.com")
 
+    def test_generate_token(self):
+        secret = token.generate_opd_token()
+        secret_length = len(secret)
+        self.assertEqual(secret_length, 22)
+
 class OpdRegistrationTest(TestCase):
     def setUp(self):
         # Setup run before every test method.
@@ -401,4 +407,13 @@ class OpdRegistrationTest(TestCase):
         response = Client().get('/admin/listopd/register/')
         self.assertEqual(response.status_code, 302)
         self.assertEqual('/admin/login', response.url)
+
+    def test_create_opd(self):
+        user_count = OpdVerificationList.objects.count()
+        response = self.client.post(
+            "/admin/listopd/register/",
+            {'opd_name': "test", 'email': "test@test.com", 'phone': "123"})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(OpdVerificationList.objects.count(), user_count+1)
+        
     
