@@ -6,8 +6,10 @@ from django.test import TestCase, Client
 from selenium import webdriver
 
 from account.models import Account, UserProfile
+from lowongan.models import Lowongan
 from user.forms import EditUserProfileForm
-from user.views import born_date_validator, sex_validator, phone_number_validator, is_data_valid
+from user.views import born_date_validator, sex_validator, phone_number_validator, is_data_valid, \
+    list_of_lowongan_to_json_dict
 
 
 # Create your tests here.
@@ -205,7 +207,6 @@ class UserUnitTest(TestCase):
         result = self.client.post('/user/dashboard/edit/', data=form_data)
         self.assertEqual(302, result.status_code)
         self.assertEqual('/user/dashboard/', result.url)
-
 
     def test_logged_in_post_to_edit_profile_url_no_name_data_shouldnt_work(self):
         self.created_mock_user.is_user = True
@@ -517,6 +518,23 @@ class UserUnitTest(TestCase):
         self.client.login(username='test@mail.com', password='12345678')
         self.client.post('/user/dashboard/edit/delete_cv/')
         self.assertEqual(self.created_mock_user.userprofile.cv.name, None)
+
+    def test_list_of_lowongan_to_json_has_data_should_success(self):
+        data = list_of_lowongan_to_json_dict(
+            [Lowongan(judul="Software Engineer", opd_foreign_key=self.created_mock_user)]
+        )['data'][0][0]
+        self.assertEqual(data, 'Pending')
+
+    def test_access_user_dashboard_api_get_table_url_logged_in_should_return_200(self):
+        self.created_mock_user.is_user = True
+        self.created_mock_user.save()
+        self.client.login(username='test@mail.com', password='12345678')
+        response = self.client.get('/user/dashboard/api/get-all-lamaran-for-dashboard-table/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_access_user_dashboard_api_get_table_url_not_logged_in_should_return_200(self):
+        response = self.client.get('/user/dashboard/api/get-all-lamaran-for-dashboard-table/')
+        self.assertEqual(response.status_code, 200)
 
 
 class UserFunctionalTest(TestCase):
