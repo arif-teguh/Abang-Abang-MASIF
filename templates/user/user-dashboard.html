@@ -1,0 +1,198 @@
+{% extends 'base.html' %}
+
+{% block head %}
+    <link rel="stylesheet" href="/static/css/user/user-dashboard.css">
+
+    <!-- DataTables -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.css">
+
+    <script type="text/javascript" charset="utf8"
+            src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js"></script>
+
+    <title>Dashboard</title>
+{% endblock %}
+
+
+{% block body %}
+    {% include 'navbar-no-bootstrap.html' %}
+    <div class="container">
+        <br>
+        <div class="row justify-content-start">
+
+            <div id="profile-picture-col" class="col-12 col-sm-auto">
+                <div class="image-upload">
+                    <label for="id_profile_picture">
+                        {% if user.profile_picture %}
+                            <img style="image-orientation: flip;" id="profile_picture"
+                                 src="/media/{{ user.profile_picture }}">
+                        {% else %}
+                            <img id="profile_picture" src="/static/img/add_photo.png">
+                        {% endif %}
+
+                    </label>
+                    <form id="form-profile-picture" method="post" enctype="multipart/form-data"
+                          action="{% url 'user_edit_upload_pp' %}">
+                        {% csrf_token %}
+                        <span style="display: none">{{ form_pp.profile_picture }}</span>
+
+                    </form>
+
+                </div>
+            </div>
+            <div id="user-info-col" class="col-12 col-sm-auto align-self-center">
+                <span id="username">{{ user.name }}</span>
+                <br>
+                <span class="user-info-right-of-photo">{{ user.userprofile.education|title }}</span>
+                <br>
+                <span class="user-info-right-of-photo">{{ user.userprofile.institution }}</span>
+                <br>
+                <span class="user-info-right-of-photo phone-only">{{ user.phone }}</span>
+                <br>
+                <span class="user-info-right-of-photo phone-only">{{ user.email }}</span>
+                <br>
+                <span class="user-info-right-of-photo phone-only">{{ user.userprofile.address }}</span>
+
+            </div>
+
+
+        </div>
+
+
+        <button class="btn btn-outline-primary" onclick="window.location.href = '{% url 'user_edit_profile' %}'">Edit
+            Profil
+        </button>
+
+        <span class="widescreen-only">
+        <div class="row">
+            <div id="info-row-item-phone" class="col-12 col-sm-4 info-row-item">{{ user.phone }}</div>
+            <div class="col-12 col-sm-4 info-row-item">{{ user.email }}</div>
+            <div class="col-12 col-sm-4 info-row-item">{{ user.userprofile.address }}</div>
+        </div>
+    </span>
+        <div id="info-separator"></div>
+
+        <div class="row">
+            <div class="col-12 col-sm-2">
+                <h4>CV</h4>
+            </div>
+            <div class="col-12 col-sm-10">
+                {% if user.userprofile.cv %}
+
+
+                    <div id="cv-file-name"><a href="/media/{{ user.userprofile.cv }}">{{ user.userprofile.cv }}</a>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="click_upload_cv()">Ubah CV</button>
+                    <button id="delete-cv-button" type="button" class="btn btn-danger" data-toggle="modal"
+                            data-target="#delete-cv-modal">
+                        Hapus CV
+                    </button>
+
+
+
+
+                {% else %}
+                    <p>Anda belum menambahkan CV</p>
+                    <button class="btn btn-primary" onclick="click_upload_cv()">Unggah CV</button>
+
+
+                {% endif %}
+
+            </div>
+        </div>
+
+
+        <form id="form-cv" method="post" enctype="multipart/form-data" action="{% url 'user_edit_upload_cv' %}">
+            {% csrf_token %}
+            <span style="display: none">{{ form_cv.cv }}</span>
+        </form>
+
+        <table id="daftar-lamaran-table" class="display shadow bg-white mb-5" style="width:100%">
+            <thead>
+            <tr>
+                <td id="daftar-lamaran-title" colspan="3">Daftar Lamaran</td>
+            </tr>
+            <tr>
+                <th>Status</th>
+                <th>Posisi</th>
+                <th>Kantor</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <tr>
+                <td> Ditolak</td>
+                <td> Programmer</td>
+                <td> Diskominfo Depok</td>
+            </tr>
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+
+
+        <!-- Modal -->
+        <div class="modal fade" id="delete-cv-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Hapus CV</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        Yakin Hapus CV?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Tidak</button>
+                        <button type="button" id="yes-delete-cv" class="btn btn-primary" onclick="deleteCVButton()"
+                                data-dismiss="modal">Ya
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        function deleteCVButton() {
+            var token = '{{ csrf_token }}';
+            $.ajax(
+                {
+                    url: '{% url 'delete_cv' %}',
+                    type: 'post',
+                    headers: {"X-CSRFToken": token},
+                }
+            );
+            location.reload();
+
+        }
+
+        $(document).ready(function () {
+            $('#daftar-lamaran-table').DataTable();
+            {#$('#daftar-lamaran-table').wrap('<div id="daftar-lamaran-wrapper" class="shadow bg-white rounded"></div>');#}
+
+
+        });
+
+
+        function click_upload_cv() {
+            $('#id_cv').click();
+        }
+
+
+        document.getElementById("id_cv").onchange = function () {
+            document.getElementById("form-cv").submit();
+        };
+
+        document.getElementById("id_profile_picture").onchange = function () {
+            document.getElementById("form-profile-picture").submit();
+        };
+
+
+    </script>
+
+{% endblock %}

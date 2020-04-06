@@ -15,6 +15,7 @@ def show_form_lowongan(request, response=None):
             return render(request, 'lowongan/form_lowongan.html',
                           response)
     return redirect("/")
+#
 
 @login_required
 def post_form_lowongan(request):
