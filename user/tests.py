@@ -7,6 +7,7 @@ from account.models import Account
 from user import views
 from .models import UserVerificationList
 from .user_registration_form import UserRegistrationForm
+from .user_login_form import UserAuthenticationForm
 from .token import generate_user_token
 
 # Create your tests here.
@@ -91,4 +92,11 @@ class PelamarValidationTest(TestCase):
     def test_open_verification_code_not_exist(self):
         secret = "abcdefakfjalk"
         response = self.client.get('/user/verification/'+secret)
-        self.assertEqual(response.status_code, 302) 
+        self.assertEqual(response.status_code, 302)
+
+    def test_pelamar_verified_login(self):
+        response = self.client.get('/user/login/')
+        self.assertEqual(200, response.status_code)
+        form = response.context['form']
+        self.assertTrue(
+            isinstance(form, UserAuthenticationForm), type(form).__mro__)
