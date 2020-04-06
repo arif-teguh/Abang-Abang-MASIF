@@ -2,20 +2,22 @@ import datetime
 from django.test import TestCase, Client
 from django.urls import resolve
 from django.apps import apps
-from account.models import Account, OpdProfile
+from account.models import Account, OpdProfile, UserProfile
 from .apps import LowonganConfig
-from .models import Lowongan
+from .models import Lowongan, UserLamarMagang
 from . import views
 from .form import LowonganForm
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 url_form_lowongan = '/lowongan/opd/form/'
+url_form_lamar = "/lowongan/user/lamar/"
 url_post_lowongan = url_form_lowongan + "post/"
 str_kartu_keluarga = "Kartu Keluarga"
 str_surat_izin_sekolah = 'Surat Izin Sekolah'
 list_berkas = [str_kartu_keluarga]
 mock_date = datetime.date(2012, 12, 12)
 mock_date2 = datetime.date(2011, 11, 11)
-'''
+
 class LowonganFormTest(TestCase):
 
     def setUp(self):
@@ -269,4 +271,90 @@ class AppsTest(TestCase):
     def test_apps(self):
         self.assertEqual(LowonganConfig.name, 'lowongan')
         self.assertEqual(apps.get_app_config('lowongan').name, 'lowongan')
-'''
+
+class UserLamarMagangModelTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.account1 = Account.objects.create_superuser(email="test@mail.com", password="1234")
+        self.user1 = Account.objects.all()[0]
+        user_profile = UserProfile(user=self.user1)
+        user_profile.save()
+        self.test_file_cv = SimpleUploadedFile("cv.pdf", b"file_content")
+
+        self.account2 = Account.objects.create_superuser(email="test2@mail.com", password="1234")
+        self.opd1 = Account.objects.all()[1]
+        opd_profile = OpdProfile(user=self.opd1,
+                                 unique_opd_attribute="opd")
+        opd_profile.save()
+
+        self.lowongan3 = Lowongan.objects.create(
+            judul='judul1',
+            kategori='kat1',
+            kuota_peserta=3,
+            waktu_awal_magang=mock_date,
+            waktu_akhir_magang=mock_date,
+            batas_akhir_pendaftaran=mock_date,
+            berkas_persyaratan=list_berkas,
+            deskripsi='deskripsi1',
+            requirement='requirement1',
+            opd_foreign_key_id=self.opd1.id
+        )
+
+        self.lowongan4 = Lowongan.objects.create(
+            judul='judul2',
+            kategori='kat2',
+            kuota_peserta=3,
+            waktu_awal_magang=mock_date,
+            waktu_akhir_magang=mock_date,
+            batas_akhir_pendaftaran=mock_date,
+            berkas_persyaratan=list_berkas,
+            deskripsi='deskripsi1',
+            requirement='requirement1',
+            opd_foreign_key_id=self.opd1.id
+        )
+
+        self.client.force_login(self.account1)
+
+        self.lamar1 = UserLamarMagang.objects.create(
+            application_letter="test",
+            lowongan_foreign_key_id=self.lowongan3.id,
+            user_foreign_key_id=self.user1.id
+        )
+        self.lamar2 = UserLamarMagang.objects.create(
+            lowongan_foreign_key_id=self.lowongan4.id,
+            user_foreign_key_id=self.user1.id
+        )
+
+    def test_object_user_lamar_magang_is_created(self):
+        self.assertTrue(type(self.lamar1), UserLamarMagang)
+
+    def test_lamar1_not_lamar2(self):
+        self.assertNotEqual(str(self.lamar1.id), str(self.lamar2.id))
+
+    def test_lamar1_user_is_lamar2_user(self):
+        self.assertEqual(str(self.lamar1.user_foreign_key_id),
+                         str(self.lamar2.user_foreign_key_id))
+
+    def test_form_lamar_lowongan_url_exist(self):
+        id_user = self.user1.id
+        self.client.force_login(self.account1)
+        Account.objects.filter(pk=id_user).update(is_user=True)
+        response = self.client.get(url_form_lamar+str(self.lowongan3.id)+"/")
+        self.assertEqual(response.status_code, 200)         
+        
+    def test_post_lamar(self):
+        id_user = self.user1.id
+        self.client.force_login(self.account1)
+        Account.objects.filter(pk=id_user).update(is_user=True)
+        data_form_lamar= {
+            "application_letter":"hei",
+            "lowongan_foreign_key_id":self.lowongan3.id,
+            "user_foreign_key_id":self.user1.id,
+            "file_berkas_tambahan":self.test_file_cv
+        }
+        self.client.post(url_form_lamar+str(self.lowongan4.id)+"/", enctype="multipart/form-data", data=data_form_lamar)
+        self.assertTrue(UserLamarMagang.objects.filter(application_letter="hei").exists())
+
+    def test_is_not_user_to_lamar(self):
+        response = self.client.get(url_form_lamar+str(self.lowongan3.id)+"/")
+        self.assertEqual(response.status_code, 302)         
