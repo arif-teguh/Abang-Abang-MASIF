@@ -37,7 +37,9 @@
 <div class="container-fluid">
     <div class="row justify-content-center" style="height: 100vh">
         <div class="col-4 align-self-center">
-            <form method="POST" action="{% url 'opd_verification' token %}">
+            <form method="POST" action="{% url 'opd_verification' token %}"
+            oninput='id_confirm_password.setCustomValidity(id_confirm_password.value != id_password.value ? "Passwords do not match." : "")'
+            >
                 {% csrf_token %}
                 <h1 class="admin-login-items">Verifikasi OPD</h1>
                 <h4 class="opd-name">Nama OPD: {{ opd_name }}</h4>
@@ -58,5 +60,19 @@
         </div>
     </div>
 </div>
+<script>
+    // $(document).ready((function () {
+    //     $("#submit-btn").click(function () {
+    //         var password = $("#id_password").val();
+    //         var confirmPassword = $("#id_confirm_password").val();
+    //         if (password != confirmPassword) {
+    //             // confirmPassword.setCustomValidity("Passwords do not match.")
+    //             alert("test")
+    //             return false;
+    //         }
+    //         return true;
+    //     });
+    // }));
+</script>
 </body>
 </html>

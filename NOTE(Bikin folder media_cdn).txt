@@ -1,0 +1,2 @@
+bikin folder ../media_cdn
+mkdir ../media_cdn

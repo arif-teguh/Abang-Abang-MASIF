@@ -11,7 +11,7 @@ class Lowongan(models.Model):
     deskripsi = models.TextField(max_length=1000)
     requirement = models.TextField(max_length=1000)
 
-    opd_foreign_key = models.ForeignKey(Account, on_delete=models.CASCADE)
+    opd_foreign_key = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='lowongan')
 
     def __str__(self):
         return self.judul
