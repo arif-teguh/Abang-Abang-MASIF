@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.db import models
 
@@ -30,8 +32,9 @@ class AccountManager(BaseUserManager):
 
 class Account(AbstractBaseUser):
     profile_picture = models.FileField(
-        default="static/default-profile.png",
-        max_length=500)
+        null=True,
+        blank=True,
+    )
     name = models.CharField(max_length=128)
     email = models.EmailField(
         verbose_name="email", max_length=254, unique=True)
@@ -63,7 +66,7 @@ class OpdProfile(models.Model):
     user = models.OneToOneField(
         Account,
         on_delete=models.CASCADE,
-        primary_key=True, null=False, blank="False"
+        primary_key=True, null=False, blank=False
     )
     # Temporary Attribute
     unique_opd_attribute = models.CharField(max_length=60)
@@ -76,7 +79,7 @@ class AdminProfile(models.Model):
     user = models.OneToOneField(
         Account,
         on_delete=models.CASCADE,
-        primary_key=True, null=False, blank="False"
+        primary_key=True, null=False, blank=False
     )
     # Temporary Attribute
     unique_admin_attribute = models.CharField(max_length=60)

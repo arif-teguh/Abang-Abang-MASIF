@@ -10,7 +10,7 @@ urlpatterns = [
         'login/',
         LoginView.as_view(
             template_name='user_login.html',
-            form_class=UserAuthenticationForm,),
+            form_class=UserAuthenticationForm, ),
         name='user_login'),
     path('verification/404', views.user_verification_not_found,
          name="user_verification_not_found"),
