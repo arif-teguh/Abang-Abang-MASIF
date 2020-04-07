@@ -26,10 +26,10 @@
             crossorigin="anonymous"></script>
 
     <script>
-        window.setTimeout(function() {
-        $(".alert").fadeTo(500, 0).slideUp(500, function(){
-            $(this).remove(); 
-        });
+        window.setTimeout(function () {
+            $(".alert").fadeTo(500, 0).slideUp(500, function () {
+                $(this).remove();
+            });
         }, 2000);
     </script>
 
@@ -45,11 +45,11 @@
 <div class="container-fluid">
     <div class="row justify-content-center" style="height: 100vh">
         <div class="col-4 align-self-center">
-            {% for message in messages%}
+            {% for message in messages %}
                 <div class="alert alert-success" role="alert">
-                    {{message}}
+                    {{ message }}
                 </div>
-            {%endfor%}
+            {% endfor %}
             <form method="POST" action="{% url 'user_login' %}">
                 {% csrf_token %}
                 <h1 class="admin-login-items">Masuk Sebagai User</h1>
@@ -57,14 +57,23 @@
                 {{ form.username }}
                 <label>Password : </label>
                 {{ form.password }}
-            <br>
+                <br>
                 {% for error in form.non_field_errors %}
                     <div class="alert alert-danger" role="alert">
                         {{ error }}
                     </div>
                 {% endfor %}
-                <button type="submit" class="btn btn-primary admin-login-items" id="submit-btn">Submit</button>
-
+                <div style="text-align: center">
+                    <button type="submit" class="btn btn-primary admin-login-items" id="submit-btn">Submit</button>
+                    <div style="padding: 1rem">
+                        atau
+                    </div>
+                    <div>
+                        <a href="{% url 'social:begin' 'google-oauth2' %}" id="google_login">
+                            <img src="{% static 'img/btn_google_sign_in.png' %}" style="width: 200px">
+                        </a>
+                    </div>
+                </div>
             </form>
         </div>
     </div>
