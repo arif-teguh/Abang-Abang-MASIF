@@ -21,7 +21,9 @@ class AdminAuthenticationForm(AuthenticationForm):
                 'class': 'form-control',
                 'type': 'email',
                 'placeholder': 'Email',
-            }))
+            }
+        )
+    )
 
     password = forms.CharField(
         strip=False,

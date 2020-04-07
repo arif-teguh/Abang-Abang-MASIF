@@ -6,6 +6,7 @@ from user.models import UserVerificationList
 from .user_registration_form import UserRegistrationForm
 from .token import generate_user_token
 
+
 def user_register(request):
     if request.method == 'POST':
         form = UserRegistrationForm(request.POST)
@@ -32,6 +33,7 @@ def user_register(request):
         form = UserRegistrationForm()
     return render(request, 'user/user_register.html', {'form': form})
 
+
 def user_verification(request, token):
     try:
         user_from_verification_list = UserVerificationList.objects.get(
@@ -53,8 +55,10 @@ def user_verification(request, token):
     messages.success(request, 'User Verified')
     return redirect("/user/login")
 
+
 def user_verification_redirect(request):
     return redirect("/")
+
 
 def user_verification_not_found(request):
     return render(

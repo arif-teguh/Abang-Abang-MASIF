@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class UserVerificationList(models.Model):
     secret = models.CharField(max_length=50, unique=True)
     name = models.CharField(max_length=30)
