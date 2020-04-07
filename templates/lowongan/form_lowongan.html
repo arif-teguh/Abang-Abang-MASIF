@@ -58,7 +58,7 @@
         $( document ).ready(function() {
             $('.selectpicker').val(choices);
             $('.selectpicker').trigger('change');
-            $('.selectpicker').select2({tags: true});
+            $('.selectpicker').select2({tags: true, tokenSeparators: [',','.',';']});
         });
 
     </script>
