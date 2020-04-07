@@ -4,20 +4,34 @@ from .models import Lowongan
 class LowonganForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.id_lowongan = kwargs.pop("id", None)
+        self.list_choice = kwargs.pop("list_choice", None)
+        self.choice = ()
         super(LowonganForm, self).__init__(*args, **kwargs)
         if self.id_lowongan is not None:
             obj_lowongan_by_id = Lowongan.objects.get(pk=self.id_lowongan)
             self.choice = ((i, i)for i in obj_lowongan_by_id.berkas_persyaratan)
-            self.fields['berkas_persyaratan'].choices = self.choice
-            self.fields['berkas_persyaratan'].widget.choices = self.choice
+        elif self.list_choice is not None:
+            self.choice = ((i, i)for i in self.list_choice)
         else:
-            self.choice = (
-                ('Kartu Keluarga', 'Kartu Keluarga'),
-                ('Kartu Tanda Penduduk', 'Kartu Tanda Penduduk'),
-                ('Surat Izin Sekolah', 'Surat Izin Sekolah'),
-            )
-            self.fields['berkas_persyaratan'].choices = self.choice
-            self.fields['berkas_persyaratan'].widget.choices = self.choice
+            default_choice = [
+                'Kartu Keluarga (KK)', 'Kartu Tanda Penduduk (KTP)',
+                'Surat Izin Sekolah', 'Surat Keterangan Catatan Kepolisian (SKCK)'
+            ]
+            self.choice = ((i, i)for i in default_choice)
+        self.fields['berkas_persyaratan'].choices = self.choice
+        self.fields['berkas_persyaratan'].widget.choices = self.choice
+
+    def clean(self):
+        cleaned_data = super(LowonganForm, self).clean()
+        try:
+            if cleaned_data["waktu_awal_magang"] > cleaned_data["waktu_akhir_magang"]:
+                self.add_error('waktu_awal_magang',
+                               "Tanggal awal lebih besar dari tanggal akhir")
+                self.add_error('waktu_akhir_magang',
+                               "Tanggal awal lebih besar dari tanggal akhir")
+                return cleaned_data
+        except KeyError:
+            print("")
 
     class Meta:
         attribute_text_input = {
@@ -82,3 +96,21 @@ class LowonganForm(forms.ModelForm):
             "deskripsi" : "Deskripsi Magang",
             "requirement" : "Requirement Magang",
         }
+
+attribute_text_lamar = {
+    'class' : 'form-control col-8'
+}
+attribute_file_lamar = {
+    'class' : 'form-control col-5'
+}
+class UserLamarMagangForm(forms.Form):
+    file_cv = forms.FileField(label="CV (format NamaAnda_CV.pdf)",
+                              widget=forms.FileInput(attrs=attribute_file_lamar),
+                              required=False)
+    file_berkas_tambahan = forms.FileField(label="Berkas Tambahan (format NamaAnda_JudulLowongan.zip)",
+                                           widget=forms.FileInput(attrs=attribute_file_lamar),
+                                           required=False)
+    application_letter = forms.CharField(label="Application Letter",
+                                         max_length=2000,
+                                         widget=forms.Textarea(attrs=attribute_text_lamar),
+                                         required=False)
