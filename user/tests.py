@@ -1,14 +1,13 @@
 from django.test import TestCase, Client
 from django.http import HttpRequest
 from django.core.exceptions import ValidationError
-
-
 from account.models import Account
 from user import views
 from .models import UserVerificationList
 from .user_registration_form import UserRegistrationForm
 from .user_login_form import UserAuthenticationForm
 from .token import generate_user_token
+
 
 # Create your tests here.
 class PelamarRegistrationTest(TestCase):
@@ -50,10 +49,11 @@ class PelamarRegistrationTest(TestCase):
         response = self.client.post(
             "/user/register",
             {'user_name': self.user_name, 'email': self.email,
-             'phone': self.phone, 'password': self.password, 
+             'phone': self.phone, 'password': self.password,
              'confirm_password': self.password})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(UserVerificationList.objects.count(), user_count+1)
+        self.assertEqual(UserVerificationList.objects.count(), user_count + 1)
+
 
 class PelamarValidationTest(TestCase):
     def setUp(self):
@@ -86,12 +86,12 @@ class PelamarValidationTest(TestCase):
                                         password=self.password,
                                         secret=secret)
         new_user.save()
-        response = self.client.get('/user/verification/'+secret)
+        response = self.client.get('/user/verification/' + secret)
         self.assertEqual(response.status_code, 302)
 
     def test_open_verification_code_not_exist(self):
         secret = "abcdefakfjalk"
-        response = self.client.get('/user/verification/'+secret)
+        response = self.client.get('/user/verification/' + secret)
         self.assertEqual(response.status_code, 302)
 
     def test_pelamar_verified_login(self):

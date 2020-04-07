@@ -1,6 +1,6 @@
 # Visual Studio Code dep
 .vscode
-venv/
+
 # Pipenv dep
 Pipfile.lock
 
@@ -17,6 +17,8 @@ builds/
 # SonarQube dep
 .scannerwork/
 
+# Chromedriver for selenium
+chromedriver
 
 # Created by https://www.gitignore.io/api/pycharm+all
 # Edit at https://www.gitignore.io/?templates=pycharm+all
@@ -110,4 +112,5 @@ modules.xml
 # End of https://www.gitignore.io/api/pycharm+all
 
 #environment
+venv/
 env/
