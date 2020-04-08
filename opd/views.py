@@ -4,15 +4,39 @@ from django.http import HttpResponse
 
 from lowongan.models import Lowongan
 from admin.models import OpdVerificationList
-from account.models import Account, OpdProfile
+from account.models import Account, OpdProfile  , UserProfile
 from .opd_confirmation_form import OpdConfirmationForm
 
 def opd_login(request):
     return render(request, 'opd_login.html')
 
+def opd_list_pendaftar(request, id_lowongan):
+    if request.user.is_authenticated and request.user.is_opd:
+        if(cek_id_lowongan_dan_opd(request, id_lowongan)):
+            lowongan = Lowongan.objects.get(id = id_lowongan)
+            list_pelamar = lowongan.list_pendaftar_key.all()
+            jumlah = list_pelamar.count()
+            return render(request,'opd_list_pendaftar.html',
+            {'lowongan': lowongan ,
+            'list_pelamar' : list_pelamar,
+            'jumlah' : jumlah,
+               } )
+        else :
+            return redirect('/opd/')
+    else:
+        return redirect('/opd/login/')
+  
+def cek_id_lowongan_dan_opd(request, id_lowongan):
+    lowongan = Lowongan.objects.get(id = id_lowongan)
+    if(lowongan.opd_foreign_key_id == request.user.id ):
+        return True
+    else:
+        return False
+
 def opd_lowongan(request):
     if request.user.is_authenticated and request.user.is_opd:
         list_lowongan = Lowongan.objects.filter(opd_foreign_key = request.user.id)
+        
         return render(request,'opd_lowongan.html', {'list_lowongan': list_lowongan})
     else:
         return redirect('/opd/login/')

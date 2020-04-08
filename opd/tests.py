@@ -1,3 +1,4 @@
+import datetime
 from django.test import TestCase, Client
 from django.urls import resolve
 from django.http import HttpRequest
@@ -5,11 +6,14 @@ import secrets
 
 from admin.models import OpdVerificationList
 from opd import views
-from account.models import Account
+from account.models import Account , UserProfile
 from lowongan.models import Lowongan
 from .opd_login_form import OpdAuthenticationForm
 
-
+url_opd_login = '/opd/login/'
+url_opd_index = '/opd/'
+url_opd_lowongan_detail = '/opd/lowongan/detail'
+mock_date = datetime.date(2012, 12, 12)
 class LoginOpdUnitTest(TestCase):
     #login
     def test_page_title_opd_login(self):
@@ -19,7 +23,7 @@ class LoginOpdUnitTest(TestCase):
         self.assertIn('<title>OPD Login</title>', html_response)
 
     def test_opd_login_template(self):
-        response = self.client.get('/opd/login/')
+        response = self.client.get(url_opd_login)
         self.assertTemplateUsed(response,'opd_login.html')
         
 
@@ -111,19 +115,21 @@ class LowonganOpdUnitTest(TestCase):
                                  unique_opd_attribute="opd")
         opd_profile.save()
         '''
+         
         self.account1.is_opd = True
         self.account1.save()
         self.client.force_login(self.account1)
         self.lowongan1 = Lowongan.objects.create(
-            judul = 'judul1',
-            penyedia = 'opd1',
-            jumlah_tersedia = 10,
-            durasi_magang = 10,
-            jangka_waktu_lamaran = 10,
-            berkas = 'berkas1',
-            deskripsi = 'deskripsi1',
-            requirement = 'requirement1',
-            opd_foreign_key_id = self.opd1.id
+            judul='judul1',
+            kategori='kat1',
+            kuota_peserta=10,
+            waktu_awal_magang = mock_date,
+            waktu_akhir_magang = mock_date,
+            batas_akhir_pendaftaran = mock_date,
+            berkas_persyaratan=['Kartu Keluarga'],
+            deskripsi='deskripsi1',
+            requirement='requirement1',
+            opd_foreign_key_id=self.account1.id
         )
 
     def test_click_lowongan_button_exist(self):
@@ -157,7 +163,6 @@ class LowonganOpdUnitTest(TestCase):
     def test_get_lowongan_item(self):
          response = self.client.get('/opd/')
          self.assertContains(response,self.lowongan1.judul)
-         self.assertContains(response,self.lowongan1.penyedia)
             
 
 
@@ -174,15 +179,16 @@ class DetailLowonganOpdUnitTest(TestCase):
         self.account1.save()
         self.client.force_login(self.account1)
         self.lowongan1 = Lowongan.objects.create(
-            judul = 'judul1',
-            penyedia = 'opd1',
-            jumlah_tersedia = 10,
-            durasi_magang = 10,
-            jangka_waktu_lamaran = 10,
-            berkas = 'berkas1',
-            deskripsi = 'deskripsi1',
-            requirement = 'requirement1',
-            opd_foreign_key_id = self.opd1.id
+            judul='judul1',
+            kategori='kat1',
+            kuota_peserta=10,
+            waktu_awal_magang = mock_date,
+            waktu_akhir_magang = mock_date,
+            batas_akhir_pendaftaran = mock_date,
+            berkas_persyaratan=['Kartu Keluarga'],
+            deskripsi='deskripsi1',
+            requirement='requirement1',
+            opd_foreign_key_id=self.account1.id
         )
 
 
@@ -213,10 +219,8 @@ class DetailLowonganOpdUnitTest(TestCase):
         url = '/opd/lowongan/detail-' + str(self.lowongan1.id)+'/'
         response = self.client.get(url)
         self.assertContains(response,self.lowongan1.judul)
-        self.assertContains(response,self.lowongan1.penyedia)
         self.assertContains(response,self.lowongan1.requirement)
         self.assertContains(response,self.lowongan1.deskripsi)
-        self.assertContains(response,self.lowongan1.durasi_magang)
 
     def test_response(self):
         response = self.client.get('/opd/lowongan/detail-' + str(self.lowongan1.id)+'/')
@@ -242,3 +246,90 @@ class OpdConfirmationTest(TestCase):
     def test_verification_without_token_redirect(self):
         response = self.client.get('/opd/verification/')
         self.assertEqual('/', response.url)
+
+
+class TestCekListPelamar(TestCase):
+    def setUp(self):
+        self.account1 = Account.objects.create_superuser(email="test@mail.com", password="1234")
+        self.account1.is_opd = True
+        self.account1.save()
+        self.account2 = Account.objects.create_superuser(email="test2@mail.com", password="xyz")
+        self.account2.is_opd = True
+        self.account2.save()
+        self.account3 = Account.objects.create_user(email="user3@mail.com", password="dqwqfas")
+        self.account3.name = "testtest"
+        self.account3.is_user = True
+        self.account3.save()
+        self.user1 = UserProfile(user=self.account3)
+        self.user1.save()
+        self.opd1 = Account.objects.all()[0]
+        self.opd2 = Account.objects.all()[1]
+
+        self.client.force_login(self.account1)
+        self.lowongan1 = Lowongan.objects.create(
+            judul='judul1',
+            kategori='kat1',
+            kuota_peserta=10,
+            waktu_awal_magang = mock_date,
+            waktu_akhir_magang = mock_date,
+            batas_akhir_pendaftaran = mock_date,
+            berkas_persyaratan=['Kartu Keluarga'],
+            deskripsi='deskripsi1',
+            requirement='requirement1',
+            opd_foreign_key_id=self.account1.id,
+            
+            
+        )
+        self.lowongan1.list_pendaftar_key.add(self.user1)
+
+        self.lowongan2 = Lowongan.objects.create(
+            judul='judul2',
+            kategori='kat2',
+            kuota_peserta=10,
+            waktu_awal_magang = mock_date,
+            waktu_akhir_magang = mock_date,
+            batas_akhir_pendaftaran = mock_date,
+            berkas_persyaratan=['Kartu Keluarga'],
+            deskripsi='deskripsi1',
+            requirement='requirement1',
+            opd_foreign_key_id = self.account2.id
+        )
+
+
+    def test_opd_pendaftar_lowongan_template(self):
+        response = self.client.get('/opd/lowongan/list-pendaftar-' + str(self.lowongan1.id)+'/')
+        self.assertTemplateUsed(response,'opd_list_pendaftar.html')
+
+    def test_using_opd_pendaftar_lowongan_func(self):
+        found = resolve('/opd/lowongan/list-pendaftar-' + str(self.lowongan1.id) +'/')
+        self.assertEqual(found.func, views.opd_list_pendaftar)
+
+    
+    def test_response_jika_sudah_login_dan__list_pendaftar_yang_miliknya(self):
+        response = self.client.get('/opd/lowongan/list-pendaftar-' + str(self.lowongan1.id) +'/')
+        self.assertEqual(response.status_code,200)
+
+    def test_response_jika_belum_login(self):
+        response = Client().get('/opd/lowongan/list-pendaftar-' + str(self.lowongan1.id) +'/')
+        self.assertNotEqual(response.status_code,200)
+    
+
+    def test_response_jika_melihat_list_pendaftar_yang_tidak_miliknya(self):
+        response = self.client.get('/opd/lowongan/list-pendaftar-' + str(self.lowongan2.id) +'/')
+        self.assertNotEqual(response.status_code,200)
+ 
+
+    def test_get_lowongan_dan_pendaftar(self):
+        url = '/opd/lowongan/list-pendaftar-' + str(self.lowongan1.id)+'/'
+        response = self.client.get(url)
+        self.assertContains(response,self.lowongan1.judul)
+        self.assertContains(response,'1')
+
+
+    
+    def test_page_title_opd_detail_lowngan_lowongan(self):
+        request = HttpRequest()
+        request.user = self.account1
+        response = views.opd_list_pendaftar(request, self.lowongan1.id)
+        html_response = response.content.decode('utf8')
+        self.assertIn(self.user1.user.name, html_response)

@@ -1,7 +1,7 @@
 import datetime
 import re
 
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.utils.datastructures import MultiValueDictKeyError
 
@@ -146,3 +146,22 @@ def user_edit_profile(request):
             return render(request, 'user/user-edit-profile.html',
                           {'form': EditUserProfileForm(current_user_data), 'request': request})
     return redirect('/user/login/')
+
+
+def list_of_lowongan_to_json_dict(data):
+    result = {
+        'data': []
+    }
+
+    for lowongan in data:
+        result['data'].append(["Pending", '<a href="/cari-lowongan/detail-lowongan/">{}</a>'.format(lowongan.judul),
+                               lowongan.opd_foreign_key.name])
+    return result
+
+
+def get_all_lamaran_for_dashboard_table(request):
+    if request.user.is_authenticated:
+        response = list_of_lowongan_to_json_dict(request.user.userprofile.lowongan_set.all())
+        return JsonResponse(response)
+    else:
+        return HttpResponse('[ERROR] permission denied')
