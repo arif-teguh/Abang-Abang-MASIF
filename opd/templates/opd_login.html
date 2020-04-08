@@ -39,7 +39,7 @@
         <div class="col-4 align-self-center">
             <form method="POST" action="{% url 'opd_login' %}">
                 {% csrf_token %}
-                <h1 class="admin-login-items">Masuk Sebagai OPD</h1>
+                <h1 >Masuk Sebagai OPD</h1>
                 <label>Email : </label>
                 {{ form.username }}
                 <label>Password : </label>
@@ -50,7 +50,7 @@
                         {{ error }}
                     </div>
                 {% endfor %}
-                <button type="submit" class="btn btn-primary admin-login-items" id="submit-btn">Submit</button>
+                <button type="submit" id="submit-btn">Submit</button>
 
             </form>
         </div>

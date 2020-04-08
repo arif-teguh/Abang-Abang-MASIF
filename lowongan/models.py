@@ -17,7 +17,16 @@ class Lowongan(models.Model):
     is_lowongan_masih_berlaku = models.BooleanField(default=True)
     opd_foreign_key = models.ForeignKey(Account, on_delete=models.CASCADE,
                                         related_name='lowongan')
-    list_pendaftar_key = models.ManyToManyField(UserProfile)
+    list_pendaftar_key = models.ManyToManyField(UserProfile, null=True, blank=True)
 
     def __str__(self):
         return self.judul
+
+class UserLamarMagang(models.Model):
+    application_letter = models.TextField(max_length=2000,
+                                          null=True, blank=True)
+    file_berkas_tambahan = models.FileField(null=True, blank=True)
+    lowongan_foreign_key = models.ForeignKey(Lowongan, on_delete=models.CASCADE,
+                                             related_name='RelasiLowonganAndUser')
+    user_foreign_key = models.ForeignKey(Account, on_delete=models.CASCADE,
+                                         related_name='RelasiLowonganAndUser')
