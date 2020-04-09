@@ -30,3 +30,5 @@ class UserLamarMagang(models.Model):
                                              related_name='RelasiLowonganAndUser')
     user_foreign_key = models.ForeignKey(Account, on_delete=models.CASCADE,
                                          related_name='RelasiLowonganAndUser')
+    status_lamaran = models.CharField(max_length=20, default="Pending")
+    notes_status_lamaran = models.TextField(max_length=1000, default="Tidak Ada Catatan")
