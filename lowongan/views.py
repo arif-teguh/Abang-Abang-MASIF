@@ -39,7 +39,8 @@ def post_form_lowongan(request):
                 opd_foreign_key_id=request.user.id
             )
             data_lowongan.save()
-            return redirect("/")
+            id_lowongan = str(data_lowongan.id)
+            return redirect("/opd/lowongan/detail-"+id_lowongan+"/")
         berkas_persyaratan = request.POST.getlist("berkas_persyaratan")
         if berkas_persyaratan != []:
             form = LowonganForm(request.POST or None, request.user.id,
@@ -98,7 +99,7 @@ def form_lamar_lowongan(request, id_lowongan):
             else:
                 user_profile.cv = file_cv
                 user_profile.save()
-            return redirect("/")
+            return redirect("/user/dashboard/")
 
     response = {
         'form': UserLamarMagangForm(),
