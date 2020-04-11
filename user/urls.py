@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 from django.contrib.auth.views import LoginView
 
 from . import views
@@ -18,4 +18,5 @@ urlpatterns = [
          name="user_verification"),
     path('verification/', views.user_verification_redirect,
          name="user_verification_redirect"),
+    path('auth/', include('social_django.urls', namespace='social')),
 ]

@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -65,12 +67,12 @@
                 {% endfor %}
                 <div style="text-align: center">
                     <button type="submit" class="btn btn-primary admin-login-items" id="submit-btn">Submit</button>
-                    <div style="padding: 1rem">
+                    <div style="margin-bottom: 3vh">
                         atau
                     </div>
                     <div>
                         <a href="{% url 'social:begin' 'google-oauth2' %}" id="google_login">
-                            <img src="{% static 'img/btn_google_sign_in.png' %}" style="width: 200px">
+                            <img src="{% static 'img/btn_google_sign_in.png' %}" style="width: 220px">
                         </a>
                     </div>
                 </div>

@@ -1,4 +1,4 @@
-from django.test import TestCase, Client
+from django.test import TestCase, Client, override_settings
 from django.http import HttpRequest
 from django.core.exceptions import ValidationError
 from account.models import Account
@@ -7,6 +7,13 @@ from .models import UserVerificationList
 from .user_registration_form import UserRegistrationForm
 from .user_login_form import UserAuthenticationForm
 from .token import generate_user_token
+from unittest import mock
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AbstractBaseUser
+from social_django.compat import reverse
+from social_django.models import UserSocialAuth
+from social_django.views import get_session_timeout
+
 
 
 # Create your tests here.
@@ -100,3 +107,31 @@ class PelamarValidationTest(TestCase):
         form = response.context['form']
         self.assertTrue(
             isinstance(form, UserAuthenticationForm), type(form).__mro__)
+
+
+
+# GOOGLE OAUTH2 UNIT TEST
+@override_settings(SOCIAL_AUTH_GOOGLE_KEY='1',
+                   SOCIAL_AUTH_GOOGLE_SECRET='2')
+class TestViews(TestCase):
+
+    def setUp(self):
+        session = self.client.session
+        session['google_state'] = '1'
+        session.save()
+
+    def test_begin_view(self):
+        response = self.client.get(reverse('social:begin', kwargs={'backend': 'google-oauth2'}))
+        self.assertEqual(response.status_code, 302)
+
+        url = reverse('social:begin', kwargs={'backend': 'blabla'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_page_response_status(self):
+        response = Client().get('/user/login/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_page_template(self):
+        response = Client().get('/user/login/')
+        self.assertTemplateUsed(response, 'user_login.html')
