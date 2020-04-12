@@ -50,7 +50,7 @@ class PelamarRegistrationTest(TestCase):
 
     def test_register_user_html(self):
         with self.assertTemplateUsed('user/user_register.html'):
-            response = self.client.get('/user/register')
+            response = self.client.get('/user/register/')
             self.assertEqual(response.status_code, 200)
 
     def test_generate_token(self):
@@ -61,7 +61,7 @@ class PelamarRegistrationTest(TestCase):
     def test_create_user(self):
         user_count = UserVerificationList.objects.count()
         response = self.client.post(
-            "/user/register",
+            "/user/register/",
             {'user_name': self.user_name, 'email': self.email,
              'phone': self.phone, 'password': self.password, 
              'confirm_password': self.password})
