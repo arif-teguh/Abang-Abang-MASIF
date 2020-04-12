@@ -1,6 +1,7 @@
 from django.test import TestCase, Client, override_settings
 from django.http import HttpRequest
 from django.core.exceptions import ValidationError
+from django.core.files.uploadedfile import SimpleUploadedFile
 from account.models import Account, UserProfile
 from user import views
 from .models import UserVerificationList
@@ -13,7 +14,7 @@ from django.contrib.auth.models import AbstractBaseUser
 from social_django.compat import reverse
 from social_django.models import UserSocialAuth
 from social_django.views import get_session_timeout
-
+from selenium import webdriver
 from lowongan.models import Lowongan
 from user.forms import EditUserProfileForm
 from user.views import born_date_validator, sex_validator, phone_number_validator, is_data_valid, \
