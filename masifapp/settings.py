@@ -43,7 +43,6 @@ INSTALLED_APPS = [
     'admin.apps.AdminConfig',
     'opd',
     'social_django',
-    'google_oauth2',
     'lowongan',
     'account',
     'user',

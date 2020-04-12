@@ -91,7 +91,6 @@ class AccountUnitTest(TestCase):
 
 
     def test_create_user_pelamar_complete(self):
-        Account.objects.create_user(email="test@mail.com", password="1234")
         newly_created_user = Account.objects.all()[0]
         pelamar_profile = PelamarProfile(user=newly_created_user,
                                  unique_pelamar_attribute="user")
