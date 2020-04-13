@@ -262,6 +262,14 @@ class TestCekListPelamar(TestCase):
         self.account3.save()
         self.user1 = UserProfile(user=self.account3)
         self.user1.save()
+        self.user2 = UserProfile(
+            user=self.account2,
+            major = 'kosong',
+            institution = 'kosong',
+            education = 'kosong',
+            address = 'kosong'
+            )
+        self.user2.save()
         self.opd1 = Account.objects.all()[0]
         self.opd2 = Account.objects.all()[1]
         self.client.force_login(self.account1)
@@ -351,6 +359,16 @@ class TestCekListPelamar(TestCase):
         self.assertContains(response,self.account3.userprofile.institution)
         self.assertContains(response,self.account3.userprofile.education)
         self.assertContains(response,self.account3.userprofile.address)
-        
+
+    #negative test
+    def test_melihat_tidak_ada_user_pelamar_yang_tidak_melamar(self):
+        url = '/opd/lowongan/list-pendaftar-' + str(self.lowongan1.id)+'/'
+        response = self.client.get(url)
+        self.assertNotContains(response,self.account2.userprofile.major)
+        self.assertNotContains(response,self.account2.email)
+        self.assertNotContains(response,self.account2.phone)
+        self.assertNotContains(response,self.account2.userprofile.institution)
+        self.assertNotContains(response,self.account2.userprofile.education)
+        self.assertNotContains(response,self.account2.userprofile.address)
 
     
