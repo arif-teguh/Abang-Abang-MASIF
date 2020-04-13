@@ -14,12 +14,10 @@ def opd_list_pendaftar(request, id_lowongan):
     if request.user.is_authenticated and request.user.is_opd:
         if(cek_id_lowongan_dan_opd(request, id_lowongan)):
             lowongan = Lowongan.objects.get(id = id_lowongan)
-            list_pelamar = lowongan.list_pendaftar_key.all()
-            jumlah = list_pelamar.count()
+            lamaran = UserLamarMagang.objects.filter(lowongan_foreign_key = id_lowongan)
             return render(request,'opd_list_pendaftar.html',
             {'lowongan': lowongan ,
-            'list_pelamar' : list_pelamar,
-            'jumlah' : jumlah,
+              'lamaran' : lamaran
                } )
         else :
             return redirect('/opd/')

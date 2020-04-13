@@ -47,7 +47,7 @@ th, td {
 <br><br>
 <div class="container">
 <h1>Daftar Pelamar {{ lowongan.judul }}</h1>
-<p>Jumlah Pelamar : {{Jumlah}}</p>
+<p>Jumlah Pelamar : {{lamaran.count}}</p>
 </div>
 <br>
 <div align="center">
@@ -57,12 +57,12 @@ th, td {
     <th>Nama</th>
     <th></th>
   </tr>
-{% for each in list_pelamar%}
+{% for each in lamaran%}
 
   <tr>
     <td id="count">{{ forloop.counter }}</td>
-    <td>{{ each.user.name }}</td>
-    <a href="/opd/lowongan/pendaftar/{{each.user.id}}/" >
+    <td>{{ each.user_foreign_key.name }}</td>
+    <a href="/opd/lowongan/pendaftar/{{each.user_foreign_key.id}}/" >
     <td>Lihat Detail</td>
     </a>
   </tr>
