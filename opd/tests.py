@@ -293,7 +293,7 @@ class TestCekListPelamar(TestCase):
             opd_foreign_key_id = self.account2.id
         )
         self.lamaran = UserLamarMagang.objects.create(
-            application_letter = '',
+            application_letter = 'test lamaran application',
             lowongan_foreign_key = self.lowongan1,
             user_foreign_key = self.account3,
         )
@@ -322,7 +322,7 @@ class TestCekListPelamar(TestCase):
         self.assertNotEqual(response.status_code,200)
  
 
-    def test_get_lowongan_dan_pendaftar(self):
+    def test_html_render_jumlah_pelmar_dan_pendaftar(self):
         url = '/opd/lowongan/list-pendaftar-' + str(self.lowongan1.id)+'/'
         response = self.client.get(url)
         self.assertContains(response,self.lowongan1.judul)
@@ -336,5 +336,21 @@ class TestCekListPelamar(TestCase):
         response = views.opd_list_pendaftar(request, self.lowongan1.id)
         html_response = response.content.decode('utf8')
         self.assertIn(self.user1.user.name, html_response)
+
+    def test_melihat_application_letter_pelamar(self):
+        url = '/opd/lowongan/list-pendaftar-' + str(self.lowongan1.id)+'/'
+        response = self.client.get(url)
+        self.assertContains(response,self.lamaran.application_letter)
+
+    def test_melihat_detail_profil_pelamar(self):
+        url = '/opd/lowongan/list-pendaftar-' + str(self.lowongan1.id)+'/'
+        response = self.client.get(url)
+        self.assertContains(response,self.account3.userprofile.major)
+        self.assertContains(response,self.account3.email)
+        self.assertContains(response,self.account3.phone)
+        self.assertContains(response,self.account3.userprofile.institution)
+        self.assertContains(response,self.account3.userprofile.education)
+        self.assertContains(response,self.account3.userprofile.address)
+        
 
     
