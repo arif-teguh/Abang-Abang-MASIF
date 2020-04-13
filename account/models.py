@@ -120,7 +120,7 @@ class UserProfile(models.Model):
     def __str__(self):
         return "<USER Profile> Account : {}".format(self.user.email)
 
-        
+
 class PelamarProfile(models.Model):
     user = models.OneToOneField(
         Account,
@@ -143,4 +143,5 @@ class KesbangpolProfile(models.Model):
     unique_kesbangpol_attribute = models.CharField(max_length=60)
 
     def __str__(self):
-        return "<KESBANGPOL Profile> {}".format(self.unique_kesbangpol_attribute)
+        return "<KESBANGPOL Profile> {}".format(
+            self.unique_kesbangpol_attribute)
