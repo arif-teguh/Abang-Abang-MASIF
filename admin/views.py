@@ -2,7 +2,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
 
-from account.models import Account, OpdProfile
+from account.models import Account
 from admin.opd_registration_form import OpdRegistrationForm
 from .models import OpdVerificationList
 from .token import generate_opd_token
@@ -62,7 +62,10 @@ def admin_register_opd(request):
                     phone=phone
                 )
                 new_account.save()
-                return render(request, 'admin/admin_activation_link.html', {'secret': secret})
+                return render(
+                    request,
+                    'admin/admin_activation_link.html',
+                    {'secret': secret})
         else:
             form = OpdRegistrationForm()
         return render(

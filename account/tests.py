@@ -2,16 +2,17 @@ from datetime import datetime
 
 from django.db import IntegrityError
 from django.test import TestCase
-
-from account.models import Account, AdminProfile, OpdProfile, UserProfile
+from account.models import Account, AdminProfile, OpdProfile, PelamarProfile, UserProfile
 
 
 # Create your tests here.
 class AccountUnitTest(TestCase):
     def setUp(self):
         # Setup run before every test method.
-        self.user_test_account = Account.objects.create_user(email="test@mail.com", password="1234")
-        self.superuser_test_account = Account.objects.create_superuser(email="super@mail.com", password="1234")
+        self.user_test_account = Account.objects.create_user(
+            email="test@mail.com", password="1234")
+        self.superuser_test_account = Account.objects.create_superuser(
+            email="super@mail.com", password="1234")
 
     def tearDown(self):
         # Clean up run after every test method.
@@ -37,8 +38,10 @@ class AccountUnitTest(TestCase):
         self.assertEqual(self.superuser_test_account.is_staff, True)
         self.assertEqual(self.superuser_test_account.is_admin, True)
         self.assertEqual(self.superuser_test_account.email, "super@mail.com")
-        self.assertEqual(self.superuser_test_account.__str__(), "super@mail.com")
-        self.assertEqual(self.superuser_test_account.has_module_perms("module"), True)
+        self.assertEqual(
+            self.superuser_test_account.__str__(), "super@mail.com")
+        self.assertEqual(
+            self.superuser_test_account.has_module_perms("module"), True)
         self.assertEqual(self.superuser_test_account.has_perm("perm"), True)
 
     def test_create_superuser_using_create_superuser_function_no_email(self):
@@ -89,9 +92,7 @@ class AccountUnitTest(TestCase):
             admin_profile.save()
 
     def test_create_user_pelamar_complete_default_value(self):
-        user_profile = UserProfile(
-            user=self.user_test_account,
-        )
+        user_profile = UserProfile(user=self.user_test_account,)
         user_profile.save()
 
         self.assertEqual(
@@ -195,8 +196,7 @@ class AccountUnitTest(TestCase):
             None,
         )
 
-
-    def test_create_user_pelamar_no_user(self):
+    def test_create_user_profile_no_user(self):
         user_profile = UserProfile(user=None)
         with self.assertRaises(IntegrityError):
             user_profile.save()
@@ -232,7 +232,8 @@ class AccountUnitTest(TestCase):
 
         self.assertEqual(self.user_test_account, user_profile.user)
         self.assertEqual(self.user_test_account.userprofile.sex, 'n')
-        self.assertEqual(self.user_test_account.userprofile.born_date, datetime(1945, 8, 17))
+        self.assertEqual(
+            self.user_test_account.userprofile.born_date, datetime(1945, 8, 17))
         self.assertEqual(self.user_test_account.userprofile.address, 'Not set')
 
     def test_call_user_from_userprofile(self):
@@ -241,4 +242,30 @@ class AccountUnitTest(TestCase):
         )
 
         self.assertEqual(user_profile.user, self.user_test_account)
-        self.assertEqual(user_profile.user.userprofile.user, self.user_test_account)
+        self.assertEqual(user_profile.user.userprofile.user,
+                         self.user_test_account)
+
+    def test_create_user_pelamar_complete(self):
+        newly_created_user = Account.objects.all()[0]
+        pelamar_profile = PelamarProfile(
+            user=newly_created_user, unique_pelamar_attribute="user")
+        pelamar_profile.save()
+        self.assertEqual(newly_created_user
+                         .pelamarprofile
+                         .unique_pelamar_attribute,
+                         "user")
+
+        self.assertEqual(
+            newly_created_user.pelamarprofile.__str__(),
+            "<PELAMAR Profile> user")
+
+        self.assertEqual(
+            newly_created_user.pelamarprofile.user.email,
+            "test@mail.com")
+
+    def test_create_user_pelamar_no_user(self):
+        pelamar_profile = OpdProfile(user=None, unique_opd_attribute="user")
+        try:
+            pelamar_profile.save()
+        except:
+            self.assertTrue(True)

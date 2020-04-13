@@ -34,7 +34,9 @@ RUN apk update && apk add --no-cache bash \
         xvfb \
         zlib-dev \
         chromium \
-        chromium-chromedriver
+        chromium-chromedriver \
+        openssl-dev \
+        libffi-dev
 
 RUN \
  apk add --no-cache postgresql-libs && \
