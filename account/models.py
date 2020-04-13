@@ -132,3 +132,15 @@ class PelamarProfile(models.Model):
 
     def __str__(self):
         return "<PELAMAR Profile> {}".format(self.unique_pelamar_attribute)
+
+class KesbangpolProfile(models.Model):
+    user = models.OneToOneField(
+        Account,
+        on_delete=models.CASCADE,
+        primary_key=True, null=False, blank=False
+    )
+    # Temporary Attribute
+    unique_kesbangpol_attribute = models.CharField(max_length=60)
+
+    def __str__(self):
+        return "<KESBANGPOL Profile> {}".format(self.unique_kesbangpol_attribute)
