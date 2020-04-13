@@ -11,6 +11,7 @@ def opd_login(request):
     return render(request, 'opd_login.html')
 
 def opd_list_pendaftar(request, id_lowongan):
+    #cek apakah user sudah login dan user harus opd
     if request.user.is_authenticated and request.user.is_opd:
         if(cek_id_lowongan_dan_opd(request, id_lowongan)):
             lowongan = Lowongan.objects.get(id = id_lowongan)
@@ -23,7 +24,9 @@ def opd_list_pendaftar(request, id_lowongan):
             return redirect('/opd/')
     else:
         return redirect('/opd/login/')
-  
+
+#Fungsi untuk mengecek apakah opd yang 
+# mengakses data lowongan adalah opd terkait
 def cek_id_lowongan_dan_opd(request, id_lowongan):
     lowongan = Lowongan.objects.get(id = id_lowongan)
     if(lowongan.opd_foreign_key_id == request.user.id ):

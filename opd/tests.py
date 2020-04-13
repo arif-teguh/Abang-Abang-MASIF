@@ -12,7 +12,8 @@ from .opd_login_form import OpdAuthenticationForm
 
 url_opd_login = '/opd/login/'
 url_opd_index = '/opd/'
-url_opd_lowongan_detail = '/opd/lowongan/detail'
+url_opd_lowongan_detail = '/opd/lowongan/detail-'
+url_opd_pelamar = '/opd/lowongan/list-pendaftar-'
 mock_date = datetime.date(2012, 12, 12)
 class LoginOpdUnitTest(TestCase):
     #login
@@ -35,19 +36,19 @@ class LoginOpdUnitTest(TestCase):
 
 
     def test_opd_login_page_is_set_up_as_expected(self):
-        response = Client().get('/opd/login/')
+        response = Client().get(url_opd_login)
         self.assertEqual(200, response.status_code)
         form = response.context['form']
         self.assertTrue(isinstance(form, OpdAuthenticationForm), type(form).__mro__)
 
     def test_displays_opd_login_form(self):
-        response = Client().get('/opd/login/')
+        response = Client().get(url_opd_login)
         self.assertIsInstance(response.context["form"], OpdAuthenticationForm)
 
     def test_opd_page_not_authenticated(self):
-        response = Client().get('/opd/')
+        response = Client().get(url_opd_index)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual('/opd/login/', response.url)
+        self.assertEqual(url_opd_login, response.url)
 
 class OpdRedirectUnitTest(TestCase):
     def test_opd_access_opd_page(self):
@@ -148,20 +149,20 @@ class LowonganOpdUnitTest(TestCase):
 
     
     def test_opd_lowongan_template(self):
-        response = self.client.get('/opd/')
+        response = self.client.get(url_opd_index)
         self.assertTemplateUsed(response,'opd_lowongan.html')
 
     def test_using_opd_lowongan_func(self):
-        found = resolve('/opd/')
+        found = resolve(url_opd_index)
         self.assertEqual(found.func, views.opd_lowongan)
 
     def test_response(self):
-        response = self.client.get('/opd/')
+        response = self.client.get(url_opd_index)
         self.assertEqual(response.status_code,200)
 
 
     def test_get_lowongan_item(self):
-         response = self.client.get('/opd/')
+         response = self.client.get(url_opd_index)
          self.assertContains(response,self.lowongan1.judul)
             
 
@@ -194,11 +195,11 @@ class DetailLowonganOpdUnitTest(TestCase):
 
 
     def test_opd_detail_lowongan_template(self):
-        response = self.client.get('/opd/lowongan/detail-' + str(self.lowongan1.id)+'/')
+        response = self.client.get(url_opd_lowongan_detail + str(self.lowongan1.id)+'/')
         self.assertTemplateUsed(response,'opd_detail_lowongan.html')
 
     def test_using_opd_detail_lowongan_func(self):
-        found = resolve('/opd/lowongan/detail-' + str(self.lowongan1.id) +'/')
+        found = resolve(url_opd_lowongan_detail + str(self.lowongan1.id) +'/')
         self.assertEqual(found.func, views.opd_detail_lowongan)
 
     def test_click_detail_lowongan_button_exist(self):
@@ -216,14 +217,14 @@ class DetailLowonganOpdUnitTest(TestCase):
         self.assertIn('<title>Detail Lowongan</title>', html_response)
     
     def test_get_lowongan_item(self):
-        url = '/opd/lowongan/detail-' + str(self.lowongan1.id)+'/'
+        url = url_opd_lowongan_detail + str(self.lowongan1.id)+'/'
         response = self.client.get(url)
         self.assertContains(response,self.lowongan1.judul)
         self.assertContains(response,self.lowongan1.requirement)
         self.assertContains(response,self.lowongan1.deskripsi)
 
     def test_response(self):
-        response = self.client.get('/opd/lowongan/detail-' + str(self.lowongan1.id)+'/')
+        response = self.client.get(url_opd_lowongan_detail+ str(self.lowongan1.id)+'/')
         self.assertEqual(response.status_code,200)
 
 
@@ -308,30 +309,30 @@ class TestCekListPelamar(TestCase):
 
 
     def test_opd_pendaftar_lowongan_template(self):
-        response = self.client.get('/opd/lowongan/list-pendaftar-' + str(self.lowongan1.id)+'/')
+        response = self.client.get(url_opd_pelamar + str(self.lowongan1.id)+'/')
         self.assertTemplateUsed(response,'opd_list_pendaftar.html')
 
     def test_using_opd_pendaftar_lowongan_func(self):
-        found = resolve('/opd/lowongan/list-pendaftar-' + str(self.lowongan1.id) +'/')
+        found = resolve(url_opd_pelamar + str(self.lowongan1.id) +'/')
         self.assertEqual(found.func, views.opd_list_pendaftar)
 
     
     def test_response_jika_sudah_login_dan__list_pendaftar_yang_miliknya(self):
-        response = self.client.get('/opd/lowongan/list-pendaftar-' + str(self.lowongan1.id) +'/')
+        response = self.client.get(url_opd_pelamar + str(self.lowongan1.id) +'/')
         self.assertEqual(response.status_code,200)
 
     def test_response_jika_belum_login(self):
-        response = Client().get('/opd/lowongan/list-pendaftar-' + str(self.lowongan1.id) +'/')
+        response = Client().get(url_opd_pelamar + str(self.lowongan1.id) +'/')
         self.assertNotEqual(response.status_code,200)
     
 
     def test_response_jika_melihat_list_pendaftar_yang_tidak_miliknya(self):
-        response = self.client.get('/opd/lowongan/list-pendaftar-' + str(self.lowongan2.id) +'/')
+        response = self.client.get(url_opd_pelamar + str(self.lowongan2.id) +'/')
         self.assertNotEqual(response.status_code,200)
  
 
     def test_html_render_jumlah_pelmar_dan_pendaftar(self):
-        url = '/opd/lowongan/list-pendaftar-' + str(self.lowongan1.id)+'/'
+        url = url_opd_pelamar + str(self.lowongan1.id)+'/'
         response = self.client.get(url)
         self.assertContains(response,self.lowongan1.judul)
         self.assertContains(response,'1')
@@ -346,12 +347,12 @@ class TestCekListPelamar(TestCase):
         self.assertIn(self.user1.user.name, html_response)
 
     def test_melihat_application_letter_pelamar(self):
-        url = '/opd/lowongan/list-pendaftar-' + str(self.lowongan1.id)+'/'
+        url = url_opd_pelamar + str(self.lowongan1.id)+'/'
         response = self.client.get(url)
         self.assertContains(response,self.lamaran.application_letter)
 
     def test_melihat_detail_profil_pelamar(self):
-        url = '/opd/lowongan/list-pendaftar-' + str(self.lowongan1.id)+'/'
+        url = url_opd_pelamar + str(self.lowongan1.id)+'/'
         response = self.client.get(url)
         self.assertContains(response,self.account3.userprofile.major)
         self.assertContains(response,self.account3.email)
@@ -362,7 +363,7 @@ class TestCekListPelamar(TestCase):
 
     #negative test
     def test_melihat_tidak_ada_user_pelamar_yang_tidak_melamar(self):
-        url = '/opd/lowongan/list-pendaftar-' + str(self.lowongan1.id)+'/'
+        url = url_opd_pelamar + str(self.lowongan1.id)+'/'
         response = self.client.get(url)
         self.assertNotContains(response,self.account2.userprofile.major)
         self.assertNotContains(response,self.account2.email)
