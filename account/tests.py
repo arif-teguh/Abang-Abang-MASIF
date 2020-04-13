@@ -2,7 +2,7 @@ from datetime import datetime
 
 from django.db import IntegrityError
 from django.test import TestCase
-from account.models import Account, AdminProfile, OpdProfile, PelamarProfile, UserProfile
+from account.models import Account, AdminProfile, OpdProfile, PelamarProfile, UserProfile, KesbangpolProfile
 
 
 # Create your tests here.
@@ -269,3 +269,25 @@ class AccountUnitTest(TestCase):
             pelamar_profile.save()
         except:
             self.assertTrue(True)
+
+    def test_create_user_kesbangpol_complete(self):
+        kesbangpol_profile = KesbangpolProfile(user=self.user_test_account,
+                                 unique_kesbangpol_attribute="kesbangpol")
+        kesbangpol_profile.save()
+        self.assertEqual(self.user_test_account
+                         .kesbangpolprofile
+                         .unique_kesbangpol_attribute,
+                         "kesbangpol")
+
+        self.assertEqual(
+            self.user_test_account.kesbangpolprofile.__str__(),
+            "<KESBANGPOL Profile> kesbangpol")
+
+        self.assertEqual(
+            self.user_test_account.kesbangpolprofile.user.email,
+            "test@mail.com")
+
+    def test_create_user_kesbangpol_no_user(self):
+        kesbangpol_profile = KesbangpolProfile(user=None, unique_kesbangpol_attribute="kesbangpol")
+        with self.assertRaises(IntegrityError):
+            kesbangpol_profile.save()
