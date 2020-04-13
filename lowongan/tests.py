@@ -17,6 +17,7 @@ str_surat_izin_sekolah = 'Surat Izin Sekolah'
 list_berkas = [str_kartu_keluarga]
 mock_date = datetime.date(2012, 12, 12)
 mock_date2 = datetime.date(2011, 11, 11)
+encypte_multipart = "multipart/form-data"
 
 class LowonganFormTest(TestCase):
 
@@ -379,7 +380,7 @@ class UserLamarMagangModelTest(TestCase):
             "user_foreign_key_id":self.user1.id,
             "file_berkas_tambahan":self.test_file_cv
         }
-        self.client.post(url_form_lamar+str(self.lowongan3.id)+"/", enctype="multipart/form-data", data=data_form_lamar)
+        self.client.post(url_form_lamar+str(self.lowongan3.id)+"/", enctype=encypte_multipart, data=data_form_lamar)
         self.assertTrue(UserLamarMagang.objects.filter(application_letter="hei").exists())
 
     def test_is_not_user_to_lamar(self):
@@ -396,7 +397,7 @@ class UserLamarMagangModelTest(TestCase):
             "user_foreign_key_id":self.user1.id,
             "file_berkas_tambahan":self.test_file_cv
         }
-        response = self.client.post(url_form_lamar+"12800/", enctype="multipart/form-data", data=data_form_lamar)
+        response = self.client.post(url_form_lamar+"12800/", enctype=encypte_multipart, data=data_form_lamar)
         self.assertEqual(response.status_code, 302)
     
     def test_pass_when_cv_exist_dan_file_request_empty(self):
@@ -411,7 +412,7 @@ class UserLamarMagangModelTest(TestCase):
             "user_foreign_key_id":self.user1.id,
             "file_berkas_tambahan":self.test_file_cv
         }
-        response = self.client.post(url_form_lamar+str(self.lowongan5.id)+"/", enctype="multipart/form-data", data=data_form_lamar)
+        response = self.client.post(url_form_lamar+str(self.lowongan5.id)+"/", enctype=encypte_multipart, data=data_form_lamar)
         self.assertEqual(response.status_code, 302)
         self.user1.userprofile.delete()
 
