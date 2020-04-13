@@ -7,7 +7,7 @@ import secrets
 from admin.models import OpdVerificationList
 from opd import views
 from account.models import Account , UserProfile
-from lowongan.models import Lowongan
+from lowongan.models import Lowongan , UserLamarMagang
 from .opd_login_form import OpdAuthenticationForm
 
 url_opd_login = '/opd/login/'
@@ -264,7 +264,6 @@ class TestCekListPelamar(TestCase):
         self.user1.save()
         self.opd1 = Account.objects.all()[0]
         self.opd2 = Account.objects.all()[1]
-
         self.client.force_login(self.account1)
         self.lowongan1 = Lowongan.objects.create(
             judul='judul1',
@@ -280,7 +279,6 @@ class TestCekListPelamar(TestCase):
             
             
         )
-        self.lowongan1.list_pendaftar_key.add(self.user1)
 
         self.lowongan2 = Lowongan.objects.create(
             judul='judul2',
@@ -293,6 +291,11 @@ class TestCekListPelamar(TestCase):
             deskripsi='deskripsi1',
             requirement='requirement1',
             opd_foreign_key_id = self.account2.id
+        )
+        self.lamaran = UserLamarMagang.objects.create(
+            application_letter = '',
+            lowongan_foreign_key = self.lowongan1,
+            user_foreign_key = self.account3,
         )
 
 
@@ -333,3 +336,5 @@ class TestCekListPelamar(TestCase):
         response = views.opd_list_pendaftar(request, self.lowongan1.id)
         html_response = response.content.decode('utf8')
         self.assertIn(self.user1.user.name, html_response)
+
+    

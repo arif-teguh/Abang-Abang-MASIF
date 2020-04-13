@@ -2,7 +2,7 @@ from django.shortcuts import render , redirect
 from django.contrib.auth.hashers import check_password
 from django.http import HttpResponse
 
-from lowongan.models import Lowongan
+from lowongan.models import Lowongan , UserLamarMagang
 from admin.models import OpdVerificationList
 from account.models import Account, OpdProfile  , UserProfile
 from .opd_confirmation_form import OpdConfirmationForm
