@@ -2,7 +2,7 @@ from django.shortcuts import render , redirect
 from django.contrib.auth.hashers import check_password
 from django.http import HttpResponse
 
-from lowongan.models import Lowongan
+from lowongan.models import Lowongan , UserLamarMagang
 from admin.models import OpdVerificationList
 from account.models import Account, OpdProfile  , UserProfile
 from .opd_confirmation_form import OpdConfirmationForm
@@ -11,21 +11,22 @@ def opd_login(request):
     return render(request, 'opd_login.html')
 
 def opd_list_pendaftar(request, id_lowongan):
+    #cek apakah user sudah login dan user harus opd
     if request.user.is_authenticated and request.user.is_opd:
         if(cek_id_lowongan_dan_opd(request, id_lowongan)):
             lowongan = Lowongan.objects.get(id = id_lowongan)
-            list_pelamar = lowongan.list_pendaftar_key.all()
-            jumlah = list_pelamar.count()
+            lamaran = UserLamarMagang.objects.filter(lowongan_foreign_key = id_lowongan)
             return render(request,'opd_list_pendaftar.html',
             {'lowongan': lowongan ,
-            'list_pelamar' : list_pelamar,
-            'jumlah' : jumlah,
+              'lamaran' : lamaran
                } )
         else :
             return redirect('/opd/')
     else:
         return redirect('/opd/login/')
-  
+
+#Fungsi untuk mengecek apakah opd yang 
+# mengakses data lowongan adalah opd terkait
 def cek_id_lowongan_dan_opd(request, id_lowongan):
     lowongan = Lowongan.objects.get(id = id_lowongan)
     if(lowongan.opd_foreign_key_id == request.user.id ):
