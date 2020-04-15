@@ -1,26 +1,20 @@
 from datetime import datetime
-from django.test import TestCase, Client, override_settings
-from django.http import HttpRequest
-from django.core.exceptions import ValidationError
+
 from django.core.files.uploadedfile import SimpleUploadedFile
-from account.models import Account, UserProfile
-from user import views
-from .models import UserVerificationList
-from .user_registration_form import UserRegistrationForm
-from .user_login_form import UserAuthenticationForm
-from .token import generate_user_token
-from unittest import mock
-from django.contrib.auth import get_user_model
-from django.contrib.auth.models import AbstractBaseUser
-from social_django.compat import reverse
-from social_django.models import UserSocialAuth
-from social_django.views import get_session_timeout
+from django.http import HttpRequest
+from django.test import TestCase, Client, override_settings
 from selenium import webdriver
-from lowongan.models import Lowongan
+from social_django.compat import reverse
+
+from account.models import Account, UserProfile
+from lowongan.models import UserLamarMagang, Lowongan
+from user import views
 from user.forms import EditUserProfileForm
 from user.views import born_date_validator, sex_validator, phone_number_validator, is_data_valid, \
     list_of_lowongan_to_json_dict
-
+from .models import UserVerificationList
+from .token import generate_user_token
+from .user_login_form import UserAuthenticationForm
 
 
 # Create your tests here.
@@ -63,10 +57,10 @@ class PelamarRegistrationTest(TestCase):
         response = self.client.post(
             "/user/register/",
             {'user_name': self.user_name, 'email': self.email,
-             'phone': self.phone, 'password': self.password, 
+             'phone': self.phone, 'password': self.password,
              'confirm_password': self.password})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(UserVerificationList.objects.count(), user_count+1)
+        self.assertEqual(UserVerificationList.objects.count(), user_count + 1)
 
 
 class PelamarValidationTest(TestCase):
@@ -100,12 +94,12 @@ class PelamarValidationTest(TestCase):
                                         password=self.password,
                                         secret=secret)
         new_user.save()
-        response = self.client.get('/user/verification/'+secret)
+        response = self.client.get('/user/verification/' + secret)
         self.assertEqual(response.status_code, 302)
 
     def test_open_verification_code_not_exist(self):
         secret = "abcdefakfjalk"
-        response = self.client.get('/user/verification/'+secret)
+        response = self.client.get('/user/verification/' + secret)
         self.assertEqual(response.status_code, 302)
 
     def test_pelamar_verified_login(self):
@@ -141,21 +135,48 @@ class TestViews(TestCase):
     def test_page_template(self):
         response = Client().get('/user/login/')
         self.assertTemplateUsed(response, 'user_login.html')
-        
+
 
 class UserUnitTest(TestCase):
     def setUp(self):
+        self.mock_date = datetime(2012, 1, 1)
         self.client = Client()
         self.request = HttpRequest()
         self.created_mock_user = Account.objects.create_user(
             email='test@mail.com',
             password='12345678',
         )
+        self.created_mock_user.name = 'MockName'
+        self.created_mock_user.is_user = True
+        self.created_mock_user.save()
+        self.mock_opd = Account.objects.create_user(
+            email='mockopd@mail.com',
+            password='12345678',
+        )
+        self.mock_opd.is_opd = True
+        self.mock_opd.name = 'MockName'
+        self.mock_opd.save()
         self.request.user = self.created_mock_user
         self.mock_user_profile = UserProfile(user=self.created_mock_user)
         self.mock_user_profile.save()
         self.test_file_cv = SimpleUploadedFile("cv.pdf", b"file_content")
         self.test_file_jpg = SimpleUploadedFile("pp.jpg", b"file_content")
+        self.mock_lowongan = Lowongan(judul='MockJudulLowongan',
+                                      kategori='kat1',
+                                      kuota_peserta=10,
+                                      waktu_awal_magang=self.mock_date,
+                                      waktu_akhir_magang=self.mock_date,
+                                      batas_akhir_pendaftaran=self.mock_date,
+                                      berkas_persyaratan=['Kartu Keluarga'],
+                                      deskripsi='deskripsi1',
+                                      requirement='requirement1',
+                                      opd_foreign_key_id=self.mock_opd.id)
+        self.mock_lowongan.save()
+        self.mock_user_lamar_magang = UserLamarMagang(
+            lowongan_foreign_key=self.mock_lowongan,
+            user_foreign_key=self.created_mock_user,
+            status_lamaran='MockStatus')
+        self.mock_user_lamar_magang.save()
 
     def tearDown(self):
         pass
@@ -646,12 +667,6 @@ class UserUnitTest(TestCase):
         self.client.post('/user/dashboard/edit/delete_cv/')
         self.assertEqual(self.created_mock_user.userprofile.cv.name, None)
 
-    def test_list_of_lowongan_to_json_has_data_should_success(self):
-        data = list_of_lowongan_to_json_dict(
-            [Lowongan(judul="Software Engineer", opd_foreign_key=self.created_mock_user)]
-        )['data'][0][0]
-        self.assertEqual(data, 'Pending')
-
     def test_access_user_dashboard_api_get_table_url_logged_in_should_return_200(self):
         self.created_mock_user.is_user = True
         self.created_mock_user.save()
@@ -662,6 +677,31 @@ class UserUnitTest(TestCase):
     def test_access_user_dashboard_api_get_table_url_not_logged_in_should_return_200(self):
         response = self.client.get('/user/dashboard/api/get-all-lamaran-for-dashboard-table/')
         self.assertEqual(response.status_code, 200)
+
+    def test_list_of_lowongan_to_json_has_data_should_return_mock_status(self):
+        data = list_of_lowongan_to_json_dict(
+            [self.mock_user_lamar_magang]
+        )['data'][0][0]
+        self.assertEqual(data, 'MockStatus')
+
+    def test_list_of_lowongan_to_json_has_data_should_return_mock_html_a_tag(self):
+        data = list_of_lowongan_to_json_dict(
+            [self.mock_user_lamar_magang]
+        )['data'][0][1]
+        self.assertEqual(data, '<a href="/user/dashboard/status-lamaran/{}/">MockJudulLowongan</a>'.format(
+            self.mock_user_lamar_magang.pk))
+
+    def test_list_of_lowongan_to_json_has_data_should_return_username(self):
+        data = list_of_lowongan_to_json_dict(
+            [self.mock_user_lamar_magang]
+        )['data'][0][2]
+        self.assertEqual(data, 'MockName')
+
+    def test_list_of_lowongan_to_json_no_data_should_return_empty_list(self):
+        data = list_of_lowongan_to_json_dict(
+            []
+        )['data']
+        self.assertEqual(data, [])
 
 
 class UserFunctionalTest(TestCase):
