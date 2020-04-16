@@ -1,9 +1,9 @@
 from django.contrib import admin
 
-from account.models import Account, OpdProfile, AdminProfile, UserProfile
+from account.models import Account, OpdProfile, AdminProfile, PelamarProfile
 
 # Register your models here.
 admin.site.register(Account)
 admin.site.register(OpdProfile)
 admin.site.register(AdminProfile)
-admin.site.register(UserProfile)
+admin.site.register(PelamarProfile)
