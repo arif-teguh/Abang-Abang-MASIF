@@ -703,6 +703,34 @@ class UserUnitTest(TestCase):
         )['data']
         self.assertEqual(data, [])
 
+    def test_status_lamaran_page_no_login_should_return_error_permission_denied(self):
+        response = self.client.get('/user/dashboard/status-lamaran/1/')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content.decode('utf-8'), '[ERROR] Permission Denied')
+
+    def test_status_lamaran_page_logged_in_access_lamaran_wrong_id_should_return_error_lamaran_not_found(self):
+        self.client.login(username='test@mail.com', password='12345678')
+        response = self.client.get('/user/dashboard/status-lamaran/999/')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content.decode('utf-8'), '[ERROR] Lamaran Not Found')
+
+    def test_status_lamaran_page_logged_in_has_lamaran_correct_lamaran_id_should_not_return_error_not_found(self):
+        self.mock_user_lamar_magang.pk = 1
+        self.mock_user_lamar_magang.save()
+        self.client.login(username='test@mail.com', password='12345678')
+        response = self.client.get('/user/dashboard/status-lamaran/1/')
+        self.assertEqual(response.status_code, 200)
+        self.assertNotEqual(response.content.decode('utf-8'), '[ERROR] Lamaran Not Found')
+
+    def test_status_lamaran_page_logged_in_has_no_lamaran_access_other_user_lamaran_should_be_error_denied(self):
+        self.mock_user_lamar_magang.pk = 2
+        self.mock_user_lamar_magang.user_foreign_key = self.mock_opd
+        self.mock_user_lamar_magang.save()
+        self.client.login(username='test@mail.com', password='12345678')
+        response = self.client.get('/user/dashboard/status-lamaran/2/')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content.decode('utf-8'), '[ERROR] Permission Denied')
+
 
 class UserFunctionalTest(TestCase):
     def setUp(self):
