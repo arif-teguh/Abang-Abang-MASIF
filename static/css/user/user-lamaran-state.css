@@ -1,0 +1,25 @@
+.lamaran-top-detail-vertical-separator {
+    border-left: black solid thin;
+}
+
+.state-text-wrapper {
+    color: white;
+    display: inline-block;
+    font-weight: bold;
+    /*background-color: cornflowerblue;*/
+    /*background-color: #ff5d67;*/
+    background-color: cornflowerblue;
+
+    padding: 5px 10px;
+    border-radius: 8px;
+
+}
+
+.catatan-wrapper {
+    border: black solid thin;
+    border-radius: 10px;
+}
+
+.lamaran-info-row {
+    margin-top: 1.5em;
+}
