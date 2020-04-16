@@ -1,12 +1,18 @@
 import datetime
 import re
 
+from django.contrib import messages
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.utils.datastructures import MultiValueDictKeyError
 
+from account.models import Account
 from account.models import UserProfile
+from lowongan.models import UserLamarMagang
 from user.forms import EditUserProfileForm, CVForm, ProfilePictureForm
+from user.models import UserVerificationList
+from .token import generate_user_token
+from .user_registration_form import UserRegistrationForm
 
 
 def account_is_user(request):
@@ -139,7 +145,6 @@ def user_edit_profile(request):
                 'address': request.user.userprofile.address,
                 'institution': request.user.userprofile.institution,
                 'major': request.user.userprofile.major,
-                'phone': request.user.phone,
 
             }
 
@@ -153,26 +158,22 @@ def list_of_lowongan_to_json_dict(data):
         'data': []
     }
 
-    for lowongan in data:
-        result['data'].append(["Pending", '<a href="/cari-lowongan/detail-lowongan/">{}</a>'.format(lowongan.judul),
-                               lowongan.opd_foreign_key.name])
+    for item in data:
+        lowongan_object = item.lowongan_foreign_key
+        result['data'].append(
+            [item.status_lamaran,
+             '<a href="/user/dashboard/status-lamaran/{}/">{}</a>'.format(item.pk, lowongan_object.judul),
+             lowongan_object.opd_foreign_key.name])
     return result
 
 
 def get_all_lamaran_for_dashboard_table(request):
     if request.user.is_authenticated:
-        response = list_of_lowongan_to_json_dict(request.user.userprofile.lowongan_set.all())
+        response = list_of_lowongan_to_json_dict(request.user.RelasiLowonganAndUser.all())
         return JsonResponse(response)
     else:
         return HttpResponse('[ERROR] permission denied')
 
-
-from django.contrib import messages
-
-from account.models import Account, PelamarProfile
-from user.models import UserVerificationList
-from .user_registration_form import UserRegistrationForm
-from .token import generate_user_token
 
 def user_register(request):
     if request.method == 'POST':
@@ -200,6 +201,7 @@ def user_register(request):
         form = UserRegistrationForm()
     return render(request, 'user/user_register.html', {'form': form})
 
+
 def user_verification(request, token):
     try:
         user_from_verification_list = UserVerificationList.objects.get(
@@ -221,11 +223,30 @@ def user_verification(request, token):
     messages.success(request, 'User Verified')
     return redirect("/user/login")
 
+
 def user_verification_redirect(request):
     return redirect("/")
+
 
 def user_verification_not_found(request):
     return render(
         request,
         'user/user_verification_404.html'
     )
+
+
+def user_see_status_lamaran(request, id_user_lamar_magang):
+    if request.user.is_authenticated:
+        try:
+            lamaran_obj = UserLamarMagang.objects.get(pk=id_user_lamar_magang)
+        except UserLamarMagang.DoesNotExist:
+            return HttpResponse('[ERROR] Lamaran Not Found')
+
+        if lamaran_obj.user_foreign_key.email == request.user.email:
+            # return HttpResponse(lamaran_obj)
+            context = {
+                'lamaran_obj': lamaran_obj
+            }
+            return render(request, 'user/user-lamaran-state.html', context=context)
+
+    return HttpResponse('[ERROR] Permission Denied')

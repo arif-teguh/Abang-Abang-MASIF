@@ -1,8 +1,8 @@
+from django.contrib.auth.views import LoginView
 from django.urls import path, include
 
 from . import views
 from .user_login_form import UserAuthenticationForm
-from django.contrib.auth.views import LoginView
 
 urlpatterns = [
     path('dashboard/', views.user_dashboard, name='user_dashboard'),
@@ -17,7 +17,7 @@ urlpatterns = [
         'login/',
         LoginView.as_view(
             template_name='user_login.html',
-            form_class=UserAuthenticationForm,),
+            form_class=UserAuthenticationForm, ),
         name='user_login'),
     path('verification/404', views.user_verification_not_found,
          name="user_verification_not_found"),
@@ -26,4 +26,6 @@ urlpatterns = [
     path('verification/', views.user_verification_redirect,
          name="user_verification_redirect"),
     path('auth/', include('social_django.urls', namespace='social')),
+    path('dashboard/status-lamaran/<int:id_user_lamar_magang>/', views.user_see_status_lamaran,
+         name='user_see_status_lamaran'),
 ]

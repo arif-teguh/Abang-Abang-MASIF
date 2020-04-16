@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block head %}
+    <link rel="stylesheet" href="/static/css/user/user-lamaran-state.css">
+    <title>Status Lamaran</title>
+{% endblock %}
+{% block body %}
+    {% include 'navbar-no-bootstrap.html' %}
+
+    <div class="container">
+        {% include 'user/user-profile-detail-dashboard.html' %}
+        <div id="top-detail-wrapper">
+            <span id="top-detail-id" class="lamaran-top-detail">ID Lamaran : {{ lamaran_obj.pk }}</span>
+            <span id="top-detail-posisi" class="lamaran-top-detail">{{ lamaran_obj.lowongan_foreign_key.judul }}</span>
+            <span id="top-detail-opd"
+                  class="lamaran-top-detail">{{ lamaran_obj.lowongan_foreign_key.opd_foreign_key.name }}</span></div>
+        <!-- class .info-horizontal-separator is in static/css/user/user-profile-detail-dashboard.css -->
+        <div class="info-horizontal-separator"></div>
+        <div class="row lamaran-info-row">
+            <div class="col-12 col-md-2">
+                <h5>Application Letter</h5>
+            </div>
+            <div class="col-12 col-md-10">
+                <p style="white-space: pre-line;">{{ lamaran_obj.application_letter }}</p>
+
+            </div>
+        </div>
+
+        <div class="row lamaran-info-row">
+            <div class="col-12 col-md-2">
+                <h5>Berkas Unggahan</h5>
+            </div>
+            <div class="col-12 col-md-10">
+
+                <a href="/media/{{ lamaran_obj.file_berkas_tambahan }}">{{ lamaran_obj.file_berkas_tambahan }}</a>
+
+            </div>
+        </div>
+
+        <div class="row lamaran-info-row">
+            <div class="col-12 col-md-2">
+                <h5>Status Lamaran</h5>
+            </div>
+            <div class="col-12 col-md-2">
+                <div class="state-text-wrapper">
+                    {{ lamaran_obj.status_lamaran }}
+                </div>
+
+            </div>
+        </div>
+
+        <div class="row lamaran-info-row">
+            <div class="col-12 col-md-2">
+                <h5>Catatan</h5>
+            </div>
+            <div class="col-12 col-md-10">
+                <p style="white-space: pre-line;">{{ lamaran_obj.notes_status_lamaran }}</p>
+
+            </div>
+        </div>
+
+    </div>
+
+
+{% endblock %}

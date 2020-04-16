@@ -23,7 +23,7 @@
                 <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item active">
-                <a class="nav-link" href="#">Cari Lowongan <span class="sr-only">(current)</span></a>
+                <a class="nav-link" href="/cari-lowongan/">Cari Lowongan <span class="sr-only">(current)</span></a>
             </li>
             <!-- Vertical Phone Only -->
             {% if request.user.is_authenticated %}
@@ -74,9 +74,9 @@
                 </div>
             </div>
         {% else %}
-            <a class="nav-link" id="login-wide" href="/" data-toggle="modal" data-target="#pop-up-login">Login <span
+            <a class="nav-link" id="login-wide" href="{% url 'user_login' %}" data-toggle="modal" data-target="#pop-up-login">Login <span
                     class="sr-only">(current)</span></a>
-            <a class="nav-link" id="daftar-wide" href="/">Daftar<span class="sr-only">(current)</span></a>
+            <a class="nav-link" id="daftar-wide" href="{% url 'user_register' %}">Daftar<span class="sr-only">(current)</span></a>
             {% include 'user/pop_up_login.html' %}
         {% endif %}
         <!-- End Of Widescreen Only -->
