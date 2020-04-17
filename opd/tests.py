@@ -17,6 +17,8 @@ url_opd_pelamar = '/opd/lowongan/list-pendaftar-'
 url_download_file = '/opd/lowongan/file_tambahan-'
 url_download_cv = '/opd/lowongan/cv_pendaftar-'
 url_update_lamaran = '/opd/proses-'
+test_email_addr = 'test@mail.com'
+kartu_keluarga = 'Kartu Keluarga'
 mock_date = datetime.date(2012, 12, 12)
 
 class LoginOpdUnitTest(TestCase):
@@ -74,7 +76,7 @@ class RedirectJikaBelumLogin(TestCase):
 class OpdRedirectUnitTest(TestCase):
     def test_opd_access_opd_page(self):
         request = HttpRequest()
-        Account.objects.create_user(email='test@mail.com', password='12345678')
+        Account.objects.create_user(email=test_email_addr, password='12345678')
         created_mock_user = Account.objects.all()[0]
         request.user = created_mock_user
         request.user.is_admin = False
@@ -86,7 +88,7 @@ class OpdRedirectUnitTest(TestCase):
 
     def test_admin_access_opd_page(self):
         request = HttpRequest()
-        Account.objects.create_user(email='test@mail.com', password='12345678')
+        Account.objects.create_user(email=test_email_addr, password='12345678')
         created_mock_user = Account.objects.all()[0]
         request.user = created_mock_user
         request.user.is_admin = True
@@ -95,11 +97,11 @@ class OpdRedirectUnitTest(TestCase):
         request.user.is_superuser = False
         response = views.opd_lowongan(request=request)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual('/opd/login/', response.url)
+        self.assertEqual(url_opd_login, response.url)
 
     def test_user_access_opd_page(self):
         request = HttpRequest()
-        Account.objects.create_user(email='test@mail.com', password='12345678')
+        Account.objects.create_user(email=test_email_addr, password='12345678')
         created_mock_user = Account.objects.all()[0]
         request.user = created_mock_user
         request.user.is_admin = False
@@ -108,11 +110,11 @@ class OpdRedirectUnitTest(TestCase):
         request.user.is_superuser = False
         response = views.opd_lowongan(request=request)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual('/opd/login/', response.url)
+        self.assertEqual(url_opd_login, response.url)
     
     def test_user_access_opd_page(self):
         request = HttpRequest()
-        Account.objects.create_user(email='test@mail.com', password='12345678')
+        Account.objects.create_user(email=test_email_addr, password='12345678')
         created_mock_user = Account.objects.all()[0]
         request.user = created_mock_user
         request.user.is_admin = False
@@ -121,16 +123,16 @@ class OpdRedirectUnitTest(TestCase):
         request.user.is_superuser = False
         response = views.opd_lowongan(request=request)
         self.assertEqual(response.status_code, 302)
-        self.assertNotEqual('/opd/lowongan/detail-3/', response.url)
+        self.assertNotEqual(url_opd_lowongan_detail + '3', response.url)
 
     def test_using_opd_lowongan_func(self):
-        found = resolve('/opd/')
+        found = resolve(url_opd_index)
         self.assertEqual(found.func, views.opd_lowongan)
 
 
 class LowonganOpdUnitTest(TestCase):
     def setUp(self):
-        self.account1 = Account.objects.create_superuser(email="test@mail.com", password="1234")
+        self.account1 = Account.objects.create_superuser(email=test_email_addr, password="1234")
         self.opd1 = Account.objects.all()[0]
    
          
@@ -144,7 +146,7 @@ class LowonganOpdUnitTest(TestCase):
             waktu_awal_magang = mock_date,
             waktu_akhir_magang = mock_date,
             batas_akhir_pendaftaran = mock_date,
-            berkas_persyaratan=['Kartu Keluarga'],
+            berkas_persyaratan=[kartu_keluarga],
             deskripsi='deskripsi1',
             requirement='requirement1',
             opd_foreign_key_id=self.account1.id
@@ -186,7 +188,7 @@ class LowonganOpdUnitTest(TestCase):
 
 class DetailLowonganOpdUnitTest(TestCase):
     def setUp(self):
-        self.account1 = Account.objects.create_superuser(email="test@mail.com", password="1234")
+        self.account1 = Account.objects.create_superuser(email=test_email_addr, password="1234")
         self.opd1 = Account.objects.all()[0]
         
         self.account1.is_opd = True
@@ -199,7 +201,7 @@ class DetailLowonganOpdUnitTest(TestCase):
             waktu_awal_magang = mock_date,
             waktu_akhir_magang = mock_date,
             batas_akhir_pendaftaran = mock_date,
-            berkas_persyaratan=['Kartu Keluarga'],
+            berkas_persyaratan=[kartu_keluarga],
             deskripsi='deskripsi1',
             requirement='requirement1',
             opd_foreign_key_id=self.account1.id
@@ -264,7 +266,7 @@ class OpdConfirmationTest(TestCase):
 
 class TestCekListPelamar(TestCase):
     def setUp(self):
-        self.account1 = Account.objects.create_superuser(email="test@mail.com", password="1234")
+        self.account1 = Account.objects.create_superuser(email=test_email_addr, password="1234")
         self.account1.is_opd = True
         self.account1.save()
         self.account2 = Account.objects.create_superuser(email="test2@mail.com", password="xyz")
@@ -294,7 +296,7 @@ class TestCekListPelamar(TestCase):
             waktu_awal_magang = mock_date,
             waktu_akhir_magang = mock_date,
             batas_akhir_pendaftaran = mock_date,
-            berkas_persyaratan=['Kartu Keluarga'],
+            berkas_persyaratan=[kartu_keluarga],
             deskripsi='deskripsi1',
             requirement='requirement1',
             opd_foreign_key_id=self.account1.id,
@@ -309,7 +311,7 @@ class TestCekListPelamar(TestCase):
             waktu_awal_magang = mock_date,
             waktu_akhir_magang = mock_date,
             batas_akhir_pendaftaran = mock_date,
-            berkas_persyaratan=['Kartu Keluarga'],
+            berkas_persyaratan=[kartu_keluarga],
             deskripsi='deskripsi1',
             requirement='requirement1',
             opd_foreign_key_id = self.account2.id
