@@ -16,6 +16,7 @@ url_opd_lowongan_detail = '/opd/lowongan/detail-'
 url_opd_pelamar = '/opd/lowongan/list-pendaftar-'
 url_download_file = '/opd/lowongan/file_tambahan-'
 url_download_cv = '/opd/lowongan/cv_pendaftar-'
+url_update_lamaran = '/opd/proses-'
 mock_date = datetime.date(2012, 12, 12)
 
 class LoginOpdUnitTest(TestCase):
@@ -384,6 +385,19 @@ class TestCekListPelamar(TestCase):
         self.assertNotContains(response,self.account2.userprofile.institution)
         self.assertNotContains(response,self.account2.userprofile.education)
         self.assertNotContains(response,self.account2.userprofile.address)
+
+    def test_approve_lamaran(self):
+        response = self.client.get(url_update_lamaran  +
+        str(self.account3.id)+'-'+str(self.lowongan1.id)
+        +'/Diterima/25 maret/')
+        self.assertNotEqual(response.status_code,404)
+
+    def test_error_jika_user_tidak_melamar(self):
+        response = self.client.get(url_update_lamaran  +
+        str(self.account2.id)+'-'+str(self.lowongan1.id)
+        +'/Diterima/25 maret/')
+        self.assertNotEqual(response.status_code,404)
+
 
 class TestOpdDownload(TestCase):
     def setUp(self):
