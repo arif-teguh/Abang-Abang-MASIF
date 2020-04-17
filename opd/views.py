@@ -11,6 +11,19 @@ opd_home = '/opd/'
 def opd_login(request):
     return render(request, 'opd_login.html')
 
+def opd_update_lamaran(request , id_lowongan , id_user , status , catatan):
+    try :
+        userlamarmagang = UserLamarMagang.objects.get(user_foreign_key = id_user , lowongan_foreign_key = id_lowongan)
+        if(cek_id_lowongan_dan_opd(request , id_lowongan)):
+            userlamarmagang.status_lamaran = status
+            userlamarmagang.notes_status_lamaran = catatan
+            return redirect('/opd/lowongan/list-pendaftar-'+id_lowongan+'/')
+        else :
+            return redirect(opd_home)
+    except ObjectDoesNotExist :
+        return redirect(opd_home)
+
+
 def opd_list_pendaftar(request, id_lowongan):
     #cek apakah user sudah login dan user harus opd
     if request.user.is_authenticated and request.user.is_opd:

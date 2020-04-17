@@ -13,9 +13,14 @@
   
  
   .panel {
-    padding: 0 18px;
     display: none;
     background-color: white;
     overflow: hidden;
   }
   
+  .input {
+    padding: 0 18px;
+    display: none;
+    background-color: white;
+    overflow: hidden;
+  }

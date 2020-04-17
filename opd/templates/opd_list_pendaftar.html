@@ -1,19 +1,23 @@
-{% extends 'base.html' %}
+  {% extends 'base.html' %}
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-<style>
 
-
-</style>
 <head>
   {% block head %}
       <meta charset="UTF-8">
       <link rel="stylesheet" type="text/css" href='{% static "/css/landing.css" %}'>
       <link rel="stylesheet" type="text/css" href='{% static "/css/accordion.css" %}'>
-      <script src ='{% static "/js/accordion.js" %}'> </script>
-      <title>List pendaftar</title>
       
+      <title>List pendaftar</title>
+      <style>
+      .inp {
+    padding: 0 18px;
+    display: none;
+    background-color: white;
+    overflow: hidden;
+  }
+      </style>
 {% endblock %}
 </head>
 <body>
@@ -21,8 +25,8 @@
 {% include 'navbar-no-bootstrap.html' %}
 <br><br>
 <div class="container">
-<h1>Daftar Pelamar {{ lowongan.judul }}</h1>
-<p>Jumlah Pelamar : {{lamaran.count}}</p>
+<h1 id = 'p2'>Daftar Pelamar {{ lowongan.judul }}</h1>
+<p id='p2'>Jumlah Pelamar : {{lamaran.count}}</p>
 </div>
 <br>
 <div align="center">
@@ -39,22 +43,27 @@
     <td>{{ each.user_foreign_key.name }}</td>
     <td><button class="accordion">Lihat detail</button></td>
   </tr>
-  <tr>
-    <td>
-      <div class="panel1">
-      <p>   {{each.user_foreign_key.userprofile.major}}
+  <tr class="panel">
+    <td colspan="4">
+      
+      {{each.user_foreign_key.userprofile.major}}
         {{each.user_foreign_key.email}}
         {{each.user_foreign_key.phone}}
         {{each.user_foreign_key.userprofile.institution}}
         {{each.user_foreign_key.userprofile.education}}
         {{each.user_foreign_key.userprofile.address}}
+        Application Letter
         {{each.application_letter}}
         <a href="/opd/lowongan/file_tambahan-{{each.user_foreign_key.id}}-{{each.lowongan_foreign_key.id}}"><button> Unduh Berkas Tambahan</button> </a>
          {{each.file_berkas_tambahan.name}}
         <a href="/opd/lowongan/cv_pendaftar-{{each.user_foreign_key.id}}-{{each.lowongan_foreign_key.id}}"><button> Unduh CV</button> </a>
          {{each.user_foreign_key.userprofile.cv.name}}
-        </p>
-      </div>
+         <button id = 'wawancara-{{each.user_foreign_key.id}}' onclick="test({{each.user_foreign_key.id}},1)">wawancara</button>
+         <button  id = 'terima-{{each.user_foreign_key.id}}' onclick="test({{each.user_foreign_key.id}},2)">terima</button>
+         <button  id = 'tolak-{{each.user_foreign_key.id}}' onclick="test({{each.user_foreign_key.id}},3)">tolak</button>
+         <label id = 'label-{{each.user_foreign_key.id}}'></label><input type="text" class = 'inp' placeholder="http://example.com" id="form-{{each.user_foreign_key.id}}">
+         <button type = 'submit' class = 'tolak' onclick='redirect({{each.user_foreign_key.id}},{{each.lowongan_foreign_key.id}})'>kirim</button>
+        
     </td>
   </tr>
 
@@ -67,24 +76,13 @@
 </table>
 
 </div>
-    {% endblock %}
+    
+
+<script src ='{% static "/js/list_pelamar.js" %}'> </script>
+
+{% endblock %}
 </body>
 
 
-<script>
-var acc = document.getElementsByClassName("accordion");
-var i;
 
-for (i = 0; i < acc.length; i++) {
-  acc[i].addEventListener("click", function() {
-    this.classList.toggle("active");
-    var panel = this.nextElementSibling;
-    if (panel.style.display === "block") {
-      panel.style.display = "none";
-    } else {
-      panel.style.display = "block";
-    }
-  });
-}
-</script>
 </html>
