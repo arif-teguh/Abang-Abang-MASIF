@@ -1,88 +1,202 @@
-  {% extends 'base.html' %}
+{% extends 'base.html' %}
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-  {% block head %}
-      <meta charset="UTF-8">
-      <link rel="stylesheet" type="text/css" href='{% static "/css/landing.css" %}'>
-      <link rel="stylesheet" type="text/css" href='{% static "/css/accordion.css" %}'>
-      
-      <title>List pendaftar</title>
-      <style>
-      .inp {
-    padding: 0 18px;
-    display: none;
-    background-color: white;
-    overflow: hidden;
-  }
-      </style>
-{% endblock %}
+    {% block head %}
+        <meta charset="UTF-8">
+        <link rel="stylesheet" type="text/css" href='{% static "/css/landing.css" %}'>
+        <link rel="stylesheet" type="text/css" href='{% static "/css/accordion.css" %}'>
+        <link rel="stylesheet" type="text/css" href='{% static "/css/opd_list_pendaftar.css" %}'>
+
+        <title>List pendaftar</title>
+        <style>
+            .inp {
+                padding: 0 18px;
+                display: none;
+                background-color: white;
+                overflow: hidden;
+            }
+        </style>
+    {% endblock %}
 </head>
 <body>
 {% block body %}
-{% include 'navbar-no-bootstrap.html' %}
-<br><br>
-<div class="container">
-<h1 id = 'p2'>Daftar Pelamar {{ lowongan.judul }}</h1>
-<p id='p2'>Jumlah Pelamar : {{lamaran.count}}</p>
-</div>
-<br>
-<div align="center">
-<table style="width:90%">
-  <tr>
-    <th>No</th>
-    <th>Nama</th>
-    <th></th>
-  </tr>
-{% for each in lamaran%}
+    {% include 'navbar-no-bootstrap.html' %}
+    <br><br>
+    <div class="container">
+        <h1 id='p2'>Daftar Pelamar {{ lowongan.judul }}</h1>
+        <p id='p2'>Jumlah Pelamar : {{ lamaran.count }}</p>
 
-  <tr>
-    <td id="count">{{ forloop.counter }}</td>
-    <td>{{ each.user_foreign_key.name }}</td>
-    <td><button class="accordion">Lihat detail</button></td>
-  </tr>
-  <tr class="panel">
-    <td colspan="4">
-      
-      {{each.user_foreign_key.userprofile.major}}
-        {{each.user_foreign_key.email}}
-        {{each.user_foreign_key.phone}}
-        {{each.user_foreign_key.userprofile.institution}}
-        {{each.user_foreign_key.userprofile.education}}
-        {{each.user_foreign_key.userprofile.address}}
-        Application Letter
-        {{each.application_letter}}
-        <a href="/opd/lowongan/file_tambahan-{{each.user_foreign_key.id}}-{{each.lowongan_foreign_key.id}}"><button> Unduh Berkas Tambahan</button> </a>
-         {{each.file_berkas_tambahan.name}}
-        <a href="/opd/lowongan/cv_pendaftar-{{each.user_foreign_key.id}}-{{each.lowongan_foreign_key.id}}"><button> Unduh CV</button> </a>
-         {{each.user_foreign_key.userprofile.cv.name}}
-         <button id = 'wawancara-{{each.user_foreign_key.id}}' onclick="test({{each.user_foreign_key.id}},1)">wawancara</button>
-         <button  id = 'terima-{{each.user_foreign_key.id}}' onclick="test({{each.user_foreign_key.id}},2)">terima</button>
-         <button  id = 'tolak-{{each.user_foreign_key.id}}' onclick="test({{each.user_foreign_key.id}},3)">tolak</button>
-         <label id = 'label-{{each.user_foreign_key.id}}'></label><input type="text" class = 'inp' placeholder="http://example.com" id="form-{{each.user_foreign_key.id}}">
-         <button type = 'submit' class = 'tolak' onclick='redirect({{each.user_foreign_key.id}},{{each.lowongan_foreign_key.id}})'>kirim</button>
-        
-    </td>
-  </tr>
+        <div class="accordion " id="accordionExample">
+            <div class="card">
+                <div class="card-header" id="headingOne">
+                    <div class="row">
+                        <div class="col-1"><h6>No.</h6></div>
+                        <div class="col-9"><h6>Nama</h6></div>
 
-  
-    </a>
-  </tr>
 
-{% endfor %}
+                    </div>
 
-</table>
+                </div>
 
-</div>
-    
+            </div>
+            {% for item in lamaran %}
+                <div class="card">
+                    <div class="card-header" id="headingOne">
+                        <div class="row">
+                            <div class="col-1"><h6>{{ forloop.counter }}</h6></div>
+                            <div class="col-9"><h6>{{ item.user_foreign_key.name }}</h6></div>
+                            <div class="col-2">
 
-<script src ='{% static "/js/list_pelamar.js" %}'> </script>
+                                <h6 class="mb-0">
+                                    <a class="click-dropdown dropdown-toggle" data-toggle="collapse"
+                                       data-target="#collapse-{{ item.id }}">Lihat Detail</a>
+
+                                </h6>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div id="collapse-{{ item.id }}" class="collapse" aria-labelledby="headingOne">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-1">
+                                    <img class="foto-profil" src="/media/{{ item.user_foreign_key.profile_picture }}">
+                                </div>
+                                <div class="col-11 info-col">
+                                    <h6>{{ item.user_foreign_key.userprofile.education|upper }}
+                                        ({{ item.user_foreign_key.userprofile.major }})</h6>
+                                    <h6>{{ item.user_foreign_key.userprofile.institution }}</h6>
+                                    <span class="phone">{{ item.user_foreign_key.phone }}</span>
+                                    <span class="email">{{ item.user_foreign_key.email }}</span>
+                                    <span class="address">{{ item.user_foreign_key.userprofile.address }}</span>
+                                </div>
+
+                            </div>
+                            <div class="row app-letter">
+                                <div class="col-3">
+                                    <h5>Application Letter</h5>
+                                </div>
+                                <div class="col-9">
+                                    <p style="white-space: pre-line">{{ item.application_letter }}</p>
+
+
+                                </div>
+
+                            </div>
+
+                            <a href="/opd/lowongan/cv_pendaftar-{{ each.user_foreign_key.id }}-{{ each.lowongan_foreign_key.id }}">
+                                <button class="btn btn-primary"> Unduh CV</button>
+                            </a>
+
+                            <div class="row buttons-row justify-content-end">
+
+                                <div class="col-3">
+                                    <button class="" id='terima-{{ item.user_foreign_key.id }}'
+                                            onclick="test({{ item.user_foreign_key.id }},2)">Terima
+                                    </button>
+                                    <button class="" id='tolak-{{ item.user_foreign_key.id }}'
+                                            onclick="test({{ item.user_foreign_key.id }},3)">Tolak
+                                    </button>
+                                    <button class="" id='wawancara-{{ item.user_foreign_key.id }}'
+                                            onclick="test({{ item.user_foreign_key.id }},1)">Wawancara
+                                    </button>
+                                    <label id='label-{{ each.user_foreign_key.id }}'></label><input type="text"
+                                                                                                    class='inp'
+                                                                                                    placeholder="http://example.com"
+                                                                                                    id="form-{{ item.user_foreign_key.id }}">
+                                    <button type='submit' class='tolak'
+                                            onclick='redirect({{ each.user_foreign_key.id }},{{ each.lowongan_foreign_key.id }})'>
+                                        kirim
+                                    </button>
+                                </div>
+
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+
+
+        </div>
+    </div>
+    <br>
+    <div align="center">
+        <table style="width:90%">
+            <tr>
+                <th>No</th>
+                <th>Nama</th>
+                <th></th>
+            </tr>
+            {% for each in lamaran %}
+
+                <tr>
+                    <td id="count">{{ forloop.counter }}</td>
+                    <td>{{ each.user_foreign_key.name }}</td>
+                    <td>
+                        <button class="accordion">Lihat detail</button>
+                    </td>
+                </tr>
+                <tr class="panel">
+                    <td colspan="4">
+
+                        {{ each.user_foreign_key.userprofile.major }}
+                        {{ each.user_foreign_key.email }}
+                        {{ each.user_foreign_key.phone }}
+                        {{ each.user_foreign_key.userprofile.institution }}
+                        {{ each.user_foreign_key.userprofile.education }}
+                        {{ each.user_foreign_key.userprofile.address }}
+                        Application Letter
+                        {{ each.application_letter }}
+                        <a href="/opd/lowongan/file_tambahan-{{ each.user_foreign_key.id }}-{{ each.lowongan_foreign_key.id }}">
+                            <button> Unduh Berkas Tambahan</button>
+                        </a>
+                        {{ each.file_berkas_tambahan.name }}
+                        <a href="/opd/lowongan/cv_pendaftar-{{ each.user_foreign_key.id }}-{{ each.lowongan_foreign_key.id }}">
+                            <button> Unduh CV</button>
+                        </a>
+                        {{ each.user_foreign_key.userprofile.cv.name }}
+                        <button id='wawancara-{{ each.user_foreign_key.id }}'
+                                onclick="test({{ each.user_foreign_key.id }},1)">wawancara
+                        </button>
+                        <button id='terima-{{ each.user_foreign_key.id }}'
+                                onclick="test({{ each.user_foreign_key.id }},2)">terima
+                        </button>
+                        <button id='tolak-{{ each.user_foreign_key.id }}'
+                                onclick="test({{ each.user_foreign_key.id }},3)">tolak
+                        </button>
+                        <label id='label-{{ each.user_foreign_key.id }}'></label><input type="text" class='inp'
+                                                                                        placeholder="http://example.com"
+                                                                                        id="form-{{ each.user_foreign_key.id }}">
+                        <button type='submit' class='tolak'
+                                onclick='redirect({{ each.user_foreign_key.id }},{{ each.lowongan_foreign_key.id }})'>
+                            kirim
+                        </button>
+
+                    </td>
+                </tr>
+
+
+                </a>
+                </tr>
+
+            {% endfor %}
+
+        </table>
+
+    </div>
+
+
+    <script src='{% static "/js/list_pelamar.js" %}'></script>
 
 {% endblock %}
 </body>
-
 
 
 </html>
