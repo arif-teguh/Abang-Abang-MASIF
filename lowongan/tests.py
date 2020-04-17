@@ -22,6 +22,7 @@ mock_date2 = datetime.date(2011, 11, 11)
 encypte_multipart = "multipart/form-data"
 kategori_json_dir = 'templates/lowongan/kategori.json'
 edit_kategori_url = "/lowongan/admin/edit-kategori/"
+url_form_edit_kategori = "/lowongan/admin/form/edit-kategori/"
 
 class LowonganFormTest(TestCase):
 
@@ -182,6 +183,11 @@ class LowonganFormTest(TestCase):
         response = self.client.post(edit_kategori_url, data_form_lowongan)
         self.assertEqual(response.status_code, 302)
 
+    def test_redirect_when_get_edit_kategori(self):
+        Account.objects.filter(pk=self.user.id).update(is_admin=True)
+        response = self.client.get(edit_kategori_url, {"Pass":"Error"})
+        self.assertEqual(response.status_code, 302)
+
     def test_redirect_when_file_kategori_json_not_found(self):
         shutil.move(kategori_json_dir, "templates/")
         Account.objects.filter(pk=self.user.id).update(is_admin=True)
@@ -196,6 +202,22 @@ class LowonganFormTest(TestCase):
         shutil.move(kategori_json_dir, "templates/")
         mock_form_lowongan = LowonganForm()
         self.assertIsInstance(mock_form_lowongan, LowonganForm)
+        shutil.move("templates/kategori.json", "templates/lowongan/")
+
+    def test_show_form_edit_lowongan_not_admin(self):
+        response = self.client.get(url_form_edit_kategori)
+        self.assertNotEqual(response.status_code, 200)
+
+    def test_show_form_edit_lowongan_admin(self):
+        Account.objects.filter(pk=self.user.id).update(is_admin=True)
+        response = self.client.get(url_form_edit_kategori)
+        self.assertEqual(response.status_code, 200)
+
+    def test_show_form_edit_lowongan_file_not_found(self):
+        shutil.move(kategori_json_dir, "templates/")
+        Account.objects.filter(pk=self.user.id).update(is_admin=True)
+        response = self.client.get(url_form_edit_kategori)
+        self.assertNotEqual(response.status_code, 200)
         shutil.move("templates/kategori.json", "templates/lowongan/")
 
 class LowonganModelTest(TestCase):
