@@ -1,12 +1,13 @@
 from django.shortcuts import render , redirect
 from django.contrib.auth.hashers import check_password
 from django.http import HttpResponse
-
+from django.core.exceptions import ObjectDoesNotExist 
 from lowongan.models import Lowongan , UserLamarMagang
 from admin.models import OpdVerificationList
 from account.models import Account, OpdProfile  , UserProfile
 from .opd_confirmation_form import OpdConfirmationForm
 
+opd_home = '/opd/'
 def opd_login(request):
     return render(request, 'opd_login.html')
 
@@ -20,11 +21,50 @@ def opd_list_pendaftar(request, id_lowongan):
             {'lowongan': lowongan ,
               'lamaran' : lamaran
                } )
-        else :
-            return redirect('/opd/')
+        else:
+            return redirect(opd_home)
     else:
         return redirect('/opd/login/')
 
+
+def opd_download_file(request ,id_user , id_lowongan):
+    try:
+        userlamarmagang = UserLamarMagang.objects.get(user_foreign_key = id_user , lowongan_foreign_key = id_lowongan)
+        if(cek_id_lowongan_dan_opd(request , id_lowongan)):
+            filename = userlamarmagang.file_berkas_tambahan.name.split('/')[-1]
+            if(userlamarmagang.file_berkas_tambahan):
+                #filename = os.path.basename(userlamarmagang.file_berkas_tambahan.name)
+                response = HttpResponse(userlamarmagang.file_berkas_tambahan, content_type='text/plain')
+                response['Content-Disposition'] = 'attachment; filename=%s' % filename
+                return response
+            else :
+                return HttpResponse('tidak ada file')
+        else :
+            return redirect(opd_home)
+    except ObjectDoesNotExist :
+        return redirect(opd_home)
+    
+    
+
+def opd_download_cv(request ,id_user, id_lowongan ):
+    try :
+        userlamarmagang = UserLamarMagang.objects.get(user_foreign_key = id_user , lowongan_foreign_key = id_lowongan)
+        if(cek_id_lowongan_dan_opd(request , id_lowongan)):
+            pelamar = Account.objects.get(id = id_user)
+            if(pelamar.userprofile.cv):
+                filename = pelamar.userprofile.cv.name.split('/')[-1]
+                #filename = os.path.basename(userlamarmagang.file_berkas_tambahan.name)
+                response = HttpResponse(pelamar.userprofile.cv, content_type='text/plain')
+                response['Content-Disposition'] = 'attachment; filename=%s' % filename
+                return response
+            else :
+                return HttpResponse('tidak ada file')
+        else :
+            return redirect(opd_home)
+    except ObjectDoesNotExist :
+        return redirect(opd_home)
+
+        
 #Fungsi untuk mengecek apakah opd yang 
 # mengakses data lowongan adalah opd terkait
 def cek_id_lowongan_dan_opd(request, id_lowongan):

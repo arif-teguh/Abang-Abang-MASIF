@@ -49,9 +49,9 @@
         {{each.user_foreign_key.userprofile.education}}
         {{each.user_foreign_key.userprofile.address}}
         {{each.application_letter}}
-        <a href="/opd/lowongan/file_tambahan-{{each.user_foreign_key.id}}"><button> Unduh Berkas Tambahan</button> </a>
+        <a href="/opd/lowongan/file_tambahan-{{each.user_foreign_key.id}}-{{each.lowongan_foreign_key.id}}"><button> Unduh Berkas Tambahan</button> </a>
          {{each.file_berkas_tambahan.name}}
-        <a href="/opd/lowongan/cv_pendaftar-{{each.user_foreign_key.id}}"><button> Unduh CV</button> </a>
+        <a href="/opd/lowongan/cv_pendaftar-{{each.user_foreign_key.id}}-{{each.lowongan_foreign_key.id}}"><button> Unduh CV</button> </a>
          {{each.user_foreign_key.userprofile.cv.name}}
         </p>
       </div>
