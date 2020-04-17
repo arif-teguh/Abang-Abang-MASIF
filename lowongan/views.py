@@ -1,9 +1,9 @@
+import os
+from json import dump, load
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, render, redirect
-from django.utils.datastructures import MultiValueDictKeyError
 from django.core.exceptions import ObjectDoesNotExist
-from account.models import Account
-from .form import LowonganForm, UserLamarMagangForm
+from .form import LowonganForm, UserLamarMagangForm, AdminMenambahKategoriForm
 from .models import Lowongan, UserLamarMagang
 
 dir_form_lowongan = 'lowongan/form_lowongan.html'
@@ -63,7 +63,7 @@ def update_form_lowongan(request, id_lowongan):
                             instance=lowongan_data, id=id_lowongan)
         if form.is_valid():
             form.save()
-            return redirect("/")
+            return redirect("/opd/lowongan/detail-"+str(id_lowongan)+"/")
     response = {
         'form': form, 'type_form': 'update',
         'choice_select_field': lowongan_data.berkas_persyaratan
@@ -89,7 +89,8 @@ def form_lamar_lowongan(request, id_lowongan):
             file_cv = request.FILES.get('file_cv', False)
             data_lamaran = UserLamarMagang.objects.create(
                 application_letter=request.POST['application_letter'],
-                file_berkas_tambahan=request.FILES.get('file_berkas_tambahan', False),
+                file_berkas_tambahan=request.FILES.get('file_berkas_tambahan',
+                                                       False),
                 lowongan_foreign_key=lowongan,
                 user_foreign_key=user
             )
@@ -110,3 +111,44 @@ def form_lamar_lowongan(request, id_lowongan):
     print(opd.name)
 
     return render(request, 'lowongan/form_lamar.html', response)
+
+@login_required
+def edit_pilihan_kategori_lowongan(request):
+    json_kategori_dir = 'templates/lowongan/kategori.json'
+    if request.user.is_admin == False:
+        return redirect('/')
+
+    if request.method == "POST":
+        kategori = request.POST.getlist('kategori')
+        print(kategori)
+        kategori_first = kategori[0]
+        empty_str = " "
+        if isinstance(kategori, list) and isinstance(kategori_first, str):
+            if kategori_first != empty_str:
+                kategori.insert(0, empty_str)
+            temp = {"kategori" : kategori}
+            if os.path.exists(json_kategori_dir):
+                with open(json_kategori_dir, 'w') as kategori_json:
+                    dump(temp, kategori_json)
+                return redirect("/admin/")
+            else:
+                print("File Error Detected!")
+                return redirect('/')
+
+    return redirect('/')
+
+@login_required
+def show_edit_kategori_lowongan(request):
+    json_kategori_dir = 'templates/lowongan/kategori.json'
+    dir_form_edit_kategori = 'admin/admin_add_kategori_lowongan.html'
+    if request.user.is_admin == False:
+        return redirect('/')
+    if os.path.exists(json_kategori_dir):
+        with open(json_kategori_dir) as kategori_json:
+            kategori_dict = load(kategori_json)
+        return render(request, dir_form_edit_kategori,
+                      {'form': AdminMenambahKategoriForm(),
+                       'choice_select_field': kategori_dict["kategori"]})
+    else:
+        print("File Error Detected!")
+        return redirect('/')
