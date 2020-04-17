@@ -32,11 +32,15 @@
                        data-toggle="dropdown"
                        aria-haspopup="true" aria-expanded="false">
                         {{ request.user.name }}
+                        {% if request.user.is_opd %}
+
+                            <span class="badge badge-primary">OPD</span>
+                        {% endif %}
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                         <a class="dropdown-item" href="{% url 'user_dashboard' %}">Profile</a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="/superuser/logout/">Keluar</a>
+                        <a class="dropdown-item" href="/user/logout/">Keluar</a>
                     </div>
                 </li>
             {% else %}
@@ -66,18 +70,23 @@
                    data-toggle="dropdown"
                    aria-haspopup="true" aria-expanded="false">
                     {{ request.user.name }}
+                    {% if request.user.is_opd %}
+
+                        <span class="badge badge-primary">OPD</span>
+                    {% endif %}
                 </a>
                 <div class="dropdown-menu dropdown-menu-right " aria-labelledby="navbarDropdown">
                     <a class="dropdown-item" href="{% url 'user_dashboard' %}">Profile</a>
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="/superuser/logout/">Keluar</a>
+                    <a class="dropdown-item" href="/user/logout/">Keluar</a>
                 </div>
             </div>
         {% else %}
-            <a class="nav-link" id="login-wide" href="{% url 'user_login' %}" data-toggle="modal" data-target="#pop-up-login">Login <span
+            <a class="nav-link" id="login-wide" href="/user/login/">Login<span class="sr-only">(current)</span></a>
+
+            <a class="nav-link" id="daftar-wide" href="{% url 'user_register' %}">Daftar<span
                     class="sr-only">(current)</span></a>
-            <a class="nav-link" id="daftar-wide" href="{% url 'user_register' %}">Daftar<span class="sr-only">(current)</span></a>
-            {% include 'user/pop_up_login.html' %}
+
         {% endif %}
         <!-- End Of Widescreen Only -->
 
