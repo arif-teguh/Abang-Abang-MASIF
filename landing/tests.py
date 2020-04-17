@@ -10,7 +10,7 @@ from . import views
 
 # Create your tests here.
 
-class testing_landing(TestCase):
+class Testing_landing(TestCase):
 
     def test_landing_page(self):
         response = Client().get('/')

@@ -6,7 +6,7 @@ from . import views
 
 # Create your tests here.
 
-class testing_detail_lowongan(TestCase):
+class Testing_detail_lowongan(TestCase):
 
     def test_detail_lowongan_page_response_status(self):
         response = Client().get('/cari-lowongan/detail-lowongan/')
