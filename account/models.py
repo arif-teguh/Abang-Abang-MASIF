@@ -44,6 +44,7 @@ class Account(AbstractBaseUser):
     last_login = models.DateTimeField(verbose_name='last login', auto_now=True)
     is_superuser = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
+    is_kesbangpol = models.BooleanField(default=False)
     is_opd = models.BooleanField(default=False)
     is_user = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
