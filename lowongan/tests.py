@@ -1,4 +1,6 @@
 import datetime
+import json
+import shutil
 from django.test import TestCase, Client
 from django.urls import resolve
 from django.apps import apps
@@ -18,6 +20,8 @@ list_berkas = [str_kartu_keluarga]
 mock_date = datetime.date(2012, 12, 12)
 mock_date2 = datetime.date(2011, 11, 11)
 encypte_multipart = "multipart/form-data"
+kategori_json_dir = 'templates/lowongan/kategori.json'
+edit_kategori_url = "/lowongan/admin/edit-kategori/"
 
 class LowonganFormTest(TestCase):
 
@@ -49,7 +53,7 @@ class LowonganFormTest(TestCase):
         Account.objects.filter(pk=self.user.id).update(is_opd=False)
         response = self.client.get(url_form_lowongan)
         self.assertEqual(response.status_code, 302)
-    
+
     def test_form_init_form_to_create_choice_update_form(self):
         choice = (
                 (str_kartu_keluarga, str_kartu_keluarga),
@@ -146,10 +150,53 @@ class LowonganFormTest(TestCase):
             "deskripsi" :'deskripsi1',
             "requirement" :'requirement1',
             "opd_foreign_key_id" :self.user.id
-        }   
+        }
         response = self.client.post(url_form_lowongan+"edit/"+str(id_lowongan)+"/", data_form_lowongan)
         self.assertTrue(Lowongan.objects.filter(judul="IniUpdate").exists())
         self.assertEqual(response.status_code, 302)
+
+    def test_edit_kategori_oleh_admin(self):
+        Account.objects.filter(pk=self.user.id).update(is_admin=True)
+        with open(kategori_json_dir) as kategori_json:
+            backup_kategori_json = json.load(kategori_json)
+        print(backup_kategori_json)
+
+        data_form_lowongan = {
+            "kategori" : ["Test"]
+        }
+
+        self.client.post(edit_kategori_url, data_form_lowongan)
+        with open(kategori_json_dir) as kategori_json:
+            test_kategori_json = json.load(kategori_json)
+        print(test_kategori_json)
+
+        self.assertNotEqual(backup_kategori_json, test_kategori_json)
+
+        with open(kategori_json_dir, 'w') as kategori_json:
+            json.dump(backup_kategori_json, kategori_json)
+
+    def test_edit_kategori_not_admin(self):
+        data_form_lowongan = {
+            "kategori" : ["Test"]
+        }
+        response = self.client.post(edit_kategori_url, data_form_lowongan)
+        self.assertEqual(response.status_code, 302)
+
+    def test_redirect_when_file_kategori_json_not_found(self):
+        shutil.move(kategori_json_dir, "templates/")
+        Account.objects.filter(pk=self.user.id).update(is_admin=True)
+        data_form_lowongan = {
+            "kategori" : ["Test"]
+        }
+        response = self.client.post(edit_kategori_url, data_form_lowongan)
+        self.assertEqual(response.status_code, 302)
+        shutil.move("templates/kategori.json", "templates/lowongan/")
+
+    def test_form_lamaran_success_made_when_file_not_found(self):
+        shutil.move(kategori_json_dir, "templates/")
+        mock_form_lowongan = LowonganForm()
+        self.assertIsInstance(mock_form_lowongan, LowonganForm)
+        shutil.move("templates/kategori.json", "templates/lowongan/")
 
 class LowonganModelTest(TestCase):
     def setUp(self):
@@ -415,4 +462,3 @@ class UserLamarMagangModelTest(TestCase):
         response = self.client.post(url_form_lamar+str(self.lowongan5.id)+"/", enctype=encypte_multipart, data=data_form_lamar)
         self.assertEqual(response.status_code, 302)
         self.user1.userprofile.delete()
-
