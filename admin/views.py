@@ -1,10 +1,12 @@
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.sites.shortcuts import get_current_site
 
 from account.models import Account
 from admin.opd_registration_form import OpdRegistrationForm
 from .models import OpdVerificationList
+from .mailing import send_verification_email
 from .token import generate_opd_token
 
 
@@ -62,10 +64,13 @@ def admin_register_opd(request):
                     phone=phone
                 )
                 new_account.save()
+                base_url = get_current_site(request).domain
+                verif_url = base_url + '/opd/verification/' + secret
+                send_verification_email(verif_url, email)
                 return render(
                     request,
-                    'admin/admin_activation_link.html',
-                    {'secret': secret})
+                    'activation_link.html'
+                    )
         else:
             form = OpdRegistrationForm()
         return render(

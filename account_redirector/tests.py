@@ -4,12 +4,13 @@ from django.test import TestCase, Client
 from account.models import Account
 from . import views
 
+TEST_SANDI = '12345678'
 
 class AccountRedirectorUnitTest(TestCase):
     def setUp(self):
         # Setup run before every test method.
         self.request = HttpRequest()
-        Account.objects.create_user(email='test@mail.com', password='12345678')
+        Account.objects.create_user(email='test@mail.com', password=TEST_SANDI)
         self.created_mock_user = Account.objects.all()[0]
 
     def tearDown(self):

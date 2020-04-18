@@ -87,7 +87,7 @@ class EditUserProfileForm(forms.Form):
             'placeholder': 'Nomor telepon',
         }
     )
-    # phone_regex = RegexValidator(regex=r'^\+?1?\d{9,15}$')
+
     phone = forms.CharField(
         max_length=100,
         min_length=1,

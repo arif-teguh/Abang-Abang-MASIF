@@ -4,3 +4,10 @@ omit =
     masifapp/*
     */__init__.py
     */apps.py
+
+[report]
+omit =
+    manage.py
+    masifapp/*
+    */__init__.py
+    */apps.py
