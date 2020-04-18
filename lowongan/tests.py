@@ -426,18 +426,38 @@ class UserLamarMagangModelTest(TestCase):
             opd_foreign_key_id=self.opd1.id
         )
 
+        self.lowongan8 = Lowongan.objects.create(
+            judul='judul8',
+            kategori='kat2',
+            kuota_peserta=3,
+            waktu_awal_magang=mock_date,
+            waktu_akhir_magang=mock_date,
+            batas_akhir_pendaftaran=mock_date,
+            berkas_persyaratan=list_berkas,
+            deskripsi='deskripsi1',
+            requirement='requirement1',
+            opd_foreign_key_id=self.opd1.id
+        )
+
         self.client.force_login(self.account1)
 
         self.lamar1 = UserLamarMagang.objects.create(
             application_letter="test",
             lowongan_foreign_key_id=self.lowongan3.id,
             user_foreign_key_id=self.user1.id,
-            status_lamaran="Wawancara",
+            status_lamaran="pending",
             notes_status_lamaran="Test"
         )
         self.lamar2 = UserLamarMagang.objects.create(
             lowongan_foreign_key_id=self.lowongan4.id,
             user_foreign_key_id=self.user1.id
+        )
+        self.lamar3 = UserLamarMagang.objects.create(
+            application_letter="test",
+            lowongan_foreign_key_id=self.lowongan8.id,
+            user_foreign_key_id=self.user1.id,
+            status_lamaran="wawancara",
+            notes_status_lamaran="Test"
         )
 
     def test_object_user_lamar_magang_is_created(self):
@@ -458,13 +478,13 @@ class UserLamarMagangModelTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_status_lamaran_default_pending(self):
-        self.assertEqual(self.lamar2.status_lamaran, "Pending")
+        self.assertEqual(self.lamar2.status_lamaran, "pending")
     
     def test_notes_status_lamaran_default_tidak_ada_catatan(self):
         self.assertEqual(self.lamar2.notes_status_lamaran, "Tidak Ada Catatan")
         
     def test_status_lamaran_not_default_pending(self):
-        self.assertNotEqual(self.lamar1.status_lamaran, "Pending")
+        self.assertNotEqual(self.lamar3.status_lamaran, "pending")
     
     def test_notes_status_lamaran_not_default_tidak_ada_catatan(self):
         self.assertNotEqual(self.lamar1.notes_status_lamaran, "Tidak Ada Catatan")
@@ -521,6 +541,19 @@ class UserLamarMagangModelTest(TestCase):
         }
         self.client.post(url_form_lamar+str(self.lowongan3.id)+"/", enctype=encypte_multipart, data=data_form_lamar)
         self.assertTrue(UserLamarMagang.objects.filter(application_letter="aaaa").exists())
+    
+    def test_update_lamar_status_wawancara(self):
+        id_user = self.user1.id
+        self.client.force_login(self.account1)
+        Account.objects.filter(pk=id_user).update(is_user=True)
+        data_form_lamar = {
+            "application_letter":"wawancara",
+            "lowongan_foreign_key_id":self.lowongan8.id,
+            "user_foreign_key_id":self.user1.id,
+            "file_berkas_tambahan":self.test_file_cv
+        }
+        self.client.post(url_form_lamar+str(self.lowongan8.id)+"/", enctype=encypte_multipart, data=data_form_lamar)
+        self.assertFalse(UserLamarMagang.objects.filter(application_letter="wawancara").exists())
 
     def test_update_url_lamar(self):
         id_user = self.user1.id
