@@ -23,6 +23,9 @@ encypte_multipart = "multipart/form-data"
 kategori_json_dir = 'templates/lowongan/kategori.json'
 edit_kategori_url = "/lowongan/admin/edit-kategori/"
 url_form_edit_kategori = "/lowongan/admin/form/edit-kategori/"
+templates_dir = "templates/"
+template_lowongan_dir = templates_dir+"lowongan/"
+template_json_dir = templates_dir+"kategori.json"
 
 class LowonganFormTest(TestCase):
 
@@ -189,20 +192,20 @@ class LowonganFormTest(TestCase):
         self.assertEqual(response.status_code, 302)
 
     def test_redirect_when_file_kategori_json_not_found(self):
-        shutil.move(kategori_json_dir, "templates/")
+        shutil.move(kategori_json_dir, templates_dir)
         Account.objects.filter(pk=self.user.id).update(is_admin=True)
         data_form_lowongan = {
             "kategori" : ["Test"]
         }
         response = self.client.post(edit_kategori_url, data_form_lowongan)
         self.assertEqual(response.status_code, 302)
-        shutil.move("templates/kategori.json", "templates/lowongan/")
+        shutil.move(template_json_dir, template_lowongan_dir)
 
     def test_form_lamaran_success_made_when_file_not_found(self):
-        shutil.move(kategori_json_dir, "templates/")
+        shutil.move(kategori_json_dir, templates_dir)
         mock_form_lowongan = LowonganForm()
         self.assertIsInstance(mock_form_lowongan, LowonganForm)
-        shutil.move("templates/kategori.json", "templates/lowongan/")
+        shutil.move(template_json_dir, template_lowongan_dir)
 
     def test_show_form_edit_lowongan_not_admin(self):
         response = self.client.get(url_form_edit_kategori)
@@ -214,11 +217,11 @@ class LowonganFormTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_show_form_edit_lowongan_file_not_found(self):
-        shutil.move(kategori_json_dir, "templates/")
+        shutil.move(kategori_json_dir, templates_dir)
         Account.objects.filter(pk=self.user.id).update(is_admin=True)
         response = self.client.get(url_form_edit_kategori)
         self.assertNotEqual(response.status_code, 200)
-        shutil.move("templates/kategori.json", "templates/lowongan/")
+        shutil.move(template_json_dir, template_lowongan_dir)
 
 class LowonganModelTest(TestCase):
     def setUp(self):

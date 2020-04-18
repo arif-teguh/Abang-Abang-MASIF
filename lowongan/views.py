@@ -69,8 +69,37 @@ def update_form_lowongan(request, id_lowongan):
     }
     return render(request, dir_form_lowongan, response)
 
+def update_lamar_lowongan(request, id_lowongan, lamaran):
+    user = request.user
+    lowongan = Lowongan.objects.get(pk=id_lowongan)
+    user_profile = user.userprofile
+    opd = lowongan.opd_foreign_key
+    if request.method == 'POST':
+        file_cv = request.FILES.get('file_cv', False)
+        form = UserLamarMagangForm(request.POST or None,
+                                       request.FILES or None,
+                                       instance=lamaran)
+        if form.is_valid():
+            form.save()
+            if file_cv is not False:
+                user_profile.cv = file_cv
+                user_profile.save()
+            return redirect("/user/dashboard/")
+    form = UserLamarMagangForm(instance=lamaran)
+    respons = {
+        'form': form,
+        'lowongan':lowongan,
+        'opd':opd,
+        'is_update':True,
+        'file_berkas':lamaran.file_berkas_tambahan,
+        'application_letter': lamaran.application_letter
+    }
+
+    return render(request, 'lowongan/form_lamar.html', respons)
+
 @login_required
 def form_lamar_lowongan(request, id_lowongan):
+    url_dashboard_user = "/user/dashboard/"
     if request.user.is_user == False:
         return redirect('/')
 
@@ -81,31 +110,21 @@ def form_lamar_lowongan(request, id_lowongan):
         opd = lowongan.opd_foreign_key
     except ObjectDoesNotExist:
         return redirect("/")
-    
+
     try:
         lamaran = UserLamarMagang.objects.get(
             user_foreign_key=user,
             lowongan_foreign_key=lowongan
         )
+        return update_lamar_lowongan(request, id_lowongan, lamaran)
     except ObjectDoesNotExist:
         lamaran = False
 
     if request.method == 'POST':
         file_cv = request.FILES.get('file_cv', False)
-        if lamaran is False:
-            form = UserLamarMagangForm(request.POST or None, request.FILES or None)
-        elif lamaran is not False:
-            form = UserLamarMagangForm(request.POST or None,
-                                       request.FILES or None,
-                                       instance=lamaran)
-        if form.is_valid():
-            if lamaran is not False:
-                form.save()
-                if file_cv is not False:
-                    user_profile.cv = file_cv
-                    user_profile.save()
-                return redirect("/user/dashboard/")
+        form = UserLamarMagangForm(request.POST or None, request.FILES or None)
 
+        if form.is_valid():
             data_lamaran = UserLamarMagang.objects.create(
                 application_letter=request.POST['application_letter'],
                 file_berkas_tambahan=request.FILES.get('file_berkas_tambahan',
@@ -116,11 +135,11 @@ def form_lamar_lowongan(request, id_lowongan):
             lowongan.list_pendaftar_key.add(user_profile)
             data_lamaran.save()
             if file_cv is False:
-                return redirect("/user/dashboard/")
+                return redirect(url_dashboard_user)
             else:
                 user_profile.cv = file_cv
                 user_profile.save()
-                return redirect("/user/dashboard/")
+                return redirect(url_dashboard_user)
     
     form = UserLamarMagangForm()
     response = {
@@ -129,16 +148,6 @@ def form_lamar_lowongan(request, id_lowongan):
         'opd':opd,
         'is_update':False
     }
-    if lamaran is not False:
-        form = UserLamarMagangForm(instance=lamaran)
-        response = {
-            'form': form,
-            'lowongan':lowongan,
-            'opd':opd,
-            'is_update':True,
-            'file_berkas':lamaran.file_berkas_tambahan,
-            'application_letter': lamaran.application_letter
-        }
 
     return render(request, 'lowongan/form_lamar.html', response)
 
