@@ -41,11 +41,11 @@
 <div class="container">
     <div class="row">
         <div class="col-8" style="text-align: left">
-            <b id="bold-text">Deskripsi Job</b>
+            <strong id="bold-text">Deskripsi Job</strong>
             <p>  {{lowongan.deskripsi}}  </p>
         </div>
         <div class="col-4" style="text-align: left"><br>
-            <b id="bold-text">Detail</b>
+            <strong id="bold-text">Detail</strong>
             <p>Tenaga yang dibutuhkan :{{ lowongan.kuota_peserta}}<br>
                 Waktu mulai  magang : {{ lowongan.waktu_awal_magang}}<br>
                 Waktu akhir magang : {{ lowongan.waktu_akhir_magang}}
@@ -58,7 +58,7 @@
     </div>
     <div class="row">
         <div class="col">
-        <b id="bold-text">Requirement :</b>  <br>
+        <strong id="bold-text">Requirement :</strong>  <br>
         
             {{lowongan.requirement}}<br>
             
@@ -68,7 +68,7 @@
 
     <div class="row">
         <div class="col">
-        <b id="bold-text">Berkas :</b>  <br>
+        <strong id="bold-text">Berkas :</strong>  <br>
         {% for each in lowongan.berkas_persyaratan  %}
             {{each}}<br>
             {% endfor %}
