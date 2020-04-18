@@ -3,3 +3,4 @@ omit =
     manage.py
     masifapp/*
     */__init__.py
+    */apps.py
