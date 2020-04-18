@@ -29,10 +29,21 @@
     <body>
         {% include 'navbar-no-bootstrap.html' %}
         {% if is_pending is False%}
-        <meta http-equiv="refresh" content="3;url=/user/dashboard/" />
         </br></br></br></br>
-        <h2>Status lamaran anda pada lowongan "{{lowongan}}"" adalah "{{status}}"</h2>
-        <h2>Redirect ke halaman dashboard user dalam 3 detik ....</h2>
+        <h3>Status lamaran anda pada lowongan "{{lowongan}}"" adalah "{{status}}"</h3>
+        <h3>Pindah otomatis ke halaman dashboard user dalam <span id="counter">3</span> detik ....</h3>
+        <br>
+        <h3><a href="/user/dashboard/">Klik untuk langsung menuju dashboard user</a></h2>
+        <script>
+            setInterval(function() {
+                var div = document.querySelector("#counter");
+                var count = div.textContent * 1 - 1;
+                div.textContent = count;
+                if (count <= 0) {
+                    window.location.replace("/user/dashboard/");
+                }
+            }, 1000);
+        </script>
         {% else %}
         <div class="container-fluid">
                 <div class="row">
