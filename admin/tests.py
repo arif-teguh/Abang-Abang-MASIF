@@ -341,7 +341,7 @@ class AdminUnitTest(TestCase):
         self.assertEqual("Forbidden", html_response)
         
 class EmailTest(TestCase):
-    verification_url = 'masif.com/abcdefg'
+    verification_url = '/user/verification/token'
     recipient_email = 'test@test.com'
 
     def test_send_email_sent(self):
@@ -367,7 +367,8 @@ class EmailTest(TestCase):
 
     def test_invalid_email(self):
         with self.assertRaises(ValueError):
-            mailing.send_verification_email(self.verification_url, "test.com")
+            mailing.send_verification_email(self.verification_url,
+                                            "test.com")
 
     def test_generate_token(self):
         secret = token.generate_opd_token()
