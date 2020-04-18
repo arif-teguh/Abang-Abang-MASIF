@@ -49,15 +49,102 @@
                 <div class="row-12 form-lamar">
                     <form method="POST" action="/lowongan/user/lamar/{{lowongan.id}}/" enctype="multipart/form-data">
                         {% csrf_token %}
-                        
-                        {{ form.as_p }}
-                        <br>
-                        <button type="submit" class="btn btn-primary">Kirim Lamaran</button>
+                        {% if user.userprofile.cv %}
+                            <label for="id_file_cv">CV (format NamaAnda_CV.pdf):</label> 
+                            <span id="cv-file-name"><a id="cv_dir_awal" href="/media/{{ user.userprofile.cv }}">{{ user.userprofile.cv }}</a>
+                            </span>
+                            <input hidden type="file" name="file_cv"  id="id_file_cv">
+
+                            <button type="button" class="btn btn-primary" onclick="click_upload_cv()">Ubah CV</button>
+
+                        {% else %}
+                            <p>Anda belum menambahkan CV</p>
+                            <button type="button" class="btn btn-primary" onclick="click_upload_cv()">Unggah CV</button>
+
+
+                        {% endif %}
+
+                        {% if is_update is True %}
+                            <br><br>
+
+                            <label for="id_file_berkas_tambahan">File berkas tambahan:
+                            </label> 
+                            <span id="span_file">
+                                <a id="file_dir_awal" href="/media/{{file_berkas}}">{{file_berkas}}</a>
+                            </span>
+                            <button type="button" class="btn btn-primary" onclick="click_upload_file()">Ubah File</button>
+                            <input style="display: none" type="file" name="file_berkas_tambahan" id="id_file_berkas_tambahan"><br><br>
+
+                            <label for="id_application_letter">Application letter:</label> 
+                            <textarea name="application_letter" cols="40" rows="10" class="form-control col-8" maxlength="2000" required="" id="id_application_letter">{{application_letter}}</textarea>
+                            
+                            <br>
+                            <button type="submit" class="btn btn-primary">Kirim Lamaran</button>
+                        {% else %}
+
+                            <br><br>
+
+                            <label for="id_file_berkas_tambahan">File berkas tambahan:
+                            </label> 
+                            <span id="span_file">
+                                <a id="file_dir">kamu belum menambahkan File Berkas</a>
+                            </span>
+                            <button type="button" class="btn btn-primary" onclick="click_upload_file()">Unggah File</button>
+                            <input style="display: none" type="file" name="file_berkas_tambahan" id="id_file_berkas_tambahan"><br><br>
+
+                            <label for="id_application_letter">Application letter:</label> 
+                            <textarea name="application_letter" cols="40" rows="10" class="form-control col-8" maxlength="2000" required="" id="id_application_letter"></textarea>
+                            
+                            <br>
+                            <button type="submit" class="btn btn-primary">Kirim Lamaran</button>
+                        {% endif %}
                     </form>
 
                     </div>
                 </div>
             </body>
+            <script>
+                function click_upload_file() {
+                    $('#id_file_berkas_tambahan').click();
+                }
+                function click_upload_cv() {
+                    $('#id_file_cv').click();
+                }
+
+                $("#id_file_cv").change(function(){
+                    $("#cv_dir").remove()
+                    $("#cv_dir_awal").remove()
+                    
+                    var file = $(this).val().split('\\').pop();
+                    if (file === ""){
+                        $("#cv-file-name").append("<span id='cv_dir'>" + "kamu belum menambahkan CV" +"</span>");
+                    }
+                    else{
+                        $("#cv-file-name").append("<span id='cv_dir'>" + file +"</span>");
+                    };
+                });
+
+                $("#id_file_berkas_tambahan").change(function(){
+                    $("#file_dir_awal").remove()
+                    $("#file_dir").remove()
+                    
+                    var file = $(this).val().split('\\').pop();
+                    console.log(file)
+                    if (file === ""){
+                        $("#span_file").append("<span id='file_dir'>" + "kamu belum menambahkan File Berkas" +"</span>");
+                    }
+                    else{
+                        $("#span_file").append("<span id='file_dir'>" + file +"</span>");
+                    };
+                });
+
+                $("form").submit(function(e){
+                    if ((document.getElementById("id_file_berkas_tambahan").files.length == 0) && $("#file_dir_awal").length < 1){
+                        alert("Kamu belum menambahkan File");
+                        e.preventDefault();
+                    }
+                });
+            </script>
         </html>
     </body>
 </html>

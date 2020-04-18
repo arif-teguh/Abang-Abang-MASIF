@@ -17,7 +17,6 @@ def show_form_lowongan(request, response=None):
             return render(request, dir_form_lowongan,
                           response)
     return redirect("/")
-#
 
 @login_required
 def post_form_lowongan(request):
@@ -82,11 +81,31 @@ def form_lamar_lowongan(request, id_lowongan):
         opd = lowongan.opd_foreign_key
     except ObjectDoesNotExist:
         return redirect("/")
+    
+    try:
+        lamaran = UserLamarMagang.objects.get(
+            user_foreign_key=user,
+            lowongan_foreign_key=lowongan
+        )
+    except ObjectDoesNotExist:
+        lamaran = False
 
     if request.method == 'POST':
-        form = UserLamarMagangForm(request.POST or None)
+        file_cv = request.FILES.get('file_cv', False)
+        if lamaran is False:
+            form = UserLamarMagangForm(request.POST or None, request.FILES or None)
+        elif lamaran is not False:
+            form = UserLamarMagangForm(request.POST or None,
+                                       request.FILES or None,
+                                       instance=lamaran)
         if form.is_valid():
-            file_cv = request.FILES.get('file_cv', False)
+            if lamaran is not False:
+                form.save()
+                if file_cv is not False:
+                    user_profile.cv = file_cv
+                    user_profile.save()
+                return redirect("/user/dashboard/")
+
             data_lamaran = UserLamarMagang.objects.create(
                 application_letter=request.POST['application_letter'],
                 file_berkas_tambahan=request.FILES.get('file_berkas_tambahan',
@@ -96,19 +115,30 @@ def form_lamar_lowongan(request, id_lowongan):
             )
             lowongan.list_pendaftar_key.add(user_profile)
             data_lamaran.save()
-            if user_profile.cv != "" and file_cv is False:
-                print("Tidak ada perubahan CV")
+            if file_cv is False:
+                return redirect("/user/dashboard/")
             else:
                 user_profile.cv = file_cv
                 user_profile.save()
-            return redirect("/user/dashboard/")
-
+                return redirect("/user/dashboard/")
+    
+    form = UserLamarMagangForm()
     response = {
-        'form': UserLamarMagangForm(),
+        'form': form,
         'lowongan':lowongan,
-        'opd':opd
+        'opd':opd,
+        'is_update':False
     }
-    print(opd.name)
+    if lamaran is not False:
+        form = UserLamarMagangForm(instance=lamaran)
+        response = {
+            'form': form,
+            'lowongan':lowongan,
+            'opd':opd,
+            'is_update':True,
+            'file_berkas':lamaran.file_berkas_tambahan,
+            'application_letter': lamaran.application_letter
+        }
 
     return render(request, 'lowongan/form_lamar.html', response)
 
@@ -120,7 +150,6 @@ def edit_pilihan_kategori_lowongan(request):
 
     if request.method == "POST":
         kategori = request.POST.getlist('kategori')
-        print(kategori)
         kategori_first = kategori[0]
         empty_str = " "
         if isinstance(kategori, list) and isinstance(kategori_first, str):

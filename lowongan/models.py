@@ -23,9 +23,8 @@ class Lowongan(models.Model):
         return self.judul
 
 class UserLamarMagang(models.Model):
-    application_letter = models.TextField(max_length=2000,
-                                          null=True, blank=True)
-    file_berkas_tambahan = models.FileField(null=True, blank=True)
+    application_letter = models.TextField(max_length=2000)
+    file_berkas_tambahan = models.FileField()
     lowongan_foreign_key = models.ForeignKey(Lowongan, on_delete=models.CASCADE,
                                              related_name='RelasiLowonganAndUser')
     user_foreign_key = models.ForeignKey(Account, on_delete=models.CASCADE,
