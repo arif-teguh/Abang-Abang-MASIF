@@ -144,96 +144,100 @@ class TestViews(TestCase):
         
 
 class UserUnitTest(TestCase):
+    URL_USER_LOGIN = '/user/login/'
+    URL_USER_DASHBOARD = '/user/dashboard/'
+    URL_USER_DASHBOARD_EDIT = '/user/dashboard/edit/'
+    URL_USER_UPLOAD_CV = '/user/dashboard/edit/upload_cv/'
+    URL_USER_DELETE_CV = '/user/dashboard/edit/delete_cv/'
+    DEFAULT_CV = 'cv.pdf'
+    DEFAULT_MAJOR = 'Computer Science'
+    EMAIL_TEST = 'test@mail.com'
+    PASSWORD_TEST = '12345678'
+
     def setUp(self):
         self.client = Client()
         self.request = HttpRequest()
         self.created_mock_user = Account.objects.create_user(
-            email='test@mail.com',
-            password='12345678',
+            email=self.EMAIL_TEST,
+            password=self.PASSWORD_TEST,
         )
         self.request.user = self.created_mock_user
         self.mock_user_profile = UserProfile(user=self.created_mock_user)
         self.mock_user_profile.save()
-        self.test_file_cv = SimpleUploadedFile("cv.pdf", b"file_content")
+        self.test_file_cv = SimpleUploadedFile(self.DEFAULT_CV, b"file_content")
         self.test_file_jpg = SimpleUploadedFile("pp.jpg", b"file_content")
 
     def tearDown(self):
+        # Clean up run after every test method.
         pass
 
     def test_access_user_dashboard_url_logged_in_should_return_200(self):
         self.created_mock_user.is_user = True
         self.created_mock_user.save()
-        self.client.login(username='test@mail.com', password='12345678')
-        response = self.client.get('/user/dashboard/')
+        self.client.login(username=self.EMAIL_TEST, password=self.PASSWORD_TEST)
+        response = self.client.get(self.URL_USER_DASHBOARD)
         self.assertEqual(response.status_code, 200)
 
     def test_access_user_dashboard_url_not_logged_in_should_return_302(self):
         response = self.client.get(
-            '/user/dashboard/'
+            self.URL_USER_DASHBOARD
         )
         self.assertEqual(response.status_code, 302)
 
     def test_access_user_dashboard_url_logged_in_not_user_should_return_302(self):
         self.created_mock_user.is_user = False
         self.created_mock_user.save()
-        response = self.client.get('/user/dashboard/')
+        response = self.client.get(self.URL_USER_DASHBOARD)
         self.assertEqual(response.status_code, 302)
-
-    def test_user_has_user_dashboard_profile_no_redirect(self):
-        self.created_mock_user.is_user = True
-        self.created_mock_user.save()
-        self.client.login(username='test@mail.com', password='12345678')
-        response = self.client.get('/user/dashboard/')
-        self.assertEqual(response.status_code, 200)
 
     def test_user_has_no_user_dashboard_profile_should_redirect(self):
         self.created_mock_user.is_user = True
         self.created_mock_user.userprofile.delete()
         self.created_mock_user.save()
-        self.client.login(username='test@mail.com', password='12345678')
-        response = self.client.get('/user/dashboard/')
+        self.client.login(username=self.EMAIL_TEST, password=self.PASSWORD_TEST)
+        response = self.client.get(self.URL_USER_DASHBOARD)
         self.assertEqual(response.status_code, 302)
 
     def test_access_user_dashboard_edit_url_logged_in_should_return_200(self):
         self.created_mock_user.is_user = True
         self.created_mock_user.save()
         self.client.login(
-            username='test@mail.com',
-            password='12345678',
+            username=self.EMAIL_TEST,
+            password=self.PASSWORD_TEST,
         )
-        response = self.client.get('/user/dashboard/edit/')
+        response = self.client.get(self.URL_USER_DASHBOARD_EDIT)
         self.assertEqual(response.status_code, 200)
 
     def test_access_user_dashboard_edit_url_not_logged_in_should_return_302(self):
-        response = self.client.get('/user/dashboard/edit/')
+        response = self.client.get(self.URL_USER_DASHBOARD_EDIT)
         self.assertEqual(response.status_code, 302)
 
     def test_access_user_dashboard_edit_url_logged_in_not_user_should_return_302(self):
         self.created_mock_user.is_user = False
         self.created_mock_user.save()
-        response = self.client.get('/user/dashboard/edit/')
+        response = self.client.get(self.URL_USER_DASHBOARD_EDIT)
         self.assertEqual(response.status_code, 302)
 
     def test_user_edit_has_user_dashboard_edit_profile_no_redirect(self):
         self.created_mock_user.is_user = True
         self.created_mock_user.save()
-        self.client.login(username='test@mail.com', password='12345678')
-        response = self.client.get('/user/dashboard/edit/')
+        self.client.login(username=self.EMAIL_TEST, password=self.PASSWORD_TEST)
+        response = self.client.get(self.URL_USER_DASHBOARD_EDIT)
         self.assertEqual(response.status_code, 200)
 
     def test_user_has_no_user_dashboard_edit_profile_should_redirect(self):
         self.created_mock_user.is_user = True
         self.created_mock_user.userprofile.delete()
         self.created_mock_user.save()
-        self.client.login(username='test@mail.com', password='12345678')
-        response = self.client.get('/user/dashboard/edit/')
+        self.client.login(username=self.EMAIL_TEST, password=self.PASSWORD_TEST)
+        response = self.client.get(self.URL_USER_DASHBOARD_EDIT)
         self.assertEqual(response.status_code, 302)
 
     def test_user_edit_profile_page_is_set_up_as_expected(self):
         self.created_mock_user.is_user = True
         self.created_mock_user.save()
-        self.client.login(username='test@mail.com', password='12345678')
-        response = self.client.get('/user/dashboard/edit/')
+        self.client.login(username=self.EMAIL_TEST, password=self.PASSWORD_TEST)
+        response = self.client.get(self.URL_USER_DASHBOARD_EDIT)
         self.assertEqual(200, response.status_code)
         form = response.context['form']
         self.assertTrue(
@@ -319,7 +323,7 @@ class UserUnitTest(TestCase):
     def test_logged_in_post_to_edit_profile_url_correct_data_should_work(self):
         self.created_mock_user.is_user = True
         self.created_mock_user.save()
-        self.client.login(username='test@mail.com', password='12345678')
+        self.client.login(username=self.EMAIL_TEST, password=self.PASSWORD_TEST)
         form_data = {
             'name': 'test',
             'address': 'rumah',
@@ -329,16 +333,16 @@ class UserUnitTest(TestCase):
             'sex': 'm',
             'institution': 'uwiw',
             'education': 'smk',
-            'major': 'Computer Science'
+            'major': self.DEFAULT_MAJOR
         }
-        result = self.client.post('/user/dashboard/edit/', data=form_data)
+        result = self.client.post(self.URL_USER_DASHBOARD_EDIT, data=form_data)
         self.assertEqual(302, result.status_code)
-        self.assertEqual('/user/dashboard/', result.url)
+        self.assertEqual(self.URL_USER_DASHBOARD, result.url)
 
     def test_logged_in_post_to_edit_profile_url_no_name_data_shouldnt_work(self):
         self.created_mock_user.is_user = True
         self.created_mock_user.save()
-        self.client.login(username='test@mail.com', password='12345678')
+        self.client.login(username=self.EMAIL_TEST, password=self.PASSWORD_TEST)
         form_data = {
 
             'address': 'rumah',
@@ -348,15 +352,15 @@ class UserUnitTest(TestCase):
             'sex': 'm',
             'institution': 'uwiw',
             'education': 'smk',
-            'major': 'Computer Science'
+            'major': self.DEFAULT_MAJOR
         }
-        result = self.client.post('/user/dashboard/edit/', data=form_data)
+        result = self.client.post(self.URL_USER_DASHBOARD_EDIT, data=form_data)
         self.assertEqual('name', result.content.decode('utf-8'))
 
     def test_logged_in_post_to_edit_profile_url_no_address_data_shouldnt_work(self):
         self.created_mock_user.is_user = True
         self.created_mock_user.save()
-        self.client.login(username='test@mail.com', password='12345678')
+        self.client.login(username=self.EMAIL_TEST, password=self.PASSWORD_TEST)
         form_data = {
             'name': 'test',
             'born_date': '17/08/1945',
@@ -365,15 +369,15 @@ class UserUnitTest(TestCase):
             'sex': 'm',
             'institution': 'uwiw',
             'education': 'smk',
-            'major': 'Computer Science'
+            'major': self.DEFAULT_MAJOR
         }
-        result = self.client.post('/user/dashboard/edit/', data=form_data)
+        result = self.client.post(self.URL_USER_DASHBOARD_EDIT, data=form_data)
         self.assertEqual('address', result.content.decode('utf-8'))
 
     def test_logged_in_post_to_edit_profile_url_no_born_date_data_shouldnt_work(self):
         self.created_mock_user.is_user = True
         self.created_mock_user.save()
-        self.client.login(username='test@mail.com', password='12345678')
+        self.client.login(username=self.EMAIL_TEST, password=self.PASSWORD_TEST)
         form_data = {
             'name': 'test',
             'address': 'rumah',
@@ -382,15 +386,15 @@ class UserUnitTest(TestCase):
             'sex': 'm',
             'institution': 'uwiw',
             'education': 'smk',
-            'major': 'Computer Science'
+            'major': self.DEFAULT_MAJOR
         }
-        result = self.client.post('/user/dashboard/edit/', data=form_data)
+        result = self.client.post(self.URL_USER_DASHBOARD_EDIT, data=form_data)
         self.assertEqual('born_date', result.content.decode('utf-8'))
 
     def test_logged_in_post_to_edit_profile_url_no_born_city_data_shouldnt_work(self):
         self.created_mock_user.is_user = True
         self.created_mock_user.save()
-        self.client.login(username='test@mail.com', password='12345678')
+        self.client.login(username=self.EMAIL_TEST, password=self.PASSWORD_TEST)
         form_data = {
             'name': 'test',
             'address': 'rumah',
@@ -399,15 +403,15 @@ class UserUnitTest(TestCase):
             'sex': 'm',
             'institution': 'uwiw',
             'education': 'smk',
-            'major': 'Computer Science'
+            'major': self.DEFAULT_MAJOR
         }
-        result = self.client.post('/user/dashboard/edit/', data=form_data)
+        result = self.client.post(self.URL_USER_DASHBOARD_EDIT, data=form_data)
         self.assertEqual('born_city', result.content.decode('utf-8'))
 
     def test_logged_in_post_to_edit_profile_url_no_phone_data_shouldnt_work(self):
         self.created_mock_user.is_user = True
         self.created_mock_user.save()
-        self.client.login(username='test@mail.com', password='12345678')
+        self.client.login(username=self.EMAIL_TEST, password=self.PASSWORD_TEST)
         form_data = {
             'name': 'test',
             'address': 'rumah',
@@ -416,15 +420,15 @@ class UserUnitTest(TestCase):
             'sex': 'm',
             'institution': 'uwiw',
             'education': 'smk',
-            'major': 'Computer Science'
+            'major': self.DEFAULT_MAJOR
         }
-        result = self.client.post('/user/dashboard/edit/', data=form_data)
+        result = self.client.post(self.URL_USER_DASHBOARD_EDIT, data=form_data)
         self.assertEqual('phone', result.content.decode('utf-8'))
 
     def test_logged_in_post_to_edit_profile_url_no_sex_data_shouldnt_work(self):
         self.created_mock_user.is_user = True
         self.created_mock_user.save()
-        self.client.login(username='test@mail.com', password='12345678')
+        self.client.login(username=self.EMAIL_TEST, password=self.PASSWORD_TEST)
         form_data = {
             'name': 'test',
             'address': 'rumah',
@@ -433,15 +437,15 @@ class UserUnitTest(TestCase):
             'phone': '0812345678',
             'institution': 'uwiw',
             'education': 'smk',
-            'major': 'Computer Science'
+            'major': self.DEFAULT_MAJOR
         }
-        result = self.client.post('/user/dashboard/edit/', data=form_data)
+        result = self.client.post(self.URL_USER_DASHBOARD_EDIT, data=form_data)
         self.assertEqual('sex', result.content.decode('utf-8'))
 
     def test_logged_in_post_to_edit_profile_url_no_institution_data_shouldnt_work(self):
         self.created_mock_user.is_user = True
         self.created_mock_user.save()
-        self.client.login(username='test@mail.com', password='12345678')
+        self.client.login(username=self.EMAIL_TEST, password=self.PASSWORD_TEST)
         form_data = {
             'name': 'test',
             'address': 'rumah',
@@ -450,15 +454,15 @@ class UserUnitTest(TestCase):
             'phone': '0812345678',
             'sex': 'm',
             'education': 'smk',
-            'major': 'Computer Science'
+            'major': self.DEFAULT_MAJOR
         }
-        result = self.client.post('/user/dashboard/edit/', data=form_data)
+        result = self.client.post(self.URL_USER_DASHBOARD_EDIT, data=form_data)
         self.assertEqual('institution', result.content.decode('utf-8'))
 
     def test_logged_in_post_to_edit_profile_url_no_education_data_shouldnt_work(self):
         self.created_mock_user.is_user = True
         self.created_mock_user.save()
-        self.client.login(username='test@mail.com', password='12345678')
+        self.client.login(username=self.EMAIL_TEST, password=self.PASSWORD_TEST)
         form_data = {
             'name': 'test',
             'address': 'rumah',
@@ -467,15 +471,15 @@ class UserUnitTest(TestCase):
             'phone': '0812345678',
             'sex': 'm',
             'institution': 'uwiw',
-            'major': 'Computer Science'
+            'major': self.DEFAULT_MAJOR
         }
-        result = self.client.post('/user/dashboard/edit/', data=form_data)
+        result = self.client.post(self.URL_USER_DASHBOARD_EDIT, data=form_data)
         self.assertEqual('education', result.content.decode('utf-8'))
 
     def test_logged_in_post_to_edit_profile_url_no_major_data_shouldnt_work(self):
         self.created_mock_user.is_user = True
         self.created_mock_user.save()
-        self.client.login(username='test@mail.com', password='12345678')
+        self.client.login(username=self.EMAIL_TEST, password=self.PASSWORD_TEST)
         form_data = {
             'name': 'test',
             'address': 'rumah',
@@ -486,13 +490,13 @@ class UserUnitTest(TestCase):
             'institution': 'uwiw',
             'education': 'smk',
         }
-        result = self.client.post('/user/dashboard/edit/', data=form_data)
+        result = self.client.post(self.URL_USER_DASHBOARD_EDIT, data=form_data)
         self.assertEqual('major', result.content.decode('utf-8'))
 
     def test_logged_in_post_to_edit_profile_url_wrong_born_date_data_shouldnt_work(self):
         self.created_mock_user.is_user = True
         self.created_mock_user.save()
-        self.client.login(username='test@mail.com', password='12345678')
+        self.client.login(username=self.EMAIL_TEST, password=self.PASSWORD_TEST)
         form_data = {
             'name': 'test',
             'address': 'rumah',
@@ -504,7 +508,7 @@ class UserUnitTest(TestCase):
             'education': 'smk',
             'major': 'CS',
         }
-        result = self.client.post('/user/dashboard/edit/', data=form_data)
+        result = self.client.post(self.URL_USER_DASHBOARD_EDIT, data=form_data)
         self.assertEqual('Tanggal lahir salah', result.content.decode('utf-8'))
 
     def test_not_logged_in_post_to_edit_profile_url_should_redirect(self):
@@ -517,13 +521,13 @@ class UserUnitTest(TestCase):
             'sex': 'm',
             'institution': 'uwiw',
             'education': 'smk',
-            'major': 'Computer Science'
+            'major': self.DEFAULT_MAJOR
         }
-        result = self.client.post('/user/dashboard/edit/', data=form_data)
+        result = self.client.post(self.URL_USER_DASHBOARD_EDIT, data=form_data)
         self.assertEqual(result.status_code, 302)
 
     def test_access_user_dashboard_upload_cv_page_should_be_accessible(self):
-        response = self.client.get('/user/dashboard/edit/upload_cv/')
+        response = self.client.get(self.URL_USER_UPLOAD_CV)
         self.assertEqual(response.status_code, 200)
 
     def test_user_upload_cv_with_pdf_should_work(self):
@@ -531,13 +535,13 @@ class UserUnitTest(TestCase):
         self.created_mock_user.is_user = True
         self.created_mock_user.save()
 
-        self.client.login(username='test@mail.com', password='12345678')
+        self.client.login(username=self.EMAIL_TEST, password=self.PASSWORD_TEST)
 
-        response = self.client.post('/user/dashboard/edit/upload_cv/', {'cv': self.test_file_cv})
+        response = self.client.post(self.URL_USER_UPLOAD_CV, {'cv': self.test_file_cv})
 
         self.assertEqual(response.status_code, 302)
-        test_user = Account.objects.get(email='test@mail.com')
-        self.assertEqual(test_user.userprofile.cv.name, 'cv.pdf')
+        test_user = Account.objects.get(email=self.EMAIL_TEST)
+        self.assertEqual(test_user.userprofile.cv.name, self.DEFAULT_CV)
         test_user.userprofile.cv.delete()
 
     def test_user_upload_cv_with_pdf_should_not_change_other_userprofile_data(self):
@@ -563,10 +567,10 @@ class UserUnitTest(TestCase):
         self.assertEqual(self.created_mock_user.userprofile.born_city, 'test_borncity')
         self.assertEqual(self.created_mock_user.userprofile.born_date, datetime(2000, 1, 1))
         self.assertEqual(self.created_mock_user.userprofile.major, 'test_major')
-        response = self.client.post('/user/dashboard/edit/upload_cv/', {'cv': self.test_file_cv})
+        response = self.client.post(self.URL_USER_UPLOAD_CV, {'cv': self.test_file_cv})
         self.assertEqual(response.status_code, 302)
-        test_user = Account.objects.get(email='test@mail.com')
-        self.assertEqual(test_user.userprofile.cv.name, 'cv.pdf')
+        test_user = Account.objects.get(email=self.EMAIL_TEST)
+        self.assertEqual(test_user.userprofile.cv.name, self.DEFAULT_CV)
         self.assertEqual(test_user.name, 'test_name')
         self.assertEqual(test_user.userprofile.sex, 'm')
         self.assertEqual(test_user.userprofile.address, 'test_address')
@@ -582,16 +586,16 @@ class UserUnitTest(TestCase):
         self.created_mock_user.is_user = True
         self.created_mock_user.save()
 
-        self.client.login(username='test@mail.com', password='12345678')
+        self.client.login(username=self.EMAIL_TEST, password=self.PASSWORD_TEST)
 
-        response = self.client.post('/user/dashboard/edit/upload_cv/', {'cv': ''})
+        response = self.client.post(self.URL_USER_UPLOAD_CV, {'cv': ''})
 
         self.assertEqual(response.status_code, 200)
-        test_user = Account.objects.get(email='test@mail.com')
+        test_user = Account.objects.get(email=self.EMAIL_TEST)
         self.assertEqual(test_user.userprofile.cv.name, '')
 
     def test_access_user_dashboard_delete_cv_should_be_accessible(self):
-        response = self.client.get('/user/dashboard/edit/delete_cv/')
+        response = self.client.get(self.URL_USER_DELETE_CV)
         self.assertEqual(response.status_code, 200)
 
     def test_user_upload_profile_picture_with_jpg_should_work(self):
@@ -599,13 +603,13 @@ class UserUnitTest(TestCase):
         self.created_mock_user.is_user = True
         self.created_mock_user.save()
 
-        self.client.login(username='test@mail.com', password='12345678')
+        self.client.login(username=self.EMAIL_TEST, password=self.PASSWORD_TEST)
 
         response = self.client.post('/user/dashboard/edit/upload_profile_picture/',
                                     {'profile_picture': self.test_file_jpg})
 
         self.assertEqual(response.status_code, 302)
-        test_user = Account.objects.get(email='test@mail.com')
+        test_user = Account.objects.get(email=self.EMAIL_TEST)
         self.assertEqual(test_user.profile_picture.name, 'pp.jpg')
         test_user.profile_picture.delete()
 
@@ -614,12 +618,12 @@ class UserUnitTest(TestCase):
         self.created_mock_user.is_user = True
         self.created_mock_user.save()
 
-        self.client.login(username='test@mail.com', password='12345678')
+        self.client.login(username=self.EMAIL_TEST, password=self.PASSWORD_TEST)
 
-        response = self.client.post('/user/dashboard/edit/upload_cv/', {'profile_picture': ''})
+        response = self.client.post(self.URL_USER_UPLOAD_CV, {'profile_picture': ''})
 
         self.assertEqual(response.status_code, 200)
-        test_user = Account.objects.get(email='test@mail.com')
+        test_user = Account.objects.get(email=self.EMAIL_TEST)
         self.assertEqual(test_user.profile_picture.name, '')
 
     def test_access_user_dashboard_upload_profile_pic_should_be_accessible(self):
@@ -628,22 +632,22 @@ class UserUnitTest(TestCase):
 
     def test_delete_cv_user_has_cv_should_work(self):
         self.created_mock_user.is_user = True
-        self.client.login(username='test@mail.com', password='12345678')
+        self.client.login(username=self.EMAIL_TEST, password=self.PASSWORD_TEST)
         self.created_mock_user.save()
-        self.client.post('/user/dashboard/edit/upload_cv/', {'cv': self.test_file_cv})
-        self.assertEqual(Account.objects.get(email='test@mail.com').userprofile.cv.name, 'cv.pdf')
+        self.client.post(self.URL_USER_UPLOAD_CV, {'cv': self.test_file_cv})
+        self.assertEqual(Account.objects.get(email=self.EMAIL_TEST).userprofile.cv.name, self.DEFAULT_CV)
 
-        self.client.post('/user/dashboard/edit/delete_cv/')
-        self.assertEqual(Account.objects.get(email='test@mail.com').userprofile.cv, '')
-        Account.objects.get(email='test@mail.com').userprofile.cv.delete()
+        self.client.post(self.URL_USER_DELETE_CV)
+        self.assertEqual(Account.objects.get(email=self.EMAIL_TEST).userprofile.cv, '')
+        Account.objects.get(email=self.EMAIL_TEST).userprofile.cv.delete()
 
     def test_delete_cv_user_no_cv_should_work(self):
         self.created_mock_user.is_user = True
         self.created_mock_user.save()
         self.assertEqual(self.created_mock_user.userprofile.cv.name, None)
 
-        self.client.login(username='test@mail.com', password='12345678')
-        self.client.post('/user/dashboard/edit/delete_cv/')
+        self.client.login(username=self.EMAIL_TEST, password=self.PASSWORD_TEST)
+        self.client.post(self.URL_USER_DELETE_CV)
         self.assertEqual(self.created_mock_user.userprofile.cv.name, None)
 
     def test_list_of_lowongan_to_json_has_data_should_success(self):
@@ -655,7 +659,7 @@ class UserUnitTest(TestCase):
     def test_access_user_dashboard_api_get_table_url_logged_in_should_return_200(self):
         self.created_mock_user.is_user = True
         self.created_mock_user.save()
-        self.client.login(username='test@mail.com', password='12345678')
+        self.client.login(username=self.EMAIL_TEST, password=self.PASSWORD_TEST)
         response = self.client.get('/user/dashboard/api/get-all-lamaran-for-dashboard-table/')
         self.assertEqual(response.status_code, 200)
 
