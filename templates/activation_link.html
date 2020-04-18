@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block head %}
+<title>Pelamar Registration Complete</title>
+{% endblock %}
+
+{% block body %}
+{% include 'navbar.html' %}
+<div class="container-fluid">
+    <div class="row justify-content-center" style="height: 100vh">
+        <div class="col-6 align-self-center">
+            <h3>Registration Complete! Please check your email</h3>
+            <a href="/"><button type="button" class="btn btn-primary">Back to Homepage</button></a>
+        </div>
+    </div>
+</div>
+{% endblock %}
