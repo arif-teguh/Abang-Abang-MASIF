@@ -66,8 +66,6 @@ def opd_verification(request, token):
             new_user.phone = phone
             new_user.is_opd = True
             new_user.save()
-            print(password)
-            print(new_user.password)
             create_opd = OpdProfile(user=new_user, unique_opd_attribute="opd")
             create_opd.save()
             opd_from_verification_list.delete()

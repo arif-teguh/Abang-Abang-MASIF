@@ -199,7 +199,7 @@ def user_register(request):
             send_verification_email(verif_url, email)
             return render(
                 request,
-                'user/user_activation_link.html',
+                'activation_link.html',
             )
     else:
         form = UserRegistrationForm()
