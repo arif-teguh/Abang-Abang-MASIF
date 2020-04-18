@@ -1,59 +1,63 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-
+{% extends 'admin/admin_base.html' %}
+{% block head %}
     <style>
-        #submit-btn {
+        .submit-btn {
             width: 100%
         }
 
         .admin-login-items {
             margin-bottom: 2em;
         }
+
+        #page-title {
+            margin-top: 1em;
+            margin-bottom: 1em;
+
+        }
     </style>
-
-
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-            crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
-            integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
-            crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
-            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
-            crossorigin="anonymous"></script>
-
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Daftar OPD</title>
-</head>
-<body>
-<div class="container-fluid">
-    <div class="row justify-content-center" style="height: 100vh">
-        <div class="col-4 align-self-center">
-            <form method="POST" action="{% url 'admin_register_opd' %}">
-                {% csrf_token %}
-                <h1 class="admin-login-items">Pembuatan Akun OPD</h1>
-                <label>Nama OPD : </label>
-                {{ form.opd_name }}
-                <label>Email : </label>
-                {{ form.email }}
-                <label>Telepon : </label>
-                {{ form.phone}}
+{% endblock %}
 
-            <br>
-                <!-- {% for error in form.non_field_errors %}
+{% block admin_body %}
+
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-12 col-sm-8 col-lg-4 align-self-center">
+                <form method="POST" action="{% url 'admin_register_opd' %}">
+                    {% csrf_token %}
+                    <h3 class="text-center" id="page-title">Pembuatan Akun OPD</h3>
+                    <label>Nama OPD : </label>
+                    {{ form.opd_name }}
+                    <label>Email : </label>
+                    {{ form.email }}
+                    <label>Telepon : </label>
+                    {{ form.phone }}
+
+                    <br>
+                    <!-- {% for error in form.non_field_errors %}
                     <div class="alert alert-danger" role="alert">
                         {{ error }}
                     </div>
                 {% endfor %} -->
-                <button type="submit" class="btn btn-primary admin-login-items" id="submit-btn">Submit</button>
+                    <div class="row">
+                        <div class="col-6">
+                            <button type="submit" class="btn btn-primary admin-login-items submit-btn">Submit
+                            </button>
 
-            </form>
+                        </div>
+                        <div class="col-6">
+                            <a href="{% url 'admin_list_opd' %}">
+                                <button type="button" class="btn btn-danger admin-login-items submit-btn">
+                                    Cancel
+                                </button>
+                            </a>
+
+                        </div>
+                    </div>
+
+
+                </form>
+            </div>
         </div>
     </div>
-</div>
-</body>
-</html>
+{% endblock %}

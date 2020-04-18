@@ -2,28 +2,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <style>
-th, td {
-  border-bottom: 1px solid #ddd;
-}
-.accordion {
-  background-color: #eee;
-  color: #444;
-  cursor: pointer;
-  padding: 18px;
-  width: 100%;
-  border: none;
-  text-align: left;
-  outline: none;
-  font-size: 15px;
-  transition: 0.4s;
-}
+    th, td {
+        border-bottom: 1px solid #ddd;
+    }
 
-.active, .accordion:hover {
-  background-color: #ccc; 
-}
+    .accordion {
+        background-color: #eee;
+        color: #444;
+        cursor: pointer;
+        padding: 18px;
+        width: 100%;
+        border: none;
+        text-align: left;
+        outline: none;
+        font-size: 15px;
+        transition: 0.4s;
+    }
 
-.panel {
-  padding: 0 18px;
+    .active, .accordion:hover {
+        background-color: #ccc;
+    }
+
+    .panel {
+        padding: 0 18px;
 
 </style>
 <head>
@@ -66,39 +67,41 @@ th, td {
 {% include 'navbar-no-bootstrap.html' %}
 <br><br>
 <div class="container">
-<h1>Daftar Pelamar {{ lowongan.judul }}</h1>
-<p>Jumlah Pelamar : {{lamaran.count}}</p>
+    <h1>Daftar Pelamar {{ lowongan.judul }}</h1>
+    <p>Jumlah Pelamar : {{ lamaran.count }}</p>
 </div>
 <br>
 <div align="center">
-<table style="width:90%">
-  <tr>
-    <th>No</th>
-    <th>Nama</th>
-    <th></th>
-  </tr>
-{% for each in lamaran%}
+    <table style="width:90%">
+        <tr>
+            <th>No</th>
+            <th>Nama</th>
+            <th></th>
+        </tr>
+        {% for each in lamaran %}
 
-  <tr>
-    <td id="count">{{ forloop.counter }}</td>
-    <td>{{ each.user_foreign_key.name }}</td>
-    <a href="/opd/lowongan/pendaftar/{{each.user_foreign_key.id}}/" >
-    <td><button class="accordion">Lihat detail</button>/td>
-    <div class="panel">
-  <p>   {{each.user_foreign_key.userprofile.major}}
-        {{each.user_foreign_key.email}}
-        {{each.user_foreign_key.phone}}
-        {{each.user_foreign_key.userprofile.institution}}
-        {{each.user_foreign_key.userprofile.education}}
-        {{each.user_foreign_key.userprofile.address}}
-        {{each.application_letter}}</p>
-  </div>
-    </a>
-  </tr>
+            <tr>
+                <td id="count">{{ forloop.counter }}</td>
+                <td>{{ each.user_foreign_key.name }}</td>
+                <a href="/opd/lowongan/pendaftar/{{ each.user_foreign_key.id }}/">
+                    <td>
+                        <button class="accordion">Lihat detail</button>
+                        /td>
+                        <div class="panel">
+                            <p>   {{ each.user_foreign_key.userprofile.major }}
+                                {{ each.user_foreign_key.email }}
+                                {{ each.user_foreign_key.phone }}
+                                {{ each.user_foreign_key.userprofile.institution }}
+                                {{ each.user_foreign_key.userprofile.education }}
+                                {{ each.user_foreign_key.userprofile.address }}
+                                {{ each.application_letter }}</p>
+                        </div>
+                </a>
+            </tr>
 
-{% endfor %}
+        {% endfor %}
 
-</table>
+    </table>
 
 </div>
 
@@ -106,19 +109,19 @@ th, td {
 
 
 <script>
-var acc = document.getElementsByClassName("accordion");
-var i;
+    var acc = document.getElementsByClassName("accordion");
+    var i;
 
-for (i = 0; i < acc.length; i++) {
-  acc[i].addEventListener("click", function() {
-    this.classList.toggle("active");
-    var panel = this.nextElementSibling;
-    if (panel.style.display === "block") {
-      panel.style.display = "none";
-    } else {
-      panel.style.display = "block";
+    for (i = 0; i < acc.length; i++) {
+        acc[i].addEventListener("click", function () {
+            this.classList.toggle("active");
+            var panel = this.nextElementSibling;
+            if (panel.style.display === "block") {
+                panel.style.display = "none";
+            } else {
+                panel.style.display = "block";
+            }
+        });
     }
-  });
-}
 </script>
 </html>

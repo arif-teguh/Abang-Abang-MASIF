@@ -103,7 +103,7 @@ def is_data_valid(post):
         if not validation_result['result']:
             return validation_result
 
-    return validation_result
+    return {'result': True, 'message': 'success'}
 
 
 def user_edit_profile(request):
