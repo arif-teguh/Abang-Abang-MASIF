@@ -4,31 +4,35 @@ from django.db import IntegrityError
 from django.test import TestCase
 from account.models import Account, AdminProfile, OpdProfile, PelamarProfile, UserProfile
 
-
+TEST_SANDI = '1234'
 # Create your tests here.
 class AccountUnitTest(TestCase):
     def setUp(self):
-        # Setup run before every test method.
+        self.DEFAULT_BLANK = ""
+        self.DEFAULT_NOT_SET = "Not set"
+        self.DEFAULT_BORN_DATE_STRING = "1945-08-17"
+        self.DEFAULT_BORN_DATE_DATETIME = datetime(1945, 8, 17)
+
+        self.test_mail = "test@mail.com"
+        self.test_supermail = "super@mail.com"
+        self.test_password = TEST_SANDI
+
         self.user_test_account = Account.objects.create_user(
-            email="test@mail.com", password="1234")
+            email=self.test_mail, password=self.test_password)
         self.superuser_test_account = Account.objects.create_superuser(
-            email="super@mail.com", password="1234")
+            email=self.test_supermail, password=self.test_password)
 
     def tearDown(self):
         # Clean up run after every test method.
         pass
 
     def test_create_user_using_create_user_function_complete(self):
-        self.assertEqual(self.user_test_account.name, "")
-        self.assertEqual(self.user_test_account.email, "test@mail.com")
+        self.assertEqual(self.user_test_account.name, self.DEFAULT_BLANK)
+        self.assertEqual(self.user_test_account.email, self.test_mail)
 
     def test_create_user_using_create_user_function_no_email(self):
         with self.assertRaises(ValueError):
-            Account.objects.create_user(email="", password="1234")
-
-    def test_create_user_using_create_user_function_empty_string_password(self):
-        self.assertEqual(self.user_test_account.name, "")
-        self.assertEqual(self.user_test_account.email, "test@mail.com")
+            Account.objects.create_user(email=self.DEFAULT_BLANK, password=self.test_password)
 
     def test_create_superuser_using_create_superuser_function_complete(self):
         self.assertEqual(self.superuser_test_account.profile_picture, None)
@@ -37,16 +41,17 @@ class AccountUnitTest(TestCase):
         self.assertEqual(self.superuser_test_account.is_superuser, True)
         self.assertEqual(self.superuser_test_account.is_staff, True)
         self.assertEqual(self.superuser_test_account.is_admin, True)
-        self.assertEqual(self.superuser_test_account.email, "super@mail.com")
+        self.assertEqual(self.superuser_test_account.email, self.test_supermail)
         self.assertEqual(
-            self.superuser_test_account.__str__(), "super@mail.com")
+            self.superuser_test_account.__str__(), self.test_supermail)
         self.assertEqual(
             self.superuser_test_account.has_module_perms("module"), True)
         self.assertEqual(self.superuser_test_account.has_perm("perm"), True)
 
     def test_create_superuser_using_create_superuser_function_no_email(self):
         with self.assertRaises(ValueError):
-            Account.objects.create_superuser(email="", password="1234")
+            Account.objects.create_superuser(email=self.DEFAULT_BLANK, 
+                                             password=self.test_password)
 
     def test_create_user_opd_complete(self):
         opd_profile = OpdProfile(user=self.user_test_account,
@@ -63,7 +68,7 @@ class AccountUnitTest(TestCase):
 
         self.assertEqual(
             self.user_test_account.opdprofile.user.email,
-            "test@mail.com")
+            self.test_mail)
 
     def test_create_user_opd_no_user(self):
         opd_profile = OpdProfile(user=None, unique_opd_attribute="opd")
@@ -84,7 +89,7 @@ class AccountUnitTest(TestCase):
 
         self.assertEqual(
             self.user_test_account.adminprofile.user.email,
-            "test@mail.com")
+            self.test_mail)
 
     def test_create_user_admin_no_user(self):
         admin_profile = AdminProfile(user=None, unique_admin_attribute="admin")
@@ -102,17 +107,17 @@ class AccountUnitTest(TestCase):
 
         self.assertEqual(
             user_profile.born_date,
-            datetime(1945, 8, 17),
+            self.DEFAULT_BORN_DATE_DATETIME,
         )
 
         self.assertEqual(
             user_profile.born_city,
-            'Not set',
+            self.DEFAULT_NOT_SET,
         )
 
         self.assertEqual(
             user_profile.address,
-            'Not set',
+            self.DEFAULT_NOT_SET,
         )
 
         self.assertEqual(
@@ -122,17 +127,17 @@ class AccountUnitTest(TestCase):
 
         self.assertEqual(
             user_profile.education,
-            'Not set'
+            self.DEFAULT_NOT_SET
         )
 
         self.assertEqual(
             user_profile.institution,
-            'Not set'
+            self.DEFAULT_NOT_SET
         )
 
         self.assertEqual(
             user_profile.major,
-            'Not set'
+            self.DEFAULT_NOT_SET
         )
 
         self.assertEqual(
@@ -204,26 +209,26 @@ class AccountUnitTest(TestCase):
     def test_user_profile_born_date_string_data_type_assert_string(self):
         user_profile = UserProfile(
             user=self.user_test_account,
-            born_date="1945-08-17",
+            born_date=self.DEFAULT_BORN_DATE_STRING,
         )
 
-        self.assertEqual(user_profile.born_date, "1945-08-17")
+        self.assertEqual(user_profile.born_date, self.DEFAULT_BORN_DATE_STRING)
 
     def test_user_profile_born_date_string_data_type_assert_date(self):
         user_profile = UserProfile(
             user=self.user_test_account,
-            born_date="1945-08-17",
+            born_date=self.DEFAULT_BORN_DATE_STRING,
         )
 
-        self.assertNotEqual(user_profile.born_date, datetime(1945, 8, 17))
+        self.assertNotEqual(user_profile.born_date, self.DEFAULT_BORN_DATE_DATETIME)
 
     def test_user_profile_born_date_datetime_data_type_assert_string(self):
         user_profile = UserProfile(
             user=self.user_test_account,
-            born_date=datetime(1945, 8, 17),
+            born_date=self.DEFAULT_BORN_DATE_DATETIME,
         )
 
-        self.assertNotEqual(user_profile.born_date, "1945-08-17")
+        self.assertNotEqual(user_profile.born_date, self.DEFAULT_BORN_DATE_STRING)
 
     def test_call_userprofile_from_user(self):
         user_profile = UserProfile(
@@ -233,8 +238,8 @@ class AccountUnitTest(TestCase):
         self.assertEqual(self.user_test_account, user_profile.user)
         self.assertEqual(self.user_test_account.userprofile.sex, 'n')
         self.assertEqual(
-            self.user_test_account.userprofile.born_date, datetime(1945, 8, 17))
-        self.assertEqual(self.user_test_account.userprofile.address, 'Not set')
+            self.user_test_account.userprofile.born_date, self.DEFAULT_BORN_DATE_DATETIME)
+        self.assertEqual(self.user_test_account.userprofile.address, self.DEFAULT_NOT_SET)
 
     def test_call_user_from_userprofile(self):
         user_profile = UserProfile(
@@ -261,11 +266,11 @@ class AccountUnitTest(TestCase):
 
         self.assertEqual(
             newly_created_user.pelamarprofile.user.email,
-            "test@mail.com")
+            self.test_mail)
 
     def test_create_user_pelamar_no_user(self):
         pelamar_profile = OpdProfile(user=None, unique_opd_attribute="user")
         try:
             pelamar_profile.save()
-        except:
+        except IntegrityError:
             self.assertTrue(True)

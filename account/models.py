@@ -89,6 +89,8 @@ class AdminProfile(models.Model):
 
 
 class UserProfile(models.Model):
+    DEFAULT_NOT_SET = 'Not set'
+
     user = models.OneToOneField(
         Account,
         on_delete=models.CASCADE,
@@ -98,8 +100,8 @@ class UserProfile(models.Model):
     )
 
     born_date = models.DateField(default=datetime(1945, 8, 17))
-    born_city = models.CharField(default='Not set', max_length=120)
-    address = models.CharField(default='Not set', max_length=300)
+    born_city = models.CharField(default=DEFAULT_NOT_SET, max_length=120)
+    address = models.CharField(default=DEFAULT_NOT_SET, max_length=300)
     '''
     *sex types*
     m = male
@@ -107,9 +109,9 @@ class UserProfile(models.Model):
     n = not set
     '''
     sex = models.CharField(default='n', max_length=1)
-    education = models.CharField(default='Not set', max_length=120)
-    institution = models.CharField(default='Not set', max_length=120)
-    major = models.CharField(default='Not set', max_length=120)
+    education = models.CharField(default=DEFAULT_NOT_SET, max_length=120)
+    institution = models.CharField(default=DEFAULT_NOT_SET, max_length=120)
+    major = models.CharField(default=DEFAULT_NOT_SET, max_length=120)
     cv = models.FileField(
         null=True,
         blank=True,
