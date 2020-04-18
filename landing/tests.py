@@ -7,10 +7,7 @@ from django.test import Client
 from django.urls import resolve
 from . import views
 
-
-# Create your tests here.
-
-class Testing_landing(TestCase):
+class TestingLanding(TestCase):
 
     def test_landing_page(self):
         response = Client().get('/')

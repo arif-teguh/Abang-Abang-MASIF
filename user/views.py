@@ -213,7 +213,7 @@ def user_verification(request, token):
         email = user_from_verification_list.email
         phone = user_from_verification_list.phone
         password = user_from_verification_list.password
-    except:
+    except UserVerificationList.DoesNotExist:
         return redirect('/user/verification/404')
     new_user = Account.objects.create_user(email, password)
     new_user.name = user_name

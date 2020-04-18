@@ -4,7 +4,7 @@ from django.db import IntegrityError
 from django.test import TestCase
 from account.models import Account, AdminProfile, OpdProfile, PelamarProfile, UserProfile
 
-
+TEST_SANDI = '1234'
 # Create your tests here.
 class AccountUnitTest(TestCase):
     def setUp(self):
@@ -15,7 +15,7 @@ class AccountUnitTest(TestCase):
 
         self.test_mail = "test@mail.com"
         self.test_supermail = "super@mail.com"
-        self.test_password = "1234"
+        self.test_password = TEST_SANDI
 
         self.user_test_account = Account.objects.create_user(
             email=self.test_mail, password=self.test_password)
@@ -272,5 +272,5 @@ class AccountUnitTest(TestCase):
         pelamar_profile = OpdProfile(user=None, unique_opd_attribute="user")
         try:
             pelamar_profile.save()
-        except:
+        except IntegrityError:
             self.assertTrue(True)

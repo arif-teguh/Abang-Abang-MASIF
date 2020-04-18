@@ -55,7 +55,7 @@ def opd_verification(request, token):
         opd_name = opd_from_verification_list.name
         email = opd_from_verification_list.email
         phone = opd_from_verification_list.phone
-    except:
+    except OpdVerificationList.DoesNotExist:
         return redirect('/opd/verification/404')
     if request.method == 'POST':
         form = OpdConfirmationForm(request.POST)

@@ -21,9 +21,8 @@ from user.forms import EditUserProfileForm
 from user.views import born_date_validator, sex_validator, phone_number_validator, is_data_valid, \
     list_of_lowongan_to_json_dict
 
+URL_USER_LOGIN = '/user/login/'
 
-
-# Create your tests here.
 class PelamarRegistrationTest(TestCase):
     def setUp(self):
         # Setup run before every test method.
@@ -109,7 +108,7 @@ class PelamarValidationTest(TestCase):
         self.assertEqual(response.status_code, 302)
 
     def test_pelamar_verified_login(self):
-        response = self.client.get('/user/login/')
+        response = self.client.get(URL_USER_LOGIN)
         self.assertEqual(200, response.status_code)
         form = response.context['form']
         self.assertTrue(
@@ -135,16 +134,15 @@ class TestViews(TestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_page_response_status(self):
-        response = Client().get('/user/login/')
+        response = Client().get(URL_USER_LOGIN)
         self.assertEqual(response.status_code, 200)
 
     def test_page_template(self):
-        response = Client().get('/user/login/')
+        response = Client().get(URL_USER_LOGIN)
         self.assertTemplateUsed(response, 'user_login.html')
         
 
 class UserUnitTest(TestCase):
-    URL_USER_LOGIN = '/user/login/'
     URL_USER_DASHBOARD = '/user/dashboard/'
     URL_USER_DASHBOARD_EDIT = '/user/dashboard/edit/'
     URL_USER_UPLOAD_CV = '/user/dashboard/edit/upload_cv/'
