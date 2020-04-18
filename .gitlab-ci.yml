@@ -21,7 +21,7 @@ Lint:
     - pylint --load-plugins=pylint_django --rcfile=.pylintrc  admin kesbangpol opd user -r n --exit-zero > pylint_report.txt
   artifacts:
     untracked: true
-    expire_in: 1 day
+    expire_in: 1 hour
     paths:
       - pylint_report.txt
 
@@ -48,7 +48,7 @@ Test:
   coverage: '/TOTAL\s+\d+\s+\d+\s+(\d+%)/'
   artifacts:
     untracked: true
-    expire_in: 1 day
+    expire_in: 1 hour
     paths:
       - coverage.xml
       - pylint_report.txt
