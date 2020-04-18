@@ -397,6 +397,32 @@ class UserLamarMagangModelTest(TestCase):
             opd_foreign_key_id=self.opd1.id
         )
 
+        self.lowongan6 = Lowongan.objects.create(
+            judul='judul3',
+            kategori='kat2',
+            kuota_peserta=3,
+            waktu_awal_magang=mock_date,
+            waktu_akhir_magang=mock_date,
+            batas_akhir_pendaftaran=mock_date,
+            berkas_persyaratan=list_berkas,
+            deskripsi='deskripsi1',
+            requirement='requirement1',
+            opd_foreign_key_id=self.opd1.id
+        )
+
+        self.lowongan7 = Lowongan.objects.create(
+            judul='judul7',
+            kategori='kat2',
+            kuota_peserta=3,
+            waktu_awal_magang=mock_date,
+            waktu_akhir_magang=mock_date,
+            batas_akhir_pendaftaran=mock_date,
+            berkas_persyaratan=list_berkas,
+            deskripsi='deskripsi1',
+            requirement='requirement1',
+            opd_foreign_key_id=self.opd1.id
+        )
+
         self.client.force_login(self.account1)
 
         self.lamar1 = UserLamarMagang.objects.create(
@@ -440,6 +466,33 @@ class UserLamarMagangModelTest(TestCase):
     def test_notes_status_lamaran_not_default_tidak_ada_catatan(self):
         self.assertNotEqual(self.lamar1.notes_status_lamaran, "Tidak Ada Catatan")
 
+    def test_first_post_lamaran(self):
+        id_user = self.user1.id
+        self.client.force_login(self.account1)
+        Account.objects.filter(pk=id_user).update(is_user=True)
+        data_form_lamar = {
+            "application_letter":"first",
+            "lowongan_foreign_key_id":self.lowongan6.id,
+            "user_foreign_key_id":self.user1.id,
+            "file_berkas_tambahan":self.test_file_cv
+        }
+        self.client.post(url_form_lamar+str(self.lowongan6.id)+"/", enctype=encypte_multipart, data=data_form_lamar)
+        self.assertTrue(UserLamarMagang.objects.filter(application_letter="first").exists())
+
+    def test_first_post_lamaran_with_cv(self):
+        id_user = self.user1.id
+        self.client.force_login(self.account1)
+        Account.objects.filter(pk=id_user).update(is_user=True)
+        data_form_lamar = {
+            "file_cv":self.test_file_cv_2,
+            "application_letter":"first",
+            "lowongan_foreign_key_id":self.lowongan7.id,
+            "user_foreign_key_id":self.user1.id,
+            "file_berkas_tambahan":self.test_file_cv
+        }
+        self.client.post(url_form_lamar+str(self.lowongan7.id)+"/", enctype=encypte_multipart, data=data_form_lamar)
+        self.assertTrue(UserLamarMagang.objects.filter(application_letter="first").exists())
+
     def test_post_lamar(self):
         id_user = self.user1.id
         self.client.force_login(self.account1)
@@ -453,6 +506,26 @@ class UserLamarMagangModelTest(TestCase):
         self.client.post(url_form_lamar+str(self.lowongan3.id)+"/", enctype=encypte_multipart, data=data_form_lamar)
         self.assertTrue(UserLamarMagang.objects.filter(application_letter="hei").exists())
     
+    def test_update_lamar(self):
+        id_user = self.user1.id
+        self.client.force_login(self.account1)
+        Account.objects.filter(pk=id_user).update(is_user=True)
+        data_form_lamar = {
+            "application_letter":"aaaa",
+            "lowongan_foreign_key_id":self.lowongan3.id,
+            "user_foreign_key_id":self.user1.id,
+            "file_berkas_tambahan":self.test_file_cv
+        }
+        self.client.post(url_form_lamar+str(self.lowongan3.id)+"/", enctype=encypte_multipart, data=data_form_lamar)
+        self.assertTrue(UserLamarMagang.objects.filter(application_letter="aaaa").exists())
+
+    def test_update_url_lamar(self):
+        id_user = self.user1.id
+        self.client.force_login(self.account1)
+        Account.objects.filter(pk=id_user).update(is_user=True)
+        response = self.client.get(url_form_lamar+str(self.lowongan3.id)+"/")
+        self.assertTrue(response.status_code, 200)
+    
     def test_post_lamar_with_cv(self):
         id_user = self.user1.id
         self.client.force_login(self.account1)
@@ -464,7 +537,7 @@ class UserLamarMagangModelTest(TestCase):
             "user_foreign_key_id":self.user1.id,
             "file_berkas_tambahan":self.test_file_cv
         }
-        self.client.post(url_form_lamar+str(self.lowongan3.id)+"/", enctype=encypte_multipart, data=data_form_lamar)
+        self.client.post(url_form_lamar+str(self.lowongan4.id)+"/", enctype=encypte_multipart, data=data_form_lamar)
         self.assertTrue(UserLamarMagang.objects.filter(application_letter="cvcv").exists())
     
     def test_redirect_post_lamar_field_missing(self):
@@ -473,7 +546,7 @@ class UserLamarMagangModelTest(TestCase):
         Account.objects.filter(pk=id_user).update(is_user=True)
         data_form_lamar = {
             "application_letter":"nofiletest",
-            "lowongan_foreign_key_id":self.lowongan4.id,
+            "lowongan_foreign_key_id":self.lowongan5.id,
             "user_foreign_key_id":self.user1.id,
         }
         self.client.post(url_form_lamar+str(self.lowongan5.id)+"/", enctype=encypte_multipart, data=data_form_lamar)
