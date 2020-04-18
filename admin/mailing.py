@@ -1,16 +1,16 @@
-import re
-
-from django.core import mail
+from django.core.mail import send_mail
+from django.core.validators import validate_email
+from django.core.validators import ValidationError
 
 def send_verification_email(verification_url, recipient_email):
-    email_validator = r'^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$'
-    if re.search(email_validator, recipient_email):
-        mail.send_mail(
+    try:
+        validate_email(recipient_email)
+        send_mail(
             'Verifikasi OPD',
             'Berikut link untuk verifikasi email untuk akun OPD: '
             + verification_url,
             'admin@masif.com',
             [recipient_email]
         )
-    else:
+    except ValidationError:
         raise ValueError("Email not valid")
