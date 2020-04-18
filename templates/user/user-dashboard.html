@@ -24,9 +24,9 @@
                     <label for="id_profile_picture">
                         {% if user.profile_picture %}
                             <img style="image-orientation: flip;" id="profile_picture"
-                                 src="/media/{{ user.profile_picture }}">
+                                 src="/media/{{ user.profile_picture }}" alt="profile-picture">
                         {% else %}
-                            <img id="profile_picture" src="/static/img/add_photo.png">
+                            <img id="profile_picture" src="/static/img/add_photo.png" alt="add-picture">
                         {% endif %}
 
                     </label>
@@ -107,15 +107,15 @@
             <span style="display: none">{{ form_cv.cv }}</span>
         </form>
 
-        <table id="daftar-lamaran-table" class="display shadow bg-white mb-5" style="width:100%">
+        <table id="daftar-lamaran-table" class="display shadow bg-white mb-5" style="width:100%" aria-hidden="true">
             <thead>
             <tr>
                 <td id="daftar-lamaran-title" colspan="3">Daftar Lamaran</td>
             </tr>
             <tr>
-                <th>Status</th>
-                <th>Posisi</th>
-                <th>Kantor</th>
+                <th scope="col">Status</th>
+                <th scope="col">Posisi</th>
+                <th scope="col">Kantor</th>
             </tr>
             </thead>
             <tbody>

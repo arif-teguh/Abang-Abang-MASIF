@@ -11,15 +11,19 @@ from admin.opd_registration_form import OpdRegistrationForm
 from .models import OpdVerificationList
 from . import mailing, token
 
-
+TEST_EMAIL = 'test@mail.com'
+TEST_PASSWORD = '12345678'
+URL_ADMIN_LOGIN = '/admin/login/'
+URL_ADMIN_BASE = '/admin/'
+URL_ADMIN_DELETE_OPD = '/admin/listopd/deleteopd/'
 class AdminUnitTest(TestCase):
     def setUp(self):
         # Setup run before every test method.
         self.client = Client()
         self.request = HttpRequest()
-        Account.objects.create_user(email='test@mail.com', password='12345678')
+        Account.objects.create_user(email=TEST_EMAIL, password=TEST_PASSWORD)
         self.created_mock_user = Account.objects.all()[0]
-        self.client.login(username='test@mail.com', password='12345678')
+        self.client.login(username=TEST_EMAIL, password=TEST_PASSWORD)
         self.request.user = self.created_mock_user
 
     def tearDown(self):
@@ -32,7 +36,7 @@ class AdminUnitTest(TestCase):
         self.assertIn('<title>Admin Login</title>', html_response)
 
     def test_using_admin_login_html(self):
-        response = Client().get('/admin/login/')
+        response = Client().get(URL_ADMIN_LOGIN)
         self.assertTemplateUsed(response, 'admin/admin_login.html')
 
     def test_submit_button_exist(self):
@@ -42,20 +46,20 @@ class AdminUnitTest(TestCase):
         self.assertIn('<button type="submit"', html_response)
 
     def test_admin_login_page_is_set_up_as_expected(self):
-        response = Client().get('/admin/login/')
+        response = Client().get(URL_ADMIN_LOGIN)
         self.assertEqual(200, response.status_code)
         form = response.context['form']
         self.assertTrue(
             isinstance(form, AdminAuthenticationForm), type(form).__mro__)
 
     def test_displays_admin_login_form(self):
-        response = Client().get('/admin/login/')
+        response = Client().get(URL_ADMIN_LOGIN)
         self.assertIsInstance(response.context["form"], AdminAuthenticationForm)
 
     def test_admin_page_not_authenticated(self):
-        response = Client().get('/admin/')
+        response = Client().get(URL_ADMIN_BASE)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual('/admin/login/', response.url)
+        self.assertEqual(URL_ADMIN_LOGIN, response.url)
 
     def test_admin_access_admin_page(self):
         self.request.user.is_admin = True
@@ -72,7 +76,7 @@ class AdminUnitTest(TestCase):
         self.request.user.is_superuser = False
         response = views.admin_index(request=self.request)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual('/admin/login/', response.url)
+        self.assertEqual(URL_ADMIN_LOGIN, response.url)
 
     def test_user_access_admin_page(self):
         self.request.user.is_admin = False
@@ -81,38 +85,38 @@ class AdminUnitTest(TestCase):
         self.request.user.is_superuser = False
         response = views.admin_index(request=self.request)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual('/admin/login/', response.url)
+        self.assertEqual(URL_ADMIN_LOGIN, response.url)
 
     def test_admin_access_admin_page_through_url(self):
         self.created_mock_user.is_admin = True
         self.created_mock_user.save()
-        response = self.client.get('/admin/')
+        response = self.client.get(URL_ADMIN_BASE)
         self.assertEqual(response.status_code, 200)
 
     def test_opd_access_admin_page_through_url(self):
         self.created_mock_user.is_admin = False
         self.created_mock_user.is_opd = True
         self.created_mock_user.save()
-        response = self.client.get('/admin/')
+        response = self.client.get(URL_ADMIN_BASE)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual('/admin/login/', response.url)
+        self.assertEqual(URL_ADMIN_LOGIN, response.url)
 
     def test_user_access_admin_page_through_url(self):
         self.created_mock_user.is_admin = False
         self.created_mock_user.is_user = True
         self.created_mock_user.save()
-        response = self.client.get('/admin/')
+        response = self.client.get(URL_ADMIN_BASE)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual('/admin/login/', response.url)
+        self.assertEqual(URL_ADMIN_LOGIN, response.url)
 
     def test_using_admin_index_func(self):
-        found = resolve('/admin/')
+        found = resolve(URL_ADMIN_BASE)
         self.assertEqual(found.func, views.admin_index)
 
     def test_admin_list_opd_not_authenticated_redirect_to_admin_login(self):
         response = Client().get('/admin/listopd/')
         self.assertEqual(response.status_code, 302)
-        self.assertEqual('/admin/login/', response.url)
+        self.assertEqual(URL_ADMIN_LOGIN, response.url)
 
     def test_using_admin_list_opd_func(self):
         found = resolve('/admin/listopd/')
@@ -133,7 +137,7 @@ class AdminUnitTest(TestCase):
         self.request.user.is_superuser = False
         response = views.admin_list_opd(request=self.request)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual('/admin/login/', response.url)
+        self.assertEqual(URL_ADMIN_LOGIN, response.url)
 
     def test_user_access_admin_opd_list_page(self):
         self.request.user.is_admin = False
@@ -142,7 +146,7 @@ class AdminUnitTest(TestCase):
         self.request.user.is_superuser = False
         response = views.admin_list_opd(request=self.request)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual('/admin/login/', response.url)
+        self.assertEqual(URL_ADMIN_LOGIN, response.url)
 
     def test_function_get_all_opd_database_has_opd(self):
         self.created_mock_user.is_opd = True
@@ -258,7 +262,7 @@ class AdminUnitTest(TestCase):
         self.created_mock_user.is_active = False
         self.created_mock_user.save()
         response = self.client.post(
-            '/admin/listopd/deleteopd/',
+            URL_ADMIN_DELETE_OPD,
             {'pk': self.created_mock_user.pk}
         )
         all_test_opd = list(Account.objects.all())
@@ -277,7 +281,7 @@ class AdminUnitTest(TestCase):
         self.created_mock_user.save()
         with self.assertRaises(IndexError):
             self.client.post(
-                '/admin/listopd/deleteopd/',
+                URL_ADMIN_DELETE_OPD,
                 {'pk': int(self.created_mock_user.pk) + 1}
             )
 
@@ -291,7 +295,7 @@ class AdminUnitTest(TestCase):
         self.created_mock_user.save()
         with self.assertRaises(ValueError):
             self.client.post(
-                '/admin/listopd/deleteopd/',
+                URL_ADMIN_DELETE_OPD,
                 {'pk': 'abcdef'}
             )
 
@@ -304,7 +308,7 @@ class AdminUnitTest(TestCase):
         self.created_mock_user.is_active = False
         self.created_mock_user.save()
         with self.assertRaises(ValueError):
-            self.client.post('/admin/listopd/deleteopd/', {'pk': 'g4bung'})
+            self.client.post(URL_ADMIN_DELETE_OPD, {'pk': 'g4bung'})
 
     def test_delete_opd_account_no_pk(self):
         self.created_mock_user.is_opd = False
@@ -315,7 +319,7 @@ class AdminUnitTest(TestCase):
         self.created_mock_user.is_active = False
         self.created_mock_user.save()
         with self.assertRaises(ValueError):
-            self.client.post('/admin/listopd/deleteopd/', {'pk': ''})
+            self.client.post(URL_ADMIN_DELETE_OPD, {'pk': ''})
 
     def test_delete_opd_account_correct_pk_not_admin(self):
         self.created_mock_user.is_opd = True
@@ -326,7 +330,7 @@ class AdminUnitTest(TestCase):
         self.created_mock_user.is_active = False
         self.created_mock_user.save()
         self.client.post(
-            '/admin/listopd/deleteopd/',
+            URL_ADMIN_DELETE_OPD,
             {'pk': self.created_mock_user.pk}
         )
         all_test_opd = list(Account.objects.all())
@@ -336,12 +340,12 @@ class AdminUnitTest(TestCase):
         )
 
     def test_get_method_in_delete_opd_for_admin(self):
-        response = self.client.get('/admin/listopd/deleteopd/')
+        response = self.client.get(URL_ADMIN_DELETE_OPD)
         html_response = response.content.decode('utf8')
         self.assertEqual("Forbidden", html_response)
         
 class EmailTest(TestCase):
-    verification_url = 'masif.com/abcdefg'
+    verification_url = '/user/verification/token'
     recipient_email = 'test@test.com'
 
     def test_send_email_sent(self):
@@ -367,7 +371,8 @@ class EmailTest(TestCase):
 
     def test_invalid_email(self):
         with self.assertRaises(ValueError):
-            mailing.send_verification_email(self.verification_url, "test.com")
+            mailing.send_verification_email(self.verification_url,
+                                            "test.com")
 
     def test_generate_token(self):
         secret = token.generate_opd_token()
@@ -379,9 +384,9 @@ class OpdRegistrationTest(TestCase):
         # Setup run before every test method.
         self.client = Client()
         self.request = HttpRequest()
-        Account.objects.create_superuser(email='test@mail.com', password='12345678')
+        Account.objects.create_superuser(email=TEST_EMAIL, password=TEST_PASSWORD)
         self.created_mock_user = Account.objects.all()[0]
-        self.client.login(username='test@mail.com', password='12345678')
+        self.client.login(username=TEST_EMAIL, password=TEST_PASSWORD)
         self.request.user = self.created_mock_user
 
     def tearDown(self):

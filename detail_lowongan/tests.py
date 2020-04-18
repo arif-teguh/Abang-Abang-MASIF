@@ -3,10 +3,7 @@ from django.test import Client
 from django.urls import resolve
 from . import views
 
-
-# Create your tests here.
-
-class Testing_detail_lowongan(TestCase):
+class TestingDetailLowongan(TestCase):
     URL_DETAIL_LOWONGAN = '/cari-lowongan/detail-lowongan/'
 
     def test_detail_lowongan_page_response_status(self):
