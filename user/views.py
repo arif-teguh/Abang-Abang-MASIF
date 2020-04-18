@@ -5,8 +5,10 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.utils.datastructures import MultiValueDictKeyError
 from django.contrib import messages
+from django.contrib.sites.shortcuts import get_current_site
 
 from account.models import UserProfile, Account
+from admin.mailing import send_verification_email
 from user.models import UserVerificationList
 from user.forms import EditUserProfileForm, CVForm, ProfilePictureForm
 from .user_registration_form import UserRegistrationForm
@@ -192,10 +194,12 @@ def user_register(request):
                 password=password
             )
             new_account.save()
+            base_url = get_current_site(request).domain
+            verif_url = base_url+'/user/verification/'+secret
+            send_verification_email(verif_url, email)
             return render(
                 request,
                 'user/user_activation_link.html',
-                {'secret': secret}
             )
     else:
         form = UserRegistrationForm()
