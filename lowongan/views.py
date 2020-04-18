@@ -6,14 +6,16 @@ from account.models import Account
 from .form import LowonganForm, UserLamarMagangForm
 from .models import Lowongan, UserLamarMagang
 
+PATH_FORM_LOWONGAN_TEMPLATE = 'lowongan/form_lowongan.html' 
+
 @login_required
 def show_form_lowongan(request, response=None):
     if request.user.is_opd is True:
         if response is None:
-            return render(request, 'lowongan/form_lowongan.html',
+            return render(request, PATH_FORM_LOWONGAN_TEMPLATE,
                           {'form': LowonganForm(), 'type_form': 'post'})
         elif response is not None:
-            return render(request, 'lowongan/form_lowongan.html',
+            return render(request, PATH_FORM_LOWONGAN_TEMPLATE,
                           response)
     return redirect("/")
 #
@@ -66,7 +68,7 @@ def update_form_lowongan(request, id_lowongan):
         'form': form, 'type_form': 'update',
         'choice_select_field': lowongan_data.berkas_persyaratan
     }
-    return render(request, 'lowongan/form_lowongan.html', response)
+    return render(request, PATH_FORM_LOWONGAN_TEMPLATE, response)
 
 @login_required
 def form_lamar_lowongan(request, id_lowongan):
@@ -93,9 +95,7 @@ def form_lamar_lowongan(request, id_lowongan):
             )
             lowongan.list_pendaftar_key.add(user_profile)
             data_lamaran.save()
-            if user_profile.cv != "" and file_cv is False:
-                pass
-            else:
+            if user_profile.cv == "" and file_cv is True:
                 user_profile.cv = file_cv
                 user_profile.save()
             return redirect("/")
