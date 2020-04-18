@@ -28,6 +28,12 @@
     </head>
     <body>
         {% include 'navbar-no-bootstrap.html' %}
+        {% if is_pending is False%}
+        <meta http-equiv="refresh" content="3;url=/user/dashboard/" />
+        </br></br></br></br>
+        <h2>Status lamaran anda pada lowongan "{{lowongan}}"" adalah "{{status}}"</h2>
+        <h2>Redirect ke halaman dashboard user dalam 3 detik ....</h2>
+        {% else %}
         <div class="container-fluid">
                 <div class="row">
                     <div class="col-12 mt-3">
@@ -145,6 +151,7 @@
                     }
                 });
             </script>
+            {% endif %}
         </html>
     </body>
 </html>

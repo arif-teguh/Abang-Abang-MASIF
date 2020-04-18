@@ -74,13 +74,26 @@ def update_lamar_lowongan(request, id_lowongan, lamaran):
     lowongan = Lowongan.objects.get(pk=id_lowongan)
     user_profile = user.userprofile
     opd = lowongan.opd_foreign_key
+    status_lamaran = lamaran.status_lamaran
+    if status_lamaran == "diterima" or status_lamaran == "wawancara":
+        response = {
+            "is_pending":False,
+            "lowongan":lamaran.lowongan_foreign_key.judul,
+            "status":status_lamaran
+            }
+        return render(request, 'lowongan/form_lamar.html', response)
+
     if request.method == 'POST':
         file_cv = request.FILES.get('file_cv', False)
         form = UserLamarMagangForm(request.POST or None,
-                                       request.FILES or None,
-                                       instance=lamaran)
+                                   request.FILES or None,
+                                   instance=lamaran)
         if form.is_valid():
             form.save()
+            UserLamarMagang.objects.filter(
+                user_foreign_key=user,
+                lowongan_foreign_key=lowongan
+            ).update(status_lamaran="pending")
             if file_cv is not False:
                 user_profile.cv = file_cv
                 user_profile.save()
