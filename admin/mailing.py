@@ -2,8 +2,6 @@ import re
 
 from django.core import mail
 
-
-
 def send_verification_email(verification_url, recipient_email):
     email_validator = r'^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$'
     if re.search(email_validator, recipient_email):
