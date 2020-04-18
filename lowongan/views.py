@@ -7,6 +7,7 @@ from .form import LowonganForm, UserLamarMagangForm, AdminMenambahKategoriForm
 from .models import Lowongan, UserLamarMagang
 
 dir_form_lowongan = 'lowongan/form_lowongan.html'
+dir_form_lamaran = 'lowongan/form_lamar.html'
 @login_required
 def show_form_lowongan(request, response=None):
     if request.user.is_opd is True:
@@ -81,7 +82,7 @@ def update_lamar_lowongan(request, id_lowongan, lamaran):
             "lowongan":lamaran.lowongan_foreign_key.judul,
             "status":status_lamaran
             }
-        return render(request, 'lowongan/form_lamar.html', response)
+        return render(request, dir_form_lamaran, response)
 
     if request.method == 'POST':
         file_cv = request.FILES.get('file_cv', False)
@@ -108,7 +109,7 @@ def update_lamar_lowongan(request, id_lowongan, lamaran):
         'application_letter': lamaran.application_letter
     }
 
-    return render(request, 'lowongan/form_lamar.html', respons)
+    return render(request, dir_form_lamaran, respons)
 
 @login_required
 def form_lamar_lowongan(request, id_lowongan):
@@ -162,7 +163,7 @@ def form_lamar_lowongan(request, id_lowongan):
         'is_update':False
     }
 
-    return render(request, 'lowongan/form_lamar.html', response)
+    return render(request, dir_form_lamaran, response)
 
 @login_required
 def edit_pilihan_kategori_lowongan(request):
