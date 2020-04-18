@@ -3,7 +3,7 @@ from django.test import TestCase, Client
 from django.urls import resolve
 from django.http import HttpRequest
 import secrets
-
+from django.core.files.uploadedfile import SimpleUploadedFile
 from admin.models import OpdVerificationList
 from opd import views
 from account.models import Account , UserProfile
@@ -14,7 +14,13 @@ url_opd_login = '/opd/login/'
 url_opd_index = '/opd/'
 url_opd_lowongan_detail = '/opd/lowongan/detail-'
 url_opd_pelamar = '/opd/lowongan/list-pendaftar-'
+url_download_file = '/opd/lowongan/file_tambahan-'
+url_download_cv = '/opd/lowongan/cv_pendaftar-'
+url_update_lamaran = '/opd/proses-'
+test_email_addr = 'test@mail.com'
+kartu_keluarga = 'Kartu Keluarga'
 mock_date = datetime.date(2012, 12, 12)
+
 class LoginOpdUnitTest(TestCase):
     #login
     def test_page_title_opd_login(self):
@@ -49,6 +55,23 @@ class LoginOpdUnitTest(TestCase):
         response = Client().get(url_opd_index)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(url_opd_login, response.url)
+
+class RedirectJikaBelumLogin(TestCase):
+    def test_redirect_detail_lowongan(self):
+        response = Client().get(url_opd_lowongan_detail + '1')
+        self.assertNotEqual(response.status_code, 200)
+
+    def test_redirect_opd_page_list_pelamar(self):
+        response = Client().get(url_opd_pelamar +'1')
+        self.assertNotEqual(response.status_code, 200)
+
+    def test_redirect_opd_mendownload(self):
+        response = Client().get(url_download_file +'1-1')
+        self.assertNotEqual(response.status_code, 200)
+
+    def test_redirect_opd_page_list_pelamar(self):
+        response = Client().get(url_download_cv +'1-1')
+        self.assertNotEqual(response.status_code, 200)
 
 class OpdRedirectUnitTest(TestCase):
     def test_opd_access_opd_page(self):
@@ -111,11 +134,7 @@ class LowonganOpdUnitTest(TestCase):
     def setUp(self):
         self.account1 = Account.objects.create_superuser(email="test@mail.com", password="1234")
         self.opd1 = Account.objects.all()[0]
-        '''
-        opd_profile = OpdProfile(user=self.opd1,
-                                 unique_opd_attribute="opd")
-        opd_profile.save()
-        '''
+   
          
         self.account1.is_opd = True
         self.account1.save()
@@ -171,11 +190,7 @@ class DetailLowonganOpdUnitTest(TestCase):
     def setUp(self):
         self.account1 = Account.objects.create_superuser(email="test@mail.com", password="1234")
         self.opd1 = Account.objects.all()[0]
-        '''
-        opd_profile = OpdProfile(user=self.opd1,
-                                 unique_opd_attribute="opd")
-        opd_profile.save()
-        '''
+        
         self.account1.is_opd = True
         self.account1.save()
         self.client.force_login(self.account1)
@@ -193,7 +208,7 @@ class DetailLowonganOpdUnitTest(TestCase):
         )
 
 
-
+    
     def test_opd_detail_lowongan_template(self):
         response = self.client.get(url_opd_lowongan_detail + str(self.lowongan1.id)+'/')
         self.assertTemplateUsed(response,'opd_detail_lowongan.html')
@@ -306,8 +321,9 @@ class TestCekListPelamar(TestCase):
             lowongan_foreign_key = self.lowongan1,
             user_foreign_key = self.account3,
         )
+        self.lamaran.save()
 
-
+    
     def test_opd_pendaftar_lowongan_template(self):
         response = self.client.get(url_opd_pelamar + str(self.lowongan1.id)+'/')
         self.assertTemplateUsed(response,'opd_list_pendaftar.html')
@@ -361,7 +377,7 @@ class TestCekListPelamar(TestCase):
         self.assertContains(response,self.account3.userprofile.education)
         self.assertContains(response,self.account3.userprofile.address)
 
-    #negative test
+    
     def test_melihat_tidak_ada_user_pelamar_yang_tidak_melamar(self):
         url = url_opd_pelamar + str(self.lowongan1.id)+'/'
         response = self.client.get(url)
@@ -372,4 +388,134 @@ class TestCekListPelamar(TestCase):
         self.assertNotContains(response,self.account2.userprofile.education)
         self.assertNotContains(response,self.account2.userprofile.address)
 
-    
+    def test_approve_lamaran(self):
+        response = self.client.get(url_update_lamaran  +
+        str(self.account3.id)+'-'+str(self.lowongan1.id)
+        +'/Diterima/25 maret/')
+        self.assertNotEqual(response.status_code,404)
+
+    def test_error_jika_user_tidak_melamar(self):
+        response = self.client.get(url_update_lamaran  +
+        str(self.account2.id)+'-'+str(self.lowongan1.id)
+        +'/Diterima/25 maret/')
+        self.assertNotEqual(response.status_code,404)
+
+
+class TestOpdDownload(TestCase):
+    def setUp(self):
+        self.account1 = Account.objects.create_superuser(email="test@mail.com", password="1234")
+        self.account1.is_opd = True
+        self.account1.save()
+        self.account2 = Account.objects.create_superuser(email="test2@mail.com", password="xyz")
+        self.account2.is_opd = True
+        self.account2.save()
+        self.account3 = Account.objects.create_user(email="user3@mail.com", password="dqwqfas")
+        self.account3.name = "testtest"
+        self.account3.is_user = True
+        self.account3.save()
+        self.account4 = Account.objects.create_user(email="user4@mail.com", password="fadfads")
+        self.account4.name = "fsafas"
+        self.account4.is_user = True
+        self.account4.save()
+        self.user1 = UserProfile(user=self.account3)
+        self.user1.cv = SimpleUploadedFile("file.pdf", b"file_content")
+        self.user1.save()
+        self.user2 = UserProfile(
+            user=self.account4,
+            major = 'kosong',
+            institution = 'kosong',
+            education = 'kosong',
+            address = 'kosong'
+            )
+        self.user2.save()
+        self.opd1 = Account.objects.all()[0]
+        self.opd2 = Account.objects.all()[1]
+        self.client.force_login(self.account1)
+        self.lowongan1 = Lowongan.objects.create(
+            judul='judul1',
+            kategori='kat1',
+            kuota_peserta=10,
+            waktu_awal_magang = mock_date,
+            waktu_akhir_magang = mock_date,
+            batas_akhir_pendaftaran = mock_date,
+            berkas_persyaratan=['Kartu Keluarga'],
+            deskripsi='deskripsi1',
+            requirement='requirement1',
+            opd_foreign_key_id=self.account1.id,
+        )
+
+        self.lowongan2 = Lowongan.objects.create(
+            judul='judul2',
+            kategori='kat2',
+            kuota_peserta=10,
+            waktu_awal_magang = mock_date,
+            waktu_akhir_magang = mock_date,
+            batas_akhir_pendaftaran = mock_date,
+            berkas_persyaratan=['Kartu Keluarga'],
+            deskripsi='deskripsi1',
+            requirement='requirement1',
+            opd_foreign_key_id = self.account2.id
+        )
+        self.lamaran = UserLamarMagang.objects.create(
+            application_letter = 'test lamaran application',
+            lowongan_foreign_key = self.lowongan1,
+            user_foreign_key = self.account3,
+            file_berkas_tambahan = SimpleUploadedFile("file.pdf", b"file_content")
+        )
+        self.lamaran.save()
+        self.lamaran2 = UserLamarMagang.objects.create(
+            application_letter = 'test lamaran application2',
+            lowongan_foreign_key = self.lowongan2,
+            user_foreign_key = self.account3,
+        )
+        self.lamaran2.save()
+        self.lamaran3 = UserLamarMagang.objects.create(
+            application_letter = 'test lamaran application2',
+            lowongan_foreign_key = self.lowongan1,
+            user_foreign_key = self.account4,
+        )
+        self.lamaran3.save()
+
+    def test_download_file_sukses(self):
+        response = self.client.get(url_download_file + str(self.account3.id)+'-'+str(self.lowongan1.id)+'/')
+        self.assertEqual(response.status_code,200)
+
+    def test_download_file_gagal(self):
+        response = self.client.get(url_download_file + str(self.account2.id)+'-'+str(self.lowongan1.id)+'/')
+        self.assertNotEqual(response.status_code,200)
+
+    def test_download_cv_sukses(self):
+        response = self.client.get(url_download_cv + str(self.account3.id)+'-'+str(self.lowongan1.id)+'/')
+        self.assertEqual(response.status_code,200)
+
+    def test_download_cv_gagal(self):
+        response = self.client.get(url_download_cv + str(self.account2.id)+'-'+str(self.lowongan1.id)+'/')
+        self.assertNotEqual(response.status_code,200)
+
+    def test_redirect_download_cv_yang_bukan_miliknya(self):
+        response = self.client.get(url_download_cv + str(self.account3.id)+'-'+str(self.lowongan2.id)+'/')
+        self.assertNotEqual(response.status_code,200)
+
+
+    def test_download_file_yang_bukan_miliknya(self):
+        response = self.client.get(url_download_file + str(self.account3.id)+'-'+str(self.lowongan2.id)+'/')
+        self.assertNotEqual(response.status_code,200)
+
+    def test_downloading_file_name(self):
+        response = self.client.get(url_download_file + str(self.account3.id)+'-'+str(self.lowongan1.id)+'/')
+        filename = self.lamaran.file_berkas_tambahan.name.split('/')[-1]
+        self.assertEquals(response.get('Content-Disposition'),'attachment; filename=%s' % filename )
+
+    def test_downloading_cv_file_name(self):
+        response = self.client.get(url_download_cv + str(self.account3.id)+'-'+str(self.lowongan1.id)+'/')
+        filename = self.account3.userprofile.cv.name.split('/')[-1]
+        self.assertEquals(response.get('Content-Disposition'),'attachment; filename=%s' % filename )
+
+    def test_jika_file_tidak_ada(self):
+        response = self.client.get(url_download_file + str(self.account4.id)+'-'+str(self.lowongan1.id)+'/')
+        self.assertEqual(response.status_code,200)
+
+    def test_jika_cv_kosong(self):
+        response = self.client.get(url_download_cv + str(self.account4.id)+'-'+str(self.lowongan1.id)+'/')
+        self.assertEqual(response.status_code,200)
+ 
