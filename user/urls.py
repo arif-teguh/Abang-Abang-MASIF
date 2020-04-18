@@ -1,6 +1,8 @@
-from django.urls import path
+from django.urls import path, include
 
 from . import views
+from .user_login_form import UserAuthenticationForm
+from django.contrib.auth.views import LoginView
 
 urlpatterns = [
     path('dashboard/', views.user_dashboard, name='user_dashboard'),
@@ -10,4 +12,18 @@ urlpatterns = [
     path('dashboard/edit/delete_cv/', views.delete_cv, name='delete_cv'),
     path('dashboard/api/get-all-lamaran-for-dashboard-table/', views.get_all_lamaran_for_dashboard_table,
          name='get_all_lamaran_for_dashboard_table'),
+    path('register/', views.user_register, name='user_register'),
+    path(
+        'login/',
+        LoginView.as_view(
+            template_name='user_login.html',
+            form_class=UserAuthenticationForm,),
+        name='user_login'),
+    path('verification/404', views.user_verification_not_found,
+         name="user_verification_not_found"),
+    path('verification/<str:token>', views.user_verification,
+         name="user_verification"),
+    path('verification/', views.user_verification_redirect,
+         name="user_verification_redirect"),
+    path('auth/', include('social_django.urls', namespace='social')),
 ]

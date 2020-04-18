@@ -74,8 +74,10 @@
                 </div>
             </div>
         {% else %}
-            <a class="nav-link" id="login-wide" href="/">Login <span class="sr-only">(current)</span></a>
+            <a class="nav-link" id="login-wide" href="/" data-toggle="modal" data-target="#pop-up-login">Login <span
+                    class="sr-only">(current)</span></a>
             <a class="nav-link" id="daftar-wide" href="/">Daftar<span class="sr-only">(current)</span></a>
+            {% include 'user/pop_up_login.html' %}
         {% endif %}
         <!-- End Of Widescreen Only -->
 

@@ -1,3 +1,4 @@
+import datetime
 from django.test import TestCase
 from django.test import Client
 from django.urls import resolve
@@ -8,22 +9,23 @@ from . import views
 
 
 # Create your tests here.
+mock_date = datetime.date(2012, 12, 12)
 
 class TestingDetailLowongan(TestCase):
     def setUp(self):
         self.account1 = Account.objects.create_superuser(email="test@mail.com", password="1234")
-        self.opd1 = Account.objects.all()[0]
         self.client.force_login(self.account1)
         self.lowongan1 = Lowongan.objects.create(
             judul='judul1',
-            penyedia='opd1',
-            jumlah_tersedia=10,
-            durasi_magang=10,
-            jangka_waktu_lamaran=10,
-            berkas='berkas1',
+            kategori='kat1',
+            kuota_peserta=10,
+            waktu_awal_magang=mock_date,
+            waktu_akhir_magang=mock_date,
+            batas_akhir_pendaftaran=mock_date,
+            berkas_persyaratan=['Kartu Keluarga'],
             deskripsi='deskripsi1',
             requirement='requirement1',
-            opd_foreign_key_id=self.opd1.id
+            opd_foreign_key_id=self.account1.id
         )
 
     def test_detail_lowongan_page_response_status(self):
