@@ -445,7 +445,7 @@ class UserLamarMagangModelTest(TestCase):
             application_letter="test",
             lowongan_foreign_key_id=self.lowongan3.id,
             user_foreign_key_id=self.user1.id,
-            status_lamaran="pending",
+            status_lamaran="MENUNGGU",
             notes_status_lamaran="Test"
         )
         self.lamar2 = UserLamarMagang.objects.create(
@@ -456,7 +456,7 @@ class UserLamarMagangModelTest(TestCase):
             application_letter="test",
             lowongan_foreign_key_id=self.lowongan8.id,
             user_foreign_key_id=self.user1.id,
-            status_lamaran="wawancara",
+            status_lamaran="WAWANCARA",
             notes_status_lamaran="Test"
         )
 
@@ -478,13 +478,13 @@ class UserLamarMagangModelTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_status_lamaran_default_pending(self):
-        self.assertEqual(self.lamar2.status_lamaran, "pending")
+        self.assertEqual(self.lamar2.status_lamaran, "MENUNGGU")
     
     def test_notes_status_lamaran_default_tidak_ada_catatan(self):
         self.assertEqual(self.lamar2.notes_status_lamaran, "Tidak Ada Catatan")
         
     def test_status_lamaran_not_default_pending(self):
-        self.assertNotEqual(self.lamar3.status_lamaran, "pending")
+        self.assertNotEqual(self.lamar3.status_lamaran, "MENUNGGU")
     
     def test_notes_status_lamaran_not_default_tidak_ada_catatan(self):
         self.assertNotEqual(self.lamar1.notes_status_lamaran, "Tidak Ada Catatan")

@@ -24,10 +24,10 @@ class Lowongan(models.Model):
 
 class UserLamarMagang(models.Model):
     CHOICE = (
-        ("diterima", "diterima"),
-        ("ditolak", "ditolak"),
-        ("wawancara", "wawancara"),
-        ("pending", "pending")
+        ("DITERIMA", "DITERIMA"),
+        ("DITOLAK", "DITOLAK"),
+        ("WAWANCARA", "WAWANCARA"),
+        ("MENUNGGU", "MENUNGGU")
     )
     application_letter = models.TextField(max_length=2000)
     file_berkas_tambahan = models.FileField()
@@ -35,5 +35,5 @@ class UserLamarMagang(models.Model):
                                              related_name='RelasiLowonganAndUser')
     user_foreign_key = models.ForeignKey(Account, on_delete=models.CASCADE,
                                          related_name='RelasiLowonganAndUser')
-    status_lamaran = models.CharField(max_length=20, default="pending", choices=CHOICE)
+    status_lamaran = models.CharField(max_length=20, default="MENUNGGU", choices=CHOICE)
     notes_status_lamaran = models.TextField(max_length=1000, default="Tidak Ada Catatan")

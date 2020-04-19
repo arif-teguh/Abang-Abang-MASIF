@@ -76,7 +76,7 @@ def update_lamar_lowongan(request, id_lowongan, lamaran):
     user_profile = user.userprofile
     opd = lowongan.opd_foreign_key
     status_lamaran = lamaran.status_lamaran
-    if status_lamaran == "diterima" or status_lamaran == "wawancara":
+    if status_lamaran == "DITERIMA" or status_lamaran == "WAWANCARA":
         response = {
             "is_pending":False,
             "lowongan":lamaran.lowongan_foreign_key.judul,
@@ -94,7 +94,7 @@ def update_lamar_lowongan(request, id_lowongan, lamaran):
             UserLamarMagang.objects.filter(
                 user_foreign_key=user,
                 lowongan_foreign_key=lowongan
-            ).update(status_lamaran="pending")
+            ).update(status_lamaran="MENUNGGU")
             if file_cv is not False:
                 user_profile.cv = file_cv
                 user_profile.save()
