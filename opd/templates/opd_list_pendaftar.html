@@ -1,87 +1,140 @@
+{% extends 'base.html' %}
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-<style>
-th, td {
-  border-bottom: 1px solid #ddd;
-}
-</style>
 <head>
-    <meta charset="UTF-8">
-    <link rel="stylesheet" type="text/css" href='{% static "/css/cari_lowongan.css" %}'>
+    {% block head %}
+        <meta charset="UTF-8">
+        <link rel="stylesheet" type="text/css" href='{% static "/css/landing.css" %}'>
+        <link rel="stylesheet" type="text/css" href='{% static "/css/accordion.css" %}'>
+        <link rel="stylesheet" type="text/css" href='{% static "/css/opd_list_pendaftar.css" %}'>
 
-    <style>
-        .opd-logo {
-            width: 120px;
-            height: 120px;
-        }
-
-        #container-dashboard-opd {
-            margin-top: 1em;
-        }
-    </style>
-
-
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-            crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
-            integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
-            crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
-            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
-            crossorigin="anonymous"></script>
-
-    <!-- Belom bisa pake static file -->
-    <link rel="stylesheet" type="text/css" href="./style.css">
-
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>List pendaftar</title>
+        <title>List pendaftar</title>
+        <style>
+            .inp {
+                padding: 0 18px;
+                display: none;
+                background-color: white;
+                overflow: hidden;
+            }
+        </style>
+    {% endblock %}
 </head>
 <body>
+{% block body %}
+    {% include 'navbar-no-bootstrap.html' %}
+    <br><br>
+    <div class="container">
+        <h1 id='p2'>Daftar Pelamar {{ lowongan.judul }}</h1>
+        <p id='p2'>Jumlah Pelamar : {{ lamaran.count }}</p>
 
-{% include 'navbar.html' %}     
-<br><br>
-<div class="container">
-<h1>Daftar Pelamar {{ lowongan.judul }}</h1>
-<p>Jumlah Pelamar : {{Jumlah}}</p>
-</div>
-<br>
-<div align="center">
-<table style="width:90%">
-  <tr>
-    <th>No</th>
-    <th>Nama</th>
-    <th></th>
-  </tr>
-{% for each in list_pelamar%}
+        <div class="accordion " id="accordionExample">
+            <div class="card">
+                <div class="card-header" id="headingOne">
+                    <div class="row">
+                        <div class="col-1"><h6>No.</h6></div>
+                        <div class="col-9"><h6>Nama</h6></div>
 
-  <tr>
-    <td id="count">{{ forloop.counter }}</td>
-    <td>{{ each.user.name }}</td>
-    <a href="/opd/lowongan/pendaftar/{{each.user.id}}/" >
-    <td>Lihat Detail</td>
-    </a>
-  </tr>
 
-{% endfor %}
+                    </div>
 
-</table>
+                </div>
 
-</div>
+            </div>
+            {% for item in lamaran %}
+                <div class="card">
+                    <div class="card-header" id="headingOne">
+                        <div class="row">
+                            <div class="col-1"><h6>{{ forloop.counter }}</h6></div>
+                            <div class="col-9"><h6>{{ item.user_foreign_key.name }}</h6></div>
+                            <div class="col-2">
 
+                                <h6 class="mb-0">
+                                    <a class="click-dropdown dropdown-toggle" data-toggle="collapse"
+                                       data-target="#collapse-{{ item.id }}">Lihat Detail</a>
+
+                                </h6>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div id="collapse-{{ item.id }}" class="collapse" aria-labelledby="headingOne">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-1">
+                                    <img class="foto-profil" src="/media/{{ item.user_foreign_key.profile_picture }}">
+                                </div>
+                                <div class="col-11 info-col">
+                                    <h6>{{ item.user_foreign_key.userprofile.education|upper }}
+                                        ({{ item.user_foreign_key.userprofile.major }})</h6>
+                                    <h6>{{ item.user_foreign_key.userprofile.institution }}</h6>
+                                    <span class="phone">{{ item.user_foreign_key.phone }}</span>
+                                    <span class="email">{{ item.user_foreign_key.email }}</span>
+                                    <span class="address">{{ item.user_foreign_key.userprofile.address }}</span>
+                                    <h6>Status lamaran : {{item.status_lamaran}}</h6>
+                                    <h6>Catatan dari opd : {{item.notes_status_lamaran}}</h6>
+                                </div>
+
+                            </div>
+                            <div class="row app-letter">
+                                <div class="col-3">
+                                    <h5>Application Letter</h5>
+                                </div>
+                                <div class="col-9">
+                                    <p style="white-space: pre-line">{{ item.application_letter }}</p>
+
+
+                                </div>
+
+                            </div>
+
+                            <a href="/opd/lowongan/cv_pendaftar-{{ item.user_foreign_key.id }}-{{ item.lowongan_foreign_key.id }}">
+                                <button class="btn btn-primary"> Unduh CV</button>
+                            </a>
+                            <a href="/opd/lowongan/file_tambahan-{{ item.user_foreign_key.id }}-{{ item.lowongan_foreign_key.id }}">
+                            <button class="btn btn-primary"> Unduh Berkas Tambahan</button>
+                            </a>
+
+                            <div class="row buttons-row justify-content-end">
+
+                                <div class="col-3">
+                                    <select id="select-{{ item.user_foreign_key.id }}" class="btn btn-primary">
+                                        <option value = "---"> --- </option>
+                                        <option value = "Diterima">Terima</option>
+                                        <option  value="Ditolak">Tolak</option>
+                                        <option   value="Menunggu wawancara">Wawancara</option>
+                                    </select>
+                                    
+                                    <label id='label-{{ each.user_foreign_key.id }}'></label><input type="text"  
+                                                                                                    class='inp'                                                                                                  
+                                                                                                    id="form-{{ item.user_foreign_key.id }}">
+                                    <h6></h6>
+                                    <button class="btn btn-primary"
+                                            onclick='redirect2({{ item.user_foreign_key.id }},{{ item.lowongan_foreign_key.id }})'>
+                                        kirim
+                                    </button>                 
+                                
+                                                                                                    
+                                
+                                </div>
+
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+
+
+        </div>
+    </div>
+    <script src='{% static "/js/list_pelamar.js" %}'></script>
+
+{% endblock %}
 </body>
 
 
-<script>
-var count = 0
-function counter() {
-  count = count + 1
-  return count ;
-}
-document.getElementById("count").innerHTML = count();
-</script>
 </html>

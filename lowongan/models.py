@@ -17,7 +17,7 @@ class Lowongan(models.Model):
     is_lowongan_masih_berlaku = models.BooleanField(default=True)
     opd_foreign_key = models.ForeignKey(Account, on_delete=models.CASCADE,
                                         related_name='lowongan')
-    list_pendaftar_key = models.ManyToManyField(UserProfile, null=True, blank=True)
+    list_pendaftar_key = models.ManyToManyField(UserProfile)
 
     def __str__(self):
         return self.judul
