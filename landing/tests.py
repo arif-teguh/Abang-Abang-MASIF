@@ -14,10 +14,11 @@ class LandingPageUnitTest(TestCase):
 
     def setUp(self):
         self.mock_date = datetime(2012, 1, 1)
-
+        self.email = 'a@a.com'
+        self.password = '12345678'
         self.created_mock_user = Account.objects.create_user(
-            email='a@a.com',
-            password='12341234',
+            email=self.email,
+            password=self.password,
         )
         self.created_mock_user.name = 'TestName'
         self.created_mock_user.is_user = True
