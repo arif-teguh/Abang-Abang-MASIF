@@ -7,6 +7,7 @@ from django.shortcuts import render, redirect
 from django.utils.datastructures import MultiValueDictKeyError
 from django.contrib import messages
 from django.contrib.sites.shortcuts import get_current_site
+from django.core.exceptions import ValidationError
 
 from account.models import Account
 from account.models import UserProfile
@@ -187,32 +188,39 @@ def get_all_lamaran_for_dashboard_table(request):
 
 
 def user_register(request):
+    err = []
     if request.method == 'POST':
         form = UserRegistrationForm(request.POST)
         if form.is_valid():
-            name = form.cleaned_data['user_name']
-            email = form.cleaned_data['email']
-            phone = form.cleaned_data['phone']
-            secret = generate_user_token()
-            password = form.cleaned_data['password']
-            new_account = UserVerificationList(
-                secret=secret,
-                name=name,
-                email=email,
-                phone=phone,
-                password=password
-            )
-            new_account.save()
-            base_url = get_current_site(request).domain
-            verif_url = base_url+'/user/verification/'+secret
-            send_verification_email(verif_url, email)
-            return render(
-                request,
-                'activation_link.html',
-            )
+            try:
+                form.check()
+                name = form.cleaned_data['user_name']
+                email = form.cleaned_data['email']
+                phone = form.cleaned_data['phone']
+                secret = generate_user_token()
+                password = form.cleaned_data['password']
+                new_account = UserVerificationList(
+                    secret=secret,
+                    name=name,
+                    email=email,
+                    phone=phone,
+                    password=password
+                )
+                new_account.save()
+                base_url = get_current_site(request).domain
+                verif_url = base_url+'/user/verification/'+secret
+                send_verification_email(verif_url, email)
+                return render(
+                    request,
+                    'activation_link.html',
+                )
+            except ValidationError as e:
+                err = e
     else:
         form = UserRegistrationForm()
-    return render(request, 'user/user_register.html', {'form': form})
+    return render(request,
+                  'user/user_register.html',
+                  {'form': form, 'err': err})
 
 
 def user_verification(request, token):

@@ -42,15 +42,21 @@ class UserRegistrationForm(forms.Form):
                 'placeholder': 'Ketik Ulang Password Anda',
             }))
 
-    def clean_email(self):
-        data = self.cleaned_data.get('email')
-        duplicate_users = Account.objects.filter(email=data)
-        temporary_users = UserVerificationList.objects.filter(email=data)
-        if duplicate_users.exists():
+    def check(self):
+        cleaned_data = super().clean()
+        email = cleaned_data.get("email")
+        err = []
+        try:
+            Account.objects.get(email=email)
             raise forms.ValidationError("Email is already registered!",
                                         code='email_exist')
-        if temporary_users.exists():
+        except Account.DoesNotExist as e:
+            err = e
+        try:
+            UserVerificationList.objects.get(email=email)
             raise forms.ValidationError(
                 "Check your inbox for confirmation link",
                 code='confirm_email')
-        return data
+        except UserVerificationList.DoesNotExist as e:
+            err = e
+        return err

@@ -4,17 +4,7 @@
         #submit-btn {
             width: 100%
         }
-
-        .admin-login-items {
-            margin-bottom: 1em;
-        }
-
-        .errorlist {
-            margin: 0;
-        }
     </style>
-
-
     <title>Daftar Pelamar</title>
 {% endblock %}
 {% block body %}
@@ -22,11 +12,11 @@
     <div class="container-fluid">
         <div class="row justify-content-center" style="height: 100vh">
             <div class="col-4 align-self-center">
-                {% if form.errors.email.as_json %}
+                {% for message in err %}
                     <div class="alert alert-danger" role="alert">
-                        {{ form.errors.email }}
+                        {{ message }}
                     </div>
-                {% endif %}
+                {% endfor %} 
                 <form method="POST" action="{% url 'user_register' %}"
                       oninput='id_confirm_password.setCustomValidity(id_confirm_password.value != id_password.value ? "Passwords do not match." : "")'
                 >
