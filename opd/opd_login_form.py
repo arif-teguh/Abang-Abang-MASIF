@@ -13,6 +13,9 @@ class OpdAuthenticationForm(AuthenticationForm):
         ,
         'inactive': "This account is inactive."
     }
+    # widget = forms.TextInput(attrs={'class': 'myfieldclass'})
+    # username = UsernameField(
+    #     widget= forms.TextInput(attrs={'autofocus': True, 'class': 'form-control', 'type': 'email'}))
 
     username = UsernameField(
         widget=forms.TextInput(

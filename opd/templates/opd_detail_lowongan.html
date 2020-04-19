@@ -1,14 +1,24 @@
+{% extends 'base.html' %}
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+<style>
+
+
+</style>
 <head>
-    <meta charset="UTF-8">
-    <link rel="stylesheet" type="text/css" href='{% static "/css/detail_lowongan.css" %}'>
-    <title>Detail Lowongan</title>
+  {% block head %}
+      <meta charset="UTF-8">
+      <link rel="stylesheet" type="text/css" href='{% static "/css/landing.css" %}'>
+      <link rel="stylesheet" type="text/css" href='{% static "/css/accordion.css" %}'>
+      <script src ='{% static "/js/accordion.js" %}'> </script>
+      <title>Detail Lowongan</title>
+      
+{% endblock %}
 </head>
 <body>
-
-{% include 'navbar.html' %}
+{% block body %}
+{% include 'navbar-no-bootstrap.html' %}
 
 <br><br>
 <div class="container" id="container-dashboard-opd">
@@ -34,18 +44,18 @@
         </div>
     </div>
 </div>
-<hr>
+<hr width="90%">
 <br>
 <br>
 
 <div class="container">
     <div class="row">
         <div class="col-8" style="text-align: left">
-            <strong id="bold-text">Deskripsi Job</strong>
+            <b id="bold-text">Deskripsi Job</b>
             <p>  {{lowongan.deskripsi}}  </p>
         </div>
         <div class="col-4" style="text-align: left"><br>
-            <strong id="bold-text">Detail</strong>
+            <b id="bold-text">Detail</b>
             <p>Tenaga yang dibutuhkan :{{ lowongan.kuota_peserta}}<br>
                 Waktu mulai  magang : {{ lowongan.waktu_awal_magang}}<br>
                 Waktu akhir magang : {{ lowongan.waktu_akhir_magang}}
@@ -58,7 +68,7 @@
     </div>
     <div class="row">
         <div class="col">
-        <strong id="bold-text">Requirement :</strong>  <br>
+        <b id="bold-text">Requirement :</b>  <br>
         
             {{lowongan.requirement}}<br>
             
@@ -68,7 +78,7 @@
 
     <div class="row">
         <div class="col">
-        <strong id="bold-text">Berkas :</strong>  <br>
+        <b id="bold-text">Berkas :</b>  <br>
         {% for each in lowongan.berkas_persyaratan  %}
             {{each}}<br>
             {% endfor %}
@@ -77,7 +87,7 @@
     </div>
 
 </div>
-
+{% endblock %}
 </body>
 </html>
 

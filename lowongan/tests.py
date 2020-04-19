@@ -17,6 +17,7 @@ str_surat_izin_sekolah = 'Surat Izin Sekolah'
 list_berkas = [str_kartu_keluarga]
 mock_date = datetime.date(2012, 12, 12)
 mock_date2 = datetime.date(2011, 11, 11)
+encypte_multipart = "multipart/form-data"
 
 class LowonganFormTest(TestCase):
 
@@ -313,12 +314,27 @@ class UserLamarMagangModelTest(TestCase):
             opd_foreign_key_id=self.opd1.id
         )
 
+        self.lowongan5 = Lowongan.objects.create(
+            judul='judul3',
+            kategori='kat2',
+            kuota_peserta=3,
+            waktu_awal_magang=mock_date,
+            waktu_akhir_magang=mock_date,
+            batas_akhir_pendaftaran=mock_date,
+            berkas_persyaratan=list_berkas,
+            deskripsi='deskripsi1',
+            requirement='requirement1',
+            opd_foreign_key_id=self.opd1.id
+        )
+
         self.client.force_login(self.account1)
 
         self.lamar1 = UserLamarMagang.objects.create(
             application_letter="test",
             lowongan_foreign_key_id=self.lowongan3.id,
-            user_foreign_key_id=self.user1.id
+            user_foreign_key_id=self.user1.id,
+            status_lamaran="Wawancara",
+            notes_status_lamaran="Test"
         )
         self.lamar2 = UserLamarMagang.objects.create(
             lowongan_foreign_key_id=self.lowongan4.id,
@@ -340,8 +356,20 @@ class UserLamarMagangModelTest(TestCase):
         self.client.force_login(self.account1)
         Account.objects.filter(pk=id_user).update(is_user=True)
         response = self.client.get(url_form_lamar+str(self.lowongan3.id)+"/")
-        self.assertEqual(response.status_code, 200)         
+        self.assertEqual(response.status_code, 200)
+
+    def test_status_lamaran_default_pending(self):
+        self.assertEqual(self.lamar2.status_lamaran, "Pending")
+    
+    def test_notes_status_lamaran_default_tidak_ada_catatan(self):
+        self.assertEqual(self.lamar2.notes_status_lamaran, "Tidak Ada Catatan")
         
+    def test_status_lamaran_not_default_pending(self):
+        self.assertNotEqual(self.lamar1.status_lamaran, "Pending")
+    
+    def test_notes_status_lamaran_not_default_tidak_ada_catatan(self):
+        self.assertNotEqual(self.lamar1.notes_status_lamaran, "Tidak Ada Catatan")
+
     def test_post_lamar(self):
         id_user = self.user1.id
         self.client.force_login(self.account1)
@@ -352,7 +380,7 @@ class UserLamarMagangModelTest(TestCase):
             "user_foreign_key_id":self.user1.id,
             "file_berkas_tambahan":self.test_file_cv
         }
-        self.client.post(url_form_lamar+str(self.lowongan4.id)+"/", enctype="multipart/form-data", data=data_form_lamar)
+        self.client.post(url_form_lamar+str(self.lowongan3.id)+"/", enctype=encypte_multipart, data=data_form_lamar)
         self.assertTrue(UserLamarMagang.objects.filter(application_letter="hei").exists())
 
     def test_is_not_user_to_lamar(self):
@@ -369,6 +397,22 @@ class UserLamarMagangModelTest(TestCase):
             "user_foreign_key_id":self.user1.id,
             "file_berkas_tambahan":self.test_file_cv
         }
-        response = self.client.post(url_form_lamar+"12800/", enctype="multipart/form-data", data=data_form_lamar)
+        response = self.client.post(url_form_lamar+"12800/", enctype=encypte_multipart, data=data_form_lamar)
         self.assertEqual(response.status_code, 302)
+    
+    def test_pass_when_cv_exist_dan_file_request_empty(self):
+        id_user = self.user1.id
+        self.user1.userprofile.cv = self.test_file_cv
+        self.user1.userprofile.save()
+        self.client.force_login(self.account1)
+        Account.objects.filter(pk=id_user).update(is_user=True)
+        data_form_lamar = {
+            "application_letter":"hei",
+            "lowongan_foreign_key_id":self.lowongan5.id,
+            "user_foreign_key_id":self.user1.id,
+            "file_berkas_tambahan":self.test_file_cv
+        }
+        response = self.client.post(url_form_lamar+str(self.lowongan5.id)+"/", enctype=encypte_multipart, data=data_form_lamar)
+        self.assertEqual(response.status_code, 302)
+        self.user1.userprofile.delete()
 
