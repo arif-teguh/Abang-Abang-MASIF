@@ -14,10 +14,11 @@ class LandingPageUnitTest(TestCase):
 
     def setUp(self):
         self.mock_date = datetime(2012, 1, 1)
-
+        self.email = 'a@a.com'
+        self.password = '12345678'
         self.created_mock_user = Account.objects.create_user(
-            email='a@a.com',
-            password='12341234',
+            email=self.email,
+            password=self.password,
         )
         self.created_mock_user.name = 'TestName'
         self.created_mock_user.is_user = True
@@ -45,6 +46,15 @@ class LandingPageUnitTest(TestCase):
     def test_landing_func_should_user_landing_function(self):
         found = resolve('/')
         self.assertEqual(found.func, views.landing)
+
+    def test_logout_func_fail_if_not_logged_in(self):
+        response = self.client.get('/logout/')
+        self.assertEqual(response.status_code, 302)
+
+    def test_logout_func_success_if_logged_in_redirect(self):
+        self.client.login(username=self.email, password=self.password)
+        response = self.client.get('/logout/')
+        self.assertEqual(response.status_code, 302)
 
     def add_10_lowongan_setup(self):
         test_lowongan = []
