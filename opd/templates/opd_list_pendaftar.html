@@ -103,11 +103,11 @@
                                 <div class="col-3">
                                     <select id="select-{{ item.user_foreign_key.id }}" class="btn btn-primary">
                                         <option value = "---"> --- </option>
-                                        <option value = "Diterima">Terima</option>
-                                        <option  value="Ditolak">Tolak</option>
-                                        <option   value="Menunggu wawancara">Wawancara</option>
+                                        <option value = "DITERIMA">Terima</option>
+                                        <option  value="DITOLAK">Tolak</option>
+                                        <option   value="WAWANCARA">Wawancara</option>
                                     </select>
-                                    
+                                    {% csrf_token %}
                                     <label id='label-{{ each.user_foreign_key.id }}'></label><input type="text"  
                                                                                                     class='inp'                                                                                                  
                                                                                                     id="form-{{ item.user_foreign_key.id }}">

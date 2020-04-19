@@ -28,15 +28,15 @@ for (i = 0; i < acc.length; i++) {
     var val = this.value
     label.style.display = "block";
     form.style.display = "block";
-    if(val.localeCompare('Diterima') == 0){
+    if(val.localeCompare('DITERIMA') == 0){
       form.type="datetime-local";
       label.innerHTML = 'Datang ke kesbangpol pada :'
     }
-    else if (val.localeCompare('Ditolak') == 0){
+    else if (val.localeCompare('DITOLAK') == 0){
       form.placeholder="Masukkan catatan"
       label.innerHTML = 'Tambahkan catatan :'
     }
-    else if (val.localeCompare('Menunggu wawancara') == 0){
+    else if (val.localeCompare('WAWANCARA') == 0){
       form.placeholder="Tanggal wawancara"
       label.innerHTML = 'Wawancara pada :'
     }
