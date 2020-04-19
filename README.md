@@ -22,7 +22,12 @@ for docker installation
    find . -path "*/migrations/*.pyc"  -delete
    docker-compose run web python manage.py makemigrations
    docker-compose run web python manage.py migrate
-  
+   
+   # Create superuser account
+   # You can user this superuser account to open django admin after you've start the app
+   # django admin url is 'localhost:8000/superuser'
+   docker-compose run web python manage.py createsuperuser
+   
    # Start the application
    $ docker-compose up
    
