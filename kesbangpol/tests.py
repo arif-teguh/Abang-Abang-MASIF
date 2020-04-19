@@ -191,7 +191,7 @@ class KesbangpolDashboardTest(TestCase):
         lamar = UserLamarMagang(application_letter='a',
                                 lowongan_foreign_key=lowongan,
                                 user_foreign_key=user,
-                                status_lamaran='Diterima')
+                                status_lamaran='DITERIMA')
         lamar.save()
 
         response = self.client.get('/kesbangpol/lamaran/'+str(lamar.id)+'/')

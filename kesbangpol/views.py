@@ -33,7 +33,7 @@ def kesbangpol_dashboard(request):
         return HttpResponseRedirect('/kesbangpol/login')
 
     user_diterima_opd = UserLamarMagang.objects.filter(
-        status_lamaran="Diterima")
+        status_lamaran="DITERIMA")
     return render(request, 'kesbangpol_dashboard.html',
                   {'user_diterima': user_diterima_opd,
                    'kesbangpol': request.user})
