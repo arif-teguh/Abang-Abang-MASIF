@@ -3,6 +3,7 @@
 }
 
 .card-lowongan-judul-lowongan {
+    overflow: hidden;
     margin-top: 10px;
     font-weight: bolder;
     margin-bottom: 0;
