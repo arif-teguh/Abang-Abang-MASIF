@@ -44,6 +44,7 @@ class Account(AbstractBaseUser):
     last_login = models.DateTimeField(verbose_name='last login', auto_now=True)
     is_superuser = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
+    is_kesbangpol = models.BooleanField(default=False)
     is_opd = models.BooleanField(default=False)
     is_user = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
@@ -122,7 +123,7 @@ class UserProfile(models.Model):
     def __str__(self):
         return "<USER Profile> Account : {}".format(self.user.email)
 
-        
+
 class PelamarProfile(models.Model):
     user = models.OneToOneField(
         Account,
@@ -134,3 +135,16 @@ class PelamarProfile(models.Model):
 
     def __str__(self):
         return "<PELAMAR Profile> {}".format(self.unique_pelamar_attribute)
+
+class KesbangpolProfile(models.Model):
+    user = models.OneToOneField(
+        Account,
+        on_delete=models.CASCADE,
+        primary_key=True, null=False, blank=False
+    )
+    # Temporary Attribute
+    unique_kesbangpol_attribute = models.CharField(max_length=60)
+
+    def __str__(self):
+        return "<KESBANGPOL Profile> {}".format(
+            self.unique_kesbangpol_attribute)

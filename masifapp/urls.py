@@ -34,6 +34,7 @@ urlpatterns = [
     #     # TESTING PATH dibawah ini
     #     path('user/', include('google_oauth2.urls')),
     path('user/', include('user.urls')),
+    path('kesbangpol/', include('kesbangpol.urls')),
 ]
 
 if settings.DEBUG:
