@@ -224,18 +224,20 @@ def user_register(request):
 
 
 def user_verification(request, token):
-    if request.get_full_path == '/user/verification/google-oauth2/':
-        print("hey")
-        print(user.email)
-        google_user = Account.objects.get(email=user.email)
-        google_user.name = "Pelamar"
-        google_user.phone = "081122232222"
-        google_user.is_user = True
-        google_user.save()
-        create_user = UserProfile(user=google_user, unique_pelamar_attribute='user')
-        create_user.save()
-        messages.success(request, 'User Verified')
-        return redirect("/")
+    if token == 'google-oauth2':
+        google_user = Account.objects.get(email=request.user.email)
+        google_is_user = google_user.is_user
+        if google_user.name == "" and google_user.phone == "" and not google_is_user:
+            google_user.name = "Pelamar"
+            google_user.phone = "081122232222"
+            google_user.is_user = True
+            google_user.save()
+            create_user = UserProfile(user=google_user, unique_pelamar_attribute='user')
+            create_user.save()
+            messages.success(request, 'User Verified')
+            return redirect("/")
+        else:
+            return redirect("/")
     else:
         try:
             user_from_verification_list = UserVerificationList.objects.get(

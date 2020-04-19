@@ -153,7 +153,7 @@ STATICFILES_DIRS = [
 LOGIN_URL = '/user/login/'
 LOGOUT_REDIRECT_URL = '/'
 LOGIN_REDIRECT_URL = '/account-redirector'
-SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/user/verification/'
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/user/verification/google-oauth2'
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), "media_cdn")
