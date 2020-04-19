@@ -3,6 +3,7 @@ from django.http import HttpRequest
 from django.test import TestCase, Client
 from django.urls import resolve
 from django.core import mail
+from django.core.exceptions import ValidationError
 
 from account.models import Account
 from admin import views
@@ -380,10 +381,16 @@ class EmailTest(TestCase):
         self.assertEqual(secret_length, 22)
 
 class OpdRegistrationTest(TestCase):
+    SECOND_EMAIL = 'a@a.com'
     def setUp(self):
         # Setup run before every test method.
         self.client = Client()
         self.request = HttpRequest()
+        self.SECRET = 'qdawedcvdswe1'
+        self.PHONE = '1234567'
+        self.DATA = {'opd_name': "test", 'email': TEST_EMAIL,
+                     'phone': self.PHONE,
+                     'secret': self.SECRET}
         Account.objects.create_superuser(email=TEST_EMAIL, password=TEST_PASSWORD)
         self.created_mock_user = Account.objects.all()[0]
         self.client.login(username=TEST_EMAIL, password=TEST_PASSWORD)
@@ -411,14 +418,51 @@ class OpdRegistrationTest(TestCase):
     def test_register_opd_page_not_authenticated(self):
         response = Client().get('/admin/listopd/register/')
         self.assertEqual(response.status_code, 302)
-        self.assertEqual('/admin/login', response.url)
+        self.assertEqual('/admin/login', response.url) 
+    
+    def test_create_opd_duplicated(self):
+        with self.assertRaises(ValidationError):
+            form = OpdRegistrationForm(self.DATA)
+            if form.is_valid():
+                form.check()
 
-    def test_create_opd(self):
+    def test_create_opd_form_failed_already_on_verification_list(self):
+        verification_list = OpdVerificationList(
+            secret=self.SECRET,
+            name="Test",
+            email=self.SECOND_EMAIL,
+            phone=self.PHONE
+        )
+        verification_list.save()
+
+        self.DATA['email'] = self.SECOND_EMAIL
+
+        with self.assertRaises(ValidationError):
+            form = OpdRegistrationForm(self.DATA)
+            if form.is_valid():
+                form.check()
+
+    def test_create_opd_form_success(self):
+        self.DATA['email'] = self.SECOND_EMAIL
+        form = OpdRegistrationForm(self.DATA)
+        if form.is_valid():
+            checked_form = form.check()
+        self.assertTrue(form.is_valid())
+        self.assertIsNotNone(checked_form)
+
+    def test_register_opd_failed_user_already_registered(self):
         user_count = OpdVerificationList.objects.count()
         response = self.client.post(
             "/admin/listopd/register/",
-            {'opd_name': "test", 'email': "test@test.com", 'phone': "123"})
+            self.DATA)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(OpdVerificationList.objects.count(), user_count)
+
+    def test_register_opd_success(self):
+        user_count = OpdVerificationList.objects.count()
+        self.DATA['email'] = self.SECOND_EMAIL
+        response = self.client.post(
+            "/admin/listopd/register/",
+            self.DATA)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(OpdVerificationList.objects.count(), user_count+1)
-        
-    
