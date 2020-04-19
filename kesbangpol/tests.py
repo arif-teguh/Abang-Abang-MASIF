@@ -108,3 +108,37 @@ class KesbangpolLoginTest(TestCase):
             }
         )
         self.assertEqual(response.status_code, 200)
+
+
+class KesbangpolDashboardTest(TestCase):
+    def setUp(self):
+        # Setup run before every test method.
+        self.client = Client()
+        self.request = HttpRequest()
+        self.email = "a@a.com"
+        self.password = "zxasqw12"
+        self.user_name = "abc"
+        self.phone = 1234
+        self.user_test_account = Account.objects.create_user(
+            email=self.email, password=self.password)
+        self.user_test_account.is_kesbangpol = True
+        self.user_test_account.save()
+
+    def tearDown(self):
+        # Clean up run after every test method.
+        pass 
+    
+    def test_dashboard_kesbangpol_redirect_if_not_login(self):
+        response = self.client.get('/kesbangpol/')
+        self.assertEqual(response.status_code, 302)
+
+    def test_dashboard_kesbangpol_200_if_login(self):
+        self.client.login(username=self.email, password=self.password)
+        response = self.client.get('/kesbangpol/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_dashboard_kesbangpol_html_if_user_login(self):
+        self.client.login(username=self.email, password=self.password) 
+        with self.assertTemplateUsed('kesbangpol_dashboard.html'):
+            response = self.client.get('/kesbangpol/')
+            self.assertEqual(response.status_code, 200)
