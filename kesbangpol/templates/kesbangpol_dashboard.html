@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block head %}
+    <link rel="stylesheet" href="/static/css/kebangpol/kesbangpol-dashboard.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css">
+    <script type="text/javascript" charset="utf8"
+            src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js"></script>
+    <script type="text/javascript" charset="utf8"
+            src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js"></script>
+    <title>Kesbangpol Dashboard</title>
+{% endblock %}
+
+{% block body %}
+    {% include 'navbar-no-bootstrap.html' %}
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-3 align-self-center">
+                <div class="text-center">
+                    <img src="/static/img/image 6.png" alt="kesbangpol-logo">
+                    <p>Dinas Depok</p>
+                </div>
+            </div>
+            <div class="col">
+                <h2>Kesatuan Bangsa dan Politik (Kesbangpol)</h1>
+                <h3>Pemerintah Kota Depok</h2>
+                <div class="mt-4">
+                    <p class="m-0">{{ kesbangpol.phone }}</p>
+                    <p class="m-0">{{ kesbangpol.email }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-5">
+            <div class="col">
+                <table id="user-accepted" class="table table-hover">
+                    <thead>
+                      <tr>
+                        <th scope="col">No</th>
+                        <th scope="col">Nama Pelamar</th>
+                        <th scope="col">Opd</th>
+                        <th scope="col">Verifikasi User</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in user_diterima %}
+                        <tr>
+                            <th scope="row" class="align-middle">{{ forloop.counter }}</th>
+                            <td class="align-middle">{{ user.user_foreign_key.name }}</td>
+                            <td class="align-middle">{{ user.lowongan_foreign_key.opd_foreign_key.name }}</td>
+                            <td class="align-middle"><a href=""><button type="button" class="btn btn-primary">Verifikasi</button></a></td>
+                          </tr>
+                        {% endfor %}
+                    </tbody>
+                  </table>
+            </div>
+        </div>
+    </div>
+    <script>
+        $(document).ready(function () {
+            $('#user-accepted').DataTable();
+        });
+
+
+    </script>
+{% endblock %}

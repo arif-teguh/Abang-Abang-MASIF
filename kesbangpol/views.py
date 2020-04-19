@@ -2,6 +2,7 @@ from django.shortcuts import render, HttpResponseRedirect
 from django.contrib.auth import authenticate, login
 from django.core.exceptions import ValidationError
 
+from lowongan.models import UserLamarMagang
 from .kesbangpol_login_form import KesbangpolAuthenticationForm
 # Create your views here.
 def kesbangpol_login(request):
@@ -23,3 +24,13 @@ def kesbangpol_login(request):
         form = KesbangpolAuthenticationForm()
 
     return render(request, 'kesbangpol_login.html', {'form': form, 'err': err})
+
+def kesbangpol_dashboard(request):
+    if not request.user.is_authenticated:
+        return HttpResponseRedirect('/kesbangpol/login')
+
+    user_diterima_opd = UserLamarMagang.objects.filter(
+        status_lamaran="Diterima")
+    return render(request, 'kesbangpol_dashboard.html',
+                  {'user_diterima': user_diterima_opd,
+                   'kesbangpol': request.user})
