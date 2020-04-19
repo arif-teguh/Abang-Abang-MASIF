@@ -4,18 +4,19 @@ from django.http import HttpResponse
 from django.core.exceptions import ObjectDoesNotExist 
 from lowongan.models import Lowongan , UserLamarMagang
 from django.shortcuts import render, redirect
-
+from django.views.decorators.csrf import csrf_exempt
 from lowongan.models import Lowongan
 from admin.models import OpdVerificationList
 from account.models import Account, OpdProfile  , UserProfile
 from .opd_confirmation_form import OpdConfirmationForm
 
 opd_home = '/opd/'
-URL_OPD_LOGIN = '/opd/login/'
+home = '/'
 
 def opd_login(request):
     return render(request, 'opd_login.html')
 
+@csrf_exempt
 def opd_update_lamaran(request , id_lowongan , id_user , status , catatan):
     try :
         userlamarmagang = UserLamarMagang.objects.get(user_foreign_key = id_user , lowongan_foreign_key = id_lowongan)
@@ -43,7 +44,7 @@ def opd_list_pendaftar(request, id_lowongan):
         else:
             return redirect(opd_home)
     else:
-        return redirect('/opd/login/')
+        return redirect(home)
 
 
 def opd_download_file(request ,id_user , id_lowongan):
@@ -87,28 +88,40 @@ def opd_download_cv(request ,id_user, id_lowongan ):
 #Fungsi untuk mengecek apakah opd yang 
 # mengakses data lowongan adalah opd terkait
 def cek_id_lowongan_dan_opd(request, id_lowongan):
-    lowongan = Lowongan.objects.get(id = id_lowongan)
-    if(lowongan.opd_foreign_key_id == request.user.id ):
-        return True
-    else:
+    try :
+        lowongan = Lowongan.objects.get(id = id_lowongan)
+        if(lowongan.opd_foreign_key_id == request.user.id ):
+            return True
+        else:
+            return False
+    except ObjectDoesNotExist :
         return False
 
-def opd_lowongan(request):
+def opd_home(request):
     if request.user.is_authenticated and request.user.is_opd:
         list_lowongan = Lowongan.objects.filter(opd_foreign_key = request.user.id)
         
         return render(request,'opd_lowongan.html', {'list_lowongan': list_lowongan})
     else:
-        return redirect('/opd/login/')
+        return redirect(home)
 
 
 def opd_detail_lowongan(request,id_lowongan):
-    if request.user.is_authenticated and request.user.is_opd:
-        list_lowongan = Lowongan.objects.filter(opd_foreign_key = request.user.id)
+    if cek_id_lowongan_dan_opd(request ,id_lowongan) :
         lowongan = Lowongan.objects.get(id = id_lowongan)
         return render(request,'opd_detail_lowongan.html' , {'lowongan': lowongan})
     else:
-        return redirect('/opd/login/')
+        return redirect(home)
+
+
+def opd_tutup_lowongan(request , id_lowongan):
+        if cek_id_lowongan_dan_opd(request ,id_lowongan):
+            lowongan = Lowongan.objects.get(id = id_lowongan)
+            lowongan.is_lowongan_masih_berlaku = not (lowongan.is_lowongan_masih_berlaku)
+            lowongan.save()
+            return redirect(opd_home)
+        else:
+            return redirect(home)
 
 def opd_verification(request, token):
     try:

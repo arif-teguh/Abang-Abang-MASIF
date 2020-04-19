@@ -10,8 +10,6 @@
   {% block head %}
       <meta charset="UTF-8">
       <link rel="stylesheet" type="text/css" href='{% static "/css/landing.css" %}'>
-      <link rel="stylesheet" type="text/css" href='{% static "/css/accordion.css" %}'>
-      <script src ='{% static "/js/accordion.js" %}'> </script>
       <title>Detail Lowongan</title>
       
 {% endblock %}
@@ -56,14 +54,17 @@
         </div>
         <div class="col-4" style="text-align: left"><br>
             <b id="bold-text">Detail</b>
-            <p>Tenaga yang dibutuhkan :{{ lowongan.kuota_peserta}}<br>
+            <p id ='demo'>{{lowongan.is_lowongan_masih_berlaku}}</p>
+            <p> Tenaga yang dibutuhkan :{{ lowongan.kuota_peserta}}<br>
                 Waktu mulai  magang : {{ lowongan.waktu_awal_magang}}<br>
                 Waktu akhir magang : {{ lowongan.waktu_akhir_magang}}
             </p>
             <a href='/lowongan/opd/form/edit/{{lowongan.id}}/'>
             <button type="button" class="btn btn-primary mt-auto">Edit Lowongan</button>
             </a>
-            <button type="button" class="btn btn-primary mt-auto">Tutup Lowongan</button>
+            <a href='/opd/lowongan/buka-tutup/{{lowongan.id}}/'>
+            <button type="button" id = 'tutup' class="btn btn-primary mt-auto">Tutup Lowongan</button>
+            </a>
         </div>
     </div>
     <div class="row">
@@ -85,7 +86,19 @@
             </p>
         </div>
     </div>
-
+<script>
+var demo =document.getElementById('demo');
+var button =document.getElementById('tutup');
+var text = 'Status lowongan :  '
+if(demo.innerHTML.localeCompare('True') == 0){
+    demo.innerHTML = text + 'Aktif';
+    button.innerHTML = 'Tutup Lowongan';
+}
+else{
+    demo.innerHTML = text + 'Tutup';
+    button.innerHTML = 'Buka Lowongan';
+}
+</script>
 </div>
 {% endblock %}
 </body>
