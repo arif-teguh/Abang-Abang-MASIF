@@ -9,7 +9,7 @@ from opd import views
 from account.models import Account , UserProfile
 from lowongan.models import Lowongan , UserLamarMagang
 from .opd_login_form import OpdAuthenticationForm
-
+home = '/'
 url_opd_login = '/opd/login/'
 url_opd_index = '/opd/'
 url_opd_lowongan_detail = '/opd/lowongan/detail-'
@@ -19,6 +19,7 @@ url_download_cv = '/opd/lowongan/cv_pendaftar-'
 url_update_lamaran = '/opd/proses-'
 test_email_addr = 'test@mail.com'
 kartu_keluarga = 'Kartu Keluarga'
+url_opd_tutup_buka_lowongan = '/opd/lowongan/buka-tutup/'
 mock_date = datetime.date(2012, 12, 12)
 
 class LoginOpdUnitTest(TestCase):
@@ -54,7 +55,7 @@ class LoginOpdUnitTest(TestCase):
     def test_opd_page_not_authenticated(self):
         response = Client().get(url_opd_index)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(url_opd_login, response.url)
+        self.assertEqual(home, response.url)
 
 class RedirectJikaBelumLogin(TestCase):
     def test_redirect_detail_lowongan(self):
@@ -83,7 +84,7 @@ class OpdRedirectUnitTest(TestCase):
         request.user.is_opd = True
         request.user.is_user = False
         request.user.is_superuser = False
-        response = views.opd_lowongan(request=request)
+        response = views.opd_home(request=request)
         self.assertEqual(response.status_code, 200)
 
     def test_admin_access_opd_page(self):
@@ -95,9 +96,9 @@ class OpdRedirectUnitTest(TestCase):
         request.user.is_opd = False
         request.user.is_user = False
         request.user.is_superuser = False
-        response = views.opd_lowongan(request=request)
+        response = views.opd_home(request=request)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual('/opd/login/', response.url)
+        self.assertEqual('/', response.url)
 
     def test_user_access_opd_page(self):
         request = HttpRequest()
@@ -108,9 +109,9 @@ class OpdRedirectUnitTest(TestCase):
         request.user.is_opd = False
         request.user.is_user = True
         request.user.is_superuser = False
-        response = views.opd_lowongan(request=request)
+        response = views.opd_home(request=request)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual('/opd/login/', response.url)
+        self.assertEqual('/', response.url)
     
     def test_user_access_opd_page(self):
         request = HttpRequest()
@@ -121,13 +122,13 @@ class OpdRedirectUnitTest(TestCase):
         request.user.is_opd = False
         request.user.is_user = True
         request.user.is_superuser = False
-        response = views.opd_lowongan(request=request)
+        response = views.opd_home(request=request)
         self.assertEqual(response.status_code, 302)
         self.assertNotEqual('/opd/lowongan/detail-3/', response.url)
 
     def test_using_opd_lowongan_func(self):
         found = resolve('/opd/')
-        self.assertEqual(found.func, views.opd_lowongan)
+        self.assertEqual(found.func, views.opd_home)
 
 
 class LowonganOpdUnitTest(TestCase):
@@ -155,14 +156,14 @@ class LowonganOpdUnitTest(TestCase):
     def test_click_lowongan_button_exist(self):
         request = HttpRequest()
         request.user = self.account1
-        response = views.opd_lowongan(request)
+        response = views.opd_home(request)
         html_response = response.content.decode('utf8')
         self.assertIn('<button ', html_response)
 
     def test_page_title_opd_lowongan(self):
         request = HttpRequest()
         request.user = self.account1
-        response = views.opd_lowongan(request)
+        response = views.opd_home(request)
         html_response = response.content.decode('utf8')
         self.assertIn('<title>OPD Dashboard</title>', html_response)
 
@@ -173,7 +174,7 @@ class LowonganOpdUnitTest(TestCase):
 
     def test_using_opd_lowongan_func(self):
         found = resolve(url_opd_index)
-        self.assertEqual(found.func, views.opd_lowongan)
+        self.assertEqual(found.func, views.opd_home)
 
     def test_response(self):
         response = self.client.get(url_opd_index)
@@ -392,7 +393,7 @@ class TestCekListPelamar(TestCase):
         response = self.client.get(url_update_lamaran  +
         str(self.account3.id)+'-'+str(self.lowongan1.id)
         +'/Diterima/25 maret/')
-        self.assertNotEqual(response.status_code,404)
+        self.assertEqual(response.url , url_opd_pelamar+str(self.lowongan1.id)+'/')
 
     def test_error_jika_user_tidak_melamar(self):
         response = self.client.get(url_update_lamaran  +
@@ -519,3 +520,32 @@ class TestOpdDownload(TestCase):
         response = self.client.get(url_download_cv + str(self.account4.id)+'-'+str(self.lowongan1.id)+'/')
         self.assertEqual(response.status_code,200)
  
+
+    def test_opd_tutup_lowongan(self):
+        response = self.client.get(url_opd_tutup_buka_lowongan + str(self.lowongan1.id)+'/')
+        self.assertNotEqual(response.status_code,404)
+    
+    def test_fake_opd_tutup_lowongan(self):
+        response = self.client.get(url_opd_tutup_buka_lowongan + str(self.lowongan1.id)+'/')
+        self.assertNotEqual(response.status_code,404)
+        self.assertEqual(url_opd_index , response.url)
+        
+
+    def test_opd_tutup_lowongan_palsu(self):
+        response = self.client.get(url_opd_tutup_buka_lowongan + '100/')
+        self.assertNotEqual(response.status_code,404)
+
+    def test_approve_lamaran_yang_bukan_miliknya(self):
+        response = self.client.get(url_update_lamaran  +
+        str(self.account3.id)+'-'+str(self.lowongan2.id)
+        +'/Diterima/25 maret/')
+        self.assertEqual(response.url , url_opd_index)
+
+    def test_opd_akses_detail_lowongan_bukan_miliknya(self):
+        response = self.client.get(url_opd_lowongan_detail +str(self.lowongan2.id) +'/' )
+        self.assertNotEqual(url_opd_lowongan_detail +str(self.lowongan2.id) +'/' , response.url)
+        self.assertEqual('/' , response.url)
+
+    def test_tutup_lowongan_yang_bukan_miliknya(self):
+        response = self.client.get(url_opd_tutup_buka_lowongan + str(self.lowongan2.id)+'/')
+        self.assertEqual('/' , response.url)
