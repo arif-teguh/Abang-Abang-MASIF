@@ -1,127 +1,122 @@
+{% extends 'admin/admin_base.html' %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    {% block head %}
 
-    <style>
-        #tambah-akun-btn {
-            margin-top: 2em;
-        }
-    </style>
+        <style>
+            #tambah-akun-btn {
+                margin-top: 2em;
+            }
+        </style>
 
-    <script
-            src="https://code.jquery.com/jquery-3.4.1.min.js"
-            integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
-            crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
-            integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
-            crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
-            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
-            crossorigin="anonymous"></script>
 
-    <!-- DataTables -->
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.css">
+        <!-- DataTables -->
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.css">
 
-    <script type="text/javascript" charset="utf8"
-            src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js"></script>
+        <script type="text/javascript" charset="utf8"
+                src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js"></script>
 
-    <!-- Belom bisa pake static file -->
-    <link rel="stylesheet" type="text/css" href="./style.css">
+        <!-- Belom bisa pake static file -->
+        <link rel="stylesheet" type="text/css" href="./style.css">
+        <title>Admin List OPD</title>
+    {% endblock %}
 
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Admin List OPD</title>
 </head>
 <body>
-<div class="container">
+{% block admin_body %}
 
-    <div class="row justify-content-end">
-        <a id="tambah-akun-btn" class="btn btn-primary" href="/admin/listopd/register" role="button">Tambah OPD</a>
-    </div>
 
-    <div class="row justify-content-center">
-        <h3>Daftar Akun OPD</h3>
-    </div>
-    <table id="example" class="display" style="width:100%">
-        <thead>
-        <tr>
-            <th>No</th>
-            <th>Nama OPD</th>
-            <th>Email</th>
-            <th>Telepon</th>
-            <th>Delete</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for opd in list_opd %}
+    <div class="container">
+
+        <div class="row justify-content-end">
+            <a id="tambah-akun-btn" class="btn btn-primary" href="/admin/listopd/register" role="button">Tambah OPD</a>
+        </div>
+
+        <div class="row justify-content-center">
+            <h3>Daftar Akun OPD</h3>
+        </div>
+        <table id="example" class="display" style="width:100%">
+            <thead>
             <tr>
-                <td> {{ forloop.counter }}</td>
-                <td> {{ opd.name }}</td>
-                <td> {{ opd.email }}</td>
-                <td> {{ opd.phone }}</td>
-                <td>
-                    <button class="btn btn-danger" data-toggle="modal" data-target="#exampleModalLong"
-                            onclick="deleteButton('{{ opd.pk }}', '{{ opd.name }}')">Delete
-                    </button>
-                </td>
+                <th>No</th>
+                <th>Nama OPD</th>
+                <th>Email</th>
+                <th>Telepon</th>
+                <th>Delete</th>
             </tr>
-        {% endfor %}
-        </tbody>
-        <tfoot>
-        </tfoot>
-    </table>
+            </thead>
+            <tbody>
+            {% for opd in list_opd %}
+                <tr>
+                    <td> {{ forloop.counter }}</td>
+                    <td> {{ opd.name }}</td>
+                    <td> {{ opd.email }}</td>
+                    <td> {{ opd.phone }}</td>
+                    <td>
+                        <button class="btn btn-danger" data-toggle="modal" data-target="#exampleModalLong"
+                                onclick="deleteButton('{{ opd.pk }}', '{{ opd.name }}')">Delete
+                        </button>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
 
-    <!-- Modal -->
-    <div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle"
-         aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    ...
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" id="deleteOPD" class="btn btn-danger" data-dismiss="modal">Hapus</button>
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog"
+             aria-labelledby="exampleModalLongTitle"
+             aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        ...
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" id="deleteOPD" class="btn btn-danger" data-dismiss="modal">Hapus</button>
+                    </div>
                 </div>
             </div>
         </div>
+
     </div>
 
-</div>
+    <script>
+        function deleteOPD(pk) {
+            $.post("/admin/listopd/deleteopd/", {'pk': pk.toString()}, function (result) {
+                location.reload();
+                console.log('POST>> ' + result);
+            })
+
+        }
+
+        function deleteButton(pk, name) {
+            console.log(pk, name);
+            $('.modal-title').text("HAPUS");
+            $('.modal-body').text("Yakin Hapus " + name + "?");
+            $('#deleteOPD').attr("onclick", "deleteOPD(" + pk + ")")
+        }
+
+        $(document).ready(function () {
+            $('#example').DataTable();
+
+
+        });
+
+
+    </script>
+{% endblock %}
+
 </body>
-
-<script>
-    function deleteOPD(pk) {
-        $.post("/admin/listopd/deleteopd/", {'pk': pk.toString()}, function (result) {
-            location.reload();
-            console.log('POST>> ' + result);
-        })
-
-    }
-
-    function deleteButton(pk, name) {
-        console.log(pk, name);
-        $('.modal-title').text("HAPUS");
-        $('.modal-body').text("Yakin Hapus " + name + "?");
-        $('#deleteOPD').attr("onclick", "deleteOPD(" + pk + ")")
-    }
-
-    $(document).ready(function () {
-        $('#example').DataTable();
-
-
-    });
-
-
-</script>
 
 
 </html>
