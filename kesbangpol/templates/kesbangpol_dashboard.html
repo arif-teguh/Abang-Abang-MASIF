@@ -8,6 +8,12 @@
     <script type="text/javascript" charset="utf8"
             src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js"></script>
     <title>Kesbangpol Dashboard</title>
+    <style>
+        pre {
+            font-size: 16px;
+            font-family: "Helvetica Neue";
+        }
+    </style>
 {% endblock %}
 
 {% block body %}
@@ -46,7 +52,7 @@
                             <th scope="row" class="align-middle">{{ forloop.counter }}</th>
                             <td class="align-middle">{{ user.user_foreign_key.name }}</td>
                             <td class="align-middle">{{ user.lowongan_foreign_key.opd_foreign_key.name }}</td>
-                            <td class="align-middle"><a href=""><button type="button" class="btn btn-primary">Verifikasi</button></a></td>
+                            <td class="align-middle"><button type="button" class="btn btn-primary" data-toggle="modal" onclick="showModal('{{ user.id }}')">Verifikasi</button></td>
                           </tr>
                         {% endfor %}
                     </tbody>
@@ -54,11 +60,48 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="modalUserDetail" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="container">
+                    <div class="row justify-content-md-center m-5">
+                        <div class="col">
+                            <h3>Verifikasi Calon Peserta Magang</h3>
+                        </div>
+                    </div>
+                    <div class="row m-5">
+                        <div class="col" id="content-details">
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>      
     <script>
         $(document).ready(function () {
             $('#user-accepted').DataTable();
         });
 
+        function showModal(id) {
+            $.ajax({
+                url : '/kesbangpol/lamaran/' + id + '/',
+                dataType : 'json',
+                type : 'GET',
+                success: function(data)
+                {
+                    $('#content-details').html('<pre class="tab">Nama                  : '+ data.name +'</pre>' +
+                    '<pre class="tab">Asal Sekolah/<br>Universitas          : '+ data.institution +'</pre>'+
+                    '<pre class="tab">OPD Terkait         : '+ data.opd + '</pre>'+
+                    '<pre class="tab">Detail Magang     : </pre>' +
+                    '<p class="pl-5">Judul Magang:    '+ data.judul + '</p>'+ 
+                    '<p class="pl-5">Divisi: '+ data.bagian + '</p>'+
+                    '<p class="pl-5">Durasi: '+ data.durasi +' Hari</p>')
+                    $('#modalUserDetail').modal('show')
+                }
+            })
+        }
 
     </script>
 {% endblock %}
