@@ -224,25 +224,38 @@ def user_register(request):
 
 
 def user_verification(request, token):
-    try:
-        user_from_verification_list = UserVerificationList.objects.get(
-            secret=token)
-        user_name = user_from_verification_list.name
-        email = user_from_verification_list.email
-        phone = user_from_verification_list.phone
-        password = user_from_verification_list.password
-    except UserVerificationList.DoesNotExist:
-        return redirect('/user/verification/404')
-    new_user = Account.objects.create_user(email, password)
-    new_user.name = user_name
-    new_user.phone = phone
-    new_user.is_user = True
-    new_user.save()
-    create_user = UserProfile(user=new_user, unique_pelamar_attribute='user')
-    create_user.save()
-    user_from_verification_list.delete()
-    messages.success(request, 'User Verified')
-    return redirect("/user/login")
+    if request.get_full_path == '/user/verification/google-oauth2/':
+        print("hey")
+        print(user.email)
+        google_user = Account.objects.get(email=user.email)
+        google_user.name = "Pelamar"
+        google_user.phone = "081122232222"
+        google_user.is_user = True
+        google_user.save()
+        create_user = UserProfile(user=google_user, unique_pelamar_attribute='user')
+        create_user.save()
+        messages.success(request, 'User Verified')
+        return redirect("/")
+    else:
+        try:
+            user_from_verification_list = UserVerificationList.objects.get(
+                secret=token)
+            user_name = user_from_verification_list.name
+            email = user_from_verification_list.email
+            phone = user_from_verification_list.phone
+            password = user_from_verification_list.password
+        except UserVerificationList.DoesNotExist:
+            return redirect('/user/verification/404')
+        new_user = Account.objects.create_user(email, password)
+        new_user.name = user_name
+        new_user.phone = phone
+        new_user.is_user = True
+        new_user.save()
+        create_user = UserProfile(user=new_user, unique_pelamar_attribute='user')
+        create_user.save()
+        user_from_verification_list.delete()
+        messages.success(request, 'User Verified')
+        return redirect("/user/login")
 
 
 def user_verification_redirect(request):
