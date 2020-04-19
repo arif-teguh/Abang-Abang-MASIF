@@ -75,7 +75,10 @@
                             <button type="button" class="btn btn-primary" onclick="click_upload_cv()">Ubah CV</button>
 
                         {% else %}
-                            <p>Anda belum menambahkan CV</p>
+                            <label for="id_file_cv">CV (format NamaAnda_CV.pdf):</label> 
+                            <span id="cv-file-name"><a id="cv_dir_awal">Anda belum menambahkan CV</a>
+                            </span>
+                            <input hidden type="file" name="file_cv"  id="id_file_cv">
                             <button type="button" class="btn btn-primary" onclick="click_upload_cv()">Unggah CV</button>
 
 
