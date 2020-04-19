@@ -1,0 +1,56 @@
+<link rel="stylesheet" href="/static/css/user/user-profile-detail-dashboard.css">
+
+<br>
+<div class="row justify-content-start">
+
+    <div id="profile-picture-col" class="col-12 col-sm-auto">
+        <div class="image-upload">
+            <label for="id_profile_picture">
+                {% if user.profile_picture %}
+                    <img style="image-orientation: flip;" id="profile_picture"
+                         src="/media/{{ user.profile_picture }}">
+                {% else %}
+                    <img id="profile_picture" src="/static/img/add_photo.png">
+                {% endif %}
+
+            </label>
+            <form id="form-profile-picture" method="post" enctype="multipart/form-data"
+                  action="{% url 'user_edit_upload_pp' %}">
+                {% csrf_token %}
+                <span style="display: none">{{ form_pp.profile_picture }}</span>
+
+            </form>
+
+        </div>
+    </div>
+    <div id="user-info-col" class="col-12 col-sm-auto align-self-center">
+        <span id="username">{{ user.name }}</span>
+        <br>
+        <span class="user-info-right-of-photo">{{ user.userprofile.education|title }}</span>
+        <br>
+        <span class="user-info-right-of-photo">{{ user.userprofile.institution }}</span>
+        <br>
+        <span class="user-info-right-of-photo phone-only">{{ user.phone }}</span>
+        <br>
+        <span class="user-info-right-of-photo phone-only">{{ user.email }}</span>
+        <br>
+        <span class="user-info-right-of-photo phone-only">{{ user.userprofile.address }}</span>
+
+    </div>
+
+
+</div>
+
+
+<button class="btn btn-outline-primary" onclick="window.location.href = '{% url 'user_edit_profile' %}'">Edit
+    Profil
+</button>
+
+<span class="widescreen-only">
+        <div class="row">
+            <div id="info-row-item-phone" class="col-12 col-sm-4 info-row-item">{{ user.phone }}</div>
+            <div class="col-12 col-sm-4 info-row-item">{{ user.email }}</div>
+            <div class="col-12 col-sm-4 info-row-item">{{ user.userprofile.address }}</div>
+        </div>
+    </span>
+<div class="info-horizontal-separator"></div>
