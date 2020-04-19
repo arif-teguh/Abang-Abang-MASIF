@@ -5,6 +5,7 @@ from django.http import HttpRequest
 from django.test import TestCase, Client, override_settings
 from selenium import webdriver
 from social_django.compat import reverse
+from django.core.exceptions import ValidationError
 
 from account.models import Account, UserProfile
 from lowongan.models import UserLamarMagang, Lowongan
@@ -15,6 +16,7 @@ from user.views import born_date_validator, sex_validator, phone_number_validato
 from .models import UserVerificationList
 from .token import generate_user_token
 from .user_login_form import UserAuthenticationForm
+from .user_registration_form import UserRegistrationForm
 
 URL_USER_LOGIN = '/user/login/'
 
@@ -27,6 +29,9 @@ class PelamarRegistrationTest(TestCase):
         self.password = "zxasqw12"
         self.user_name = "abc"
         self.phone = 1234
+        self.DATA = {'user_name': self.user_name, 'email': self.email,
+                     'phone': self.phone, 'password': self.password,
+                     'confirm_password': self.password}
 
     def tearDown(self):
         # Clean up run after every test method.
@@ -52,16 +57,54 @@ class PelamarRegistrationTest(TestCase):
         secret_len = len(secret)
         self.assertEqual(secret_len, 22)
 
-    def test_create_user(self):
+    def test_create_user_success(self):
         user_count = UserVerificationList.objects.count()
         response = self.client.post(
             "/user/register/",
-            {'user_name': self.user_name, 'email': self.email,
-             'phone': self.phone, 'password': self.password,
-             'confirm_password': self.password})
+            self.DATA)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(UserVerificationList.objects.count(), user_count + 1)
+    
+    def test_create_user_failed(self):
+        user_count = UserVerificationList.objects.count()
 
+        new_account = Account.objects.create_user(email=self.email,
+                                                  password=self.password)
+        new_account.is_user = True
+        new_account.save()
+
+        response = self.client.post(
+            "/user/register/",
+            self.DATA
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(UserVerificationList.objects.count(), user_count)
+
+    def test_user_registration_form_fail_duplicate_user(self):
+        new_account = Account.objects.create_user(email=self.email,
+                                                  password=self.password)
+        new_account.is_user = True
+        new_account.save()
+
+        with self.assertRaises(ValidationError):
+            form = UserRegistrationForm(self.DATA)
+            if form.is_valid():
+                form.check()
+
+    def test_user_registration_form_fail_user_on_verification_list(self):
+        user_on_waitinglist = UserVerificationList(
+            secret='1sdeja2sdfdf',
+            name=self.user_name,
+            email=self.email,
+            phone=self.phone,
+            password=self.password
+        )
+        user_on_waitinglist.save()
+
+        with self.assertRaises(ValidationError):
+            form = UserRegistrationForm(self.DATA)
+            if form.is_valid():
+                form.check()
 
 class PelamarValidationTest(TestCase):
     def setUp(self):
