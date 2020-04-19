@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+
+{% block head %}
+    <link rel="stylesheet" href="/static/css/kebangpol/kesbangpol-dashboard.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css">
+    <script type="text/javascript" charset="utf8"
+            src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js"></script>
+    <script type="text/javascript" charset="utf8"
+            src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js"></script>
+    <title>Kesbangpol Dashboard</title>
+    <style>
+        pre {
+            font-size: 16px;
+            font-family: "Helvetica Neue";
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    {% include 'navbar-no-bootstrap.html' %}
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-3 align-self-center">
+                <div class="text-center">
+                    <img src="/static/img/image 6.png" alt="kesbangpol-logo">
+                    <p>Dinas Depok</p>
+                </div>
+            </div>
+            <div class="col">
+                <h2>Kesatuan Bangsa dan Politik (Kesbangpol)</h1>
+                <h3>Pemerintah Kota Depok</h2>
+                <div class="mt-4">
+                    <p class="m-0">{{ kesbangpol.phone }}</p>
+                    <p class="m-0">{{ kesbangpol.email }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-5">
+            <div class="col">
+                <table id="user-accepted" class="table table-hover">
+                    <thead>
+                      <tr>
+                        <th scope="col">No</th>
+                        <th scope="col">Nama Pelamar</th>
+                        <th scope="col">Opd</th>
+                        <th scope="col">Verifikasi User</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in user_diterima %}
+                        <tr>
+                            <th scope="row" class="align-middle">{{ forloop.counter }}</th>
+                            <td class="align-middle">{{ user.user_foreign_key.name }}</td>
+                            <td class="align-middle">{{ user.lowongan_foreign_key.opd_foreign_key.name }}</td>
+                            <td class="align-middle"><button type="button" class="btn btn-primary" data-toggle="modal" onclick="showModal('{{ user.id }}')">Verifikasi</button></td>
+                          </tr>
+                        {% endfor %}
+                    </tbody>
+                  </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalUserDetail" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="container">
+                    <div class="row justify-content-md-center m-5">
+                        <div class="col">
+                            <h3>Verifikasi Calon Peserta Magang</h3>
+                        </div>
+                    </div>
+                    <div class="row m-5">
+                        <div class="col" id="content-details">
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>      
+    <script>
+        $(document).ready(function () {
+            $('#user-accepted').DataTable();
+        });
+
+        function showModal(id) {
+            $.ajax({
+                url : '/kesbangpol/lamaran/' + id + '/',
+                dataType : 'json',
+                type : 'GET',
+                success: function(data)
+                {
+                    $('#content-details').html('<pre class="tab">Nama                  : '+ data.name +'</pre>' +
+                    '<pre class="tab">Asal Sekolah/<br>Universitas          : '+ data.institution +'</pre>'+
+                    '<pre class="tab">OPD Terkait         : '+ data.opd + '</pre>'+
+                    '<pre class="tab">Detail Magang     : </pre>' +
+                    '<p class="pl-5">Judul Magang:    '+ data.judul + '</p>'+ 
+                    '<p class="pl-5">Divisi: '+ data.bagian + '</p>'+
+                    '<p class="pl-5">Durasi: '+ data.durasi +' Hari</p>')
+                    $('#modalUserDetail').modal('show')
+                }
+            })
+        }
+
+    </script>
+{% endblock %}

@@ -11,67 +11,23 @@
 
 ## Setup Development
 
-1. **Install and Setup the Pyenv**
-
-    For MacOs & Debian/Ubuntu users:
-    
-   ```shell
-   # Install 
-   $ brew install pyenv     # MacOS
-   $ apt-get install pyenv  # Debian/Ubuntu
-   
-   # Setup Pyenv requirement
-   # Depends on your system, you can change .zshrc to .bashrc or .bash_profile
-   $ echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.zshrc    
-   $ echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.zshrc
-   $ echo -e 'if command -v pyenv 1>/dev/null 2>&1; then\n  eval "$(pyenv init -)"\nfi' >> ~/.zshrc
-   $ exec "$SHELL"
-   
-   # Install and Using Python 3.7.6
-   $ pyenv install 3.7.6
-   $ pyenv global 3.7.6
-   
-   ```
-   
-   For Windows users: Follow [this](https://github.com/pyenv-win/pyenv-win) steps
-   
-   If you found any problem, you can visit [pyenv](https://github.com/pyenv/pyenv) repo.
-
-2. **Setup Pipenv**
-
-   Setup Pipenv for easier virtual environment (venv) and package manager 
-
-   ```shell
-   # Install Pipenv
-   $ pip install pipenv
-   
-   # Install all packages and creating virtual environment
-   $ pipenv install
-   
-   ```
-
-3. **Use the Virtual Environment**
-
-   Start the virtual environment (venv):
-
-   ```shell
-   $ pipenv shell
-   ```
-   
-   If you want to exit the virtual environment, use:
-   
-   ```shell
-   $ deactivate
-   ```
-   
-4. **Happy Developing!**
- 
-### Optional: Develop Using Docker
+### Develop Using Docker
 
 Make sure docker installed on your machine. Follow [this steps](https://docs.docker.com/install/) 
 for docker installation
    
   ```shell
+   # Reset migration for new Device, skip this if you've run this app before
+   find . -path "*/migrations/*.py" -not -name "__init__.py" -delete
+   find . -path "*/migrations/*.pyc"  -delete
+   docker-compose run web python manage.py makemigrations
+   docker-compose run web python manage.py migrate
+   
+   # Create superuser account
+   # You can user this superuser account to open django admin after you've start the app
+   # django admin url is 'localhost:8000/superuser'
+   docker-compose run web python manage.py createsuperuser
+   
    # Start the application
    $ docker-compose up
    

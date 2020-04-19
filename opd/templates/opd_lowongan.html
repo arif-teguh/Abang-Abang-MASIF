@@ -1,7 +1,9 @@
+{% extends 'base.html' %}
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
+{% block head %}
     <meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" href='{% static "/css/cari_lowongan.css" %}'>
 
@@ -35,10 +37,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>OPD Dashboard</title>
+    {% endblock %}
 </head>
 <body>
-
-{% include 'navbar.html' %}     
+{% block body %}
+{% include 'navbar-no-bootstrap.html' %}
 <div class="container" id="container-dashboard-opd">
     <div class="row">
         <div class="col">
@@ -91,6 +94,6 @@
     {% endfor %}
 
 </div>
-
+{% endblock %}
 </body>
 </html>

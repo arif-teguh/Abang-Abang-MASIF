@@ -1,10 +1,9 @@
-<link rel="stylesheet" type="stylesheet" href="static/css/navbar-no-bootstrap.css">
-
+<link rel="stylesheet" href="/static/css/navbar-no-bootstrap.css">
 
 <!-- Widescreen Only -->
 <div class="d-none d-sm-block">
     <div class="row" id="top-logo-row">
-        <img id="masif-logo-pic" class="masif-logo" src="/static/img/image%201.png"/>
+        <img id="masif-logo-pic" class="masif-logo" src="/static/img/image%201.png" alt="logo" />
         <div id="masif-logo-separator" class="masif-logo"></div>
         <div id="masif-top-title" class="masif-logo">
             <h4>MASIF</h4>
@@ -15,7 +14,7 @@
 </div>
 <!-- End Of Widescreen Only -->
 {#<img id="masif-logo" src="/static/img/image%201.png">#}
-<nav class="navbar navbar-expand-lg navbar-dark bg-masif-blue">
+<nav class="navbar navbar-expand-sm navbar-dark bg-masif-blue">
     <!-- Vertical Phone Only -->
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
@@ -23,19 +22,39 @@
                 <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item active">
-                <a class="nav-link" href="#">Cari Lowongan <span class="sr-only">(current)</span></a>
+                <a class="nav-link" href="/cari-lowongan/">Cari Lowongan <span class="sr-only">(current)</span></a>
             </li>
             <!-- Vertical Phone Only -->
             {% if request.user.is_authenticated %}
                 <li class="nav-item dropdown d-block d-sm-none">
                     <a class="navbar-account nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                        data-toggle="dropdown"
-                       aria-haspopup="true" aria-expanded="false">
+                       aria-haspopup="true" aria-expanded="false" style="color:white;">
                         {{ request.user.name }}
+                        {% if request.user.is_opd %}
+
+                            <span class="badge badge-primary">OPD</span>
+                        {% endif %}
+
+                        {% if request.user.is_admin %}
+
+                            <span class="badge badge-warning" style="color: white">ADMIN</span>
+                        {% endif %}
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="{% url 'user_dashboard' %}">Profile</a>
-                        <div class="dropdown-divider"></div>
+                        {% if request.user.is_opd %}
+                            <a class="dropdown-item" href="/opd/">Halaman OPD</a>
+                            <div class="dropdown-divider"></div>
+                        {% endif %}
+                        {% if request.user.is_admin %}
+                            <a class="dropdown-item" href="/admin/">Halaman ADMIN</a>
+                            <div class="dropdown-divider"></div>
+
+                        {% endif %}
+                        {% if request.user.is_user %}
+                            <a class="dropdown-item" href="{% url 'user_dashboard' %}">Profile</a>
+                            <div class="dropdown-divider"></div>
+                        {% endif %}
                         <a class="dropdown-item" href="/logout/">Keluar</a>
                     </div>
                 </li>
@@ -66,25 +85,52 @@
                    data-toggle="dropdown"
                    aria-haspopup="true" aria-expanded="false">
                     {{ request.user.name }}
+                    {% if request.user.is_opd %}
+
+                        <span class="badge badge-primary">OPD</span>
+                    {% endif %}
+
+                    {% if request.user.is_admin %}
+
+                        <span class="badge badge-warning" style="color: white">ADMIN</span>
+                    {% endif %}
                 </a>
                 <div class="dropdown-menu dropdown-menu-right " aria-labelledby="navbarDropdown">
-                    <a class="dropdown-item" href="{% url 'user_dashboard' %}">Profile</a>
-                    <div class="dropdown-divider"></div>
+                    {% if request.user.is_opd %}
+                        <a class="dropdown-item" href="/opd/">Halaman OPD</a>
+                        <div class="dropdown-divider"></div>
+
+                    {% endif %}
+
+
+                    {% if request.user.is_admin %}
+                        <a class="dropdown-item" href="/admin/">Halaman ADMIN</a>
+                        <div class="dropdown-divider"></div>
+
+                    {% endif %}
+
+                    {% if request.user.is_user %}
+                        <a class="dropdown-item" href="{% url 'user_dashboard' %}">Profile</a>
+                        <div class="dropdown-divider"></div>
+
+                    {% endif %}
+
                     <a class="dropdown-item" href="/logout/">Keluar</a>
                 </div>
             </div>
         {% else %}
-            <a class="nav-link" id="login-wide" href="/" data-toggle="modal" data-target="#pop-up-login">Login <span
+            <a class="nav-link" id="login-wide" href="/user/login/">Login<span class="sr-only">(current)</span></a>
+
+            <a class="nav-link" id="daftar-wide" href="{% url 'user_register' %}">Daftar<span
                     class="sr-only">(current)</span></a>
-            <a class="nav-link" id="daftar-wide" href="/">Daftar<span class="sr-only">(current)</span></a>
-            {% include 'user/pop_up_login.html' %}
+
         {% endif %}
         <!-- End Of Widescreen Only -->
 
     </div>
     <!-- END OF Vertical Phone Only -->
     <div class="navbar-brand d-block d-sm-none" href="#">
-        {#        <img id="masif-logo" src="/static/img/image%201.png">#}
+        {#        <img id="masif-logo" src="/static/img/image%201.png" alt="logo">#}
 
         MASIF
 

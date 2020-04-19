@@ -56,6 +56,7 @@
     <script>
         let choices = {{choice_select_field|safe}}
         $( document ).ready(function() {
+            $('.selectsingle').select2({placeholder: 'Select an option'});
             $('.selectpicker').val(choices);
             $('.selectpicker').trigger('change');
             $('.selectpicker').select2({tags: true, tokenSeparators: [',','.',';']});

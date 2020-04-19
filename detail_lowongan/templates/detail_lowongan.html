@@ -10,57 +10,50 @@
 
 {% include 'navbar.html' %}
 
-<div class="pg-container">
-    <div class="outer-box">
-        <div class="row inner-box">
-            <div class="col-2 col1">
-                <img src="{% static 'img/image 6.png' %}">
-                <p>Dinas Depok</p>
+{% for i in data %}
+    <div class="pg-container">
+        <div class="outer-box">
+            <div class="row inner-box">
+                <div class="col-2 col1">
+                    <img src="{% static 'img/image 6.png' %}">
+                    <p>Dinas Depok</p>
+                </div>
+                <div class="col-9 align-self-center col2">
+                    <p id="judul-lowongan">{{ i.judul }}</p>
+                    <p>{{ i.kategori }}</p>
+                    <p>{{ i.batas_akhir_pendaftaran }}</p>
+                </div>
+                <div class="col-1 d-flex align-items-end flex-column col3">
+                    <button type="button" class="btn btn-primary mt-auto disabled">Lamar</button>
+                </div>
             </div>
-            <div class="col-9 align-self-center col2">
-                <p id="judul-lowongan">Mobile Developer Intern</p>
-                <p>IT | Magang</p>
-                <p>10 Januari 2020</p>
-            </div>
-            <div class="col-1 d-flex align-items-end flex-column col3">
-                <button type="button" class="btn btn-primary mt-auto disabled">Lamar</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="container">
-    <div class="row">
-        <div class="col-8" style="text-align: left">
-            <b id="bold-text">Deskripsi Job</b>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-                tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-                veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-                commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-                velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
-                cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id
-                est laborum.</p>
-        </div>
-        <div class="col-4" style="text-align: left">
-            <b id="bold-text">Detail</b>
-            <p>Tenaga yang dibutuhkan : 10<br>
-                Durasi magang : 3 bulan
-            </p>
-            <button type="button" class="btn btn-primary mt-auto">Lamar Sekarang</button>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col">
-            <b id="bold-text">Syarat</b>
-            <p>1. Sedang menempuh pendidikan SMK/sederajat<br>
-                2.<br>
-                3.<br>
-                4.
-            </p>
         </div>
     </div>
 
-</div>
+    <div class="container">
+        <div class="row">
+            <div class="col-8" style="text-align: left">
+                <b id="bold-text">Deskripsi Job</b>
+                <p>{{ i.deskripsi }}</p>
+            </div>
+            <div class="col-4" style="text-align: left">
+                <b id="bold-text">Detail</b>
+                <p>Tenaga yang dibutuhkan : {{ i.kuota_peserta }}<br>
+                    Durasi magang : {{ i.waktu_awal_magang }} - {{ i.waktu_akhir_magang }}
+                </p>
+                <button type="button" class="btn btn-primary mt-auto">Lamar Sekarang</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <b id="bold-text">Syarat</b>
+                <p>
+                    {{ i.requirement }}
+                </p>
+            </div>
+        </div>
+    </div>
+{% endfor %}
 
 </body>
 </html>
