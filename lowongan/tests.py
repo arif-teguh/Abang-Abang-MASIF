@@ -1,4 +1,6 @@
 import datetime
+import json
+import shutil
 from django.test import TestCase, Client
 from django.urls import resolve
 from django.apps import apps
@@ -18,6 +20,12 @@ list_berkas = [str_kartu_keluarga]
 mock_date = datetime.date(2012, 12, 12)
 mock_date2 = datetime.date(2011, 11, 11)
 encypte_multipart = "multipart/form-data"
+kategori_json_dir = 'templates/lowongan/kategori.json'
+edit_kategori_url = "/lowongan/admin/edit-kategori/"
+url_form_edit_kategori = "/lowongan/admin/form/edit-kategori/"
+templates_dir = "templates/"
+template_lowongan_dir = templates_dir+"lowongan/"
+template_json_dir = templates_dir+"kategori.json"
 
 class LowonganFormTest(TestCase):
 
@@ -49,7 +57,7 @@ class LowonganFormTest(TestCase):
         Account.objects.filter(pk=self.user.id).update(is_opd=False)
         response = self.client.get(url_form_lowongan)
         self.assertEqual(response.status_code, 302)
-    
+
     def test_form_init_form_to_create_choice_update_form(self):
         choice = (
                 (str_kartu_keluarga, str_kartu_keluarga),
@@ -146,10 +154,74 @@ class LowonganFormTest(TestCase):
             "deskripsi" :'deskripsi1',
             "requirement" :'requirement1',
             "opd_foreign_key_id" :self.user.id
-        }   
+        }
         response = self.client.post(url_form_lowongan+"edit/"+str(id_lowongan)+"/", data_form_lowongan)
         self.assertTrue(Lowongan.objects.filter(judul="IniUpdate").exists())
         self.assertEqual(response.status_code, 302)
+
+    def test_edit_kategori_oleh_admin(self):
+        Account.objects.filter(pk=self.user.id).update(is_admin=True)
+        with open(kategori_json_dir) as kategori_json:
+            backup_kategori_json = json.load(kategori_json)
+        print(backup_kategori_json)
+
+        data_form_lowongan = {
+            "kategori" : ["Test"]
+        }
+
+        self.client.post(edit_kategori_url, data_form_lowongan)
+        with open(kategori_json_dir) as kategori_json:
+            test_kategori_json = json.load(kategori_json)
+        print(test_kategori_json)
+
+        self.assertNotEqual(backup_kategori_json, test_kategori_json)
+
+        with open(kategori_json_dir, 'w') as kategori_json:
+            json.dump(backup_kategori_json, kategori_json)
+
+    def test_edit_kategori_not_admin(self):
+        data_form_lowongan = {
+            "kategori" : ["Test"]
+        }
+        response = self.client.post(edit_kategori_url, data_form_lowongan)
+        self.assertEqual(response.status_code, 302)
+
+    def test_redirect_when_get_edit_kategori(self):
+        Account.objects.filter(pk=self.user.id).update(is_admin=True)
+        response = self.client.get(edit_kategori_url, {"Pass":"Error"})
+        self.assertEqual(response.status_code, 302)
+
+    def test_redirect_when_file_kategori_json_not_found(self):
+        shutil.move(kategori_json_dir, templates_dir)
+        Account.objects.filter(pk=self.user.id).update(is_admin=True)
+        data_form_lowongan = {
+            "kategori" : ["Test"]
+        }
+        response = self.client.post(edit_kategori_url, data_form_lowongan)
+        self.assertEqual(response.status_code, 302)
+        shutil.move(template_json_dir, template_lowongan_dir)
+
+    def test_form_lamaran_success_made_when_file_not_found(self):
+        shutil.move(kategori_json_dir, templates_dir)
+        mock_form_lowongan = LowonganForm()
+        self.assertIsInstance(mock_form_lowongan, LowonganForm)
+        shutil.move(template_json_dir, template_lowongan_dir)
+
+    def test_show_form_edit_lowongan_not_admin(self):
+        response = self.client.get(url_form_edit_kategori)
+        self.assertNotEqual(response.status_code, 200)
+
+    def test_show_form_edit_lowongan_admin(self):
+        Account.objects.filter(pk=self.user.id).update(is_admin=True)
+        response = self.client.get(url_form_edit_kategori)
+        self.assertEqual(response.status_code, 200)
+
+    def test_show_form_edit_lowongan_file_not_found(self):
+        shutil.move(kategori_json_dir, templates_dir)
+        Account.objects.filter(pk=self.user.id).update(is_admin=True)
+        response = self.client.get(url_form_edit_kategori)
+        self.assertNotEqual(response.status_code, 200)
+        shutil.move(template_json_dir, template_lowongan_dir)
 
 class LowonganModelTest(TestCase):
     def setUp(self):
@@ -281,6 +353,7 @@ class UserLamarMagangModelTest(TestCase):
         user_profile = UserProfile(user=self.user1)
         user_profile.save()
         self.test_file_cv = SimpleUploadedFile("testcv.pdf", b"file_content")
+        self.test_file_cv_2 = SimpleUploadedFile("testcv2.pdf", b"file_content")
 
         self.account2 = Account.objects.create_superuser(email="test2@mail.com", password="1234")
         self.opd1 = Account.objects.all()[1]
@@ -327,18 +400,64 @@ class UserLamarMagangModelTest(TestCase):
             opd_foreign_key_id=self.opd1.id
         )
 
+        self.lowongan6 = Lowongan.objects.create(
+            judul='judul3',
+            kategori='kat2',
+            kuota_peserta=3,
+            waktu_awal_magang=mock_date,
+            waktu_akhir_magang=mock_date,
+            batas_akhir_pendaftaran=mock_date,
+            berkas_persyaratan=list_berkas,
+            deskripsi='deskripsi1',
+            requirement='requirement1',
+            opd_foreign_key_id=self.opd1.id
+        )
+
+        self.lowongan7 = Lowongan.objects.create(
+            judul='judul7',
+            kategori='kat2',
+            kuota_peserta=3,
+            waktu_awal_magang=mock_date,
+            waktu_akhir_magang=mock_date,
+            batas_akhir_pendaftaran=mock_date,
+            berkas_persyaratan=list_berkas,
+            deskripsi='deskripsi1',
+            requirement='requirement1',
+            opd_foreign_key_id=self.opd1.id
+        )
+
+        self.lowongan8 = Lowongan.objects.create(
+            judul='judul8',
+            kategori='kat2',
+            kuota_peserta=3,
+            waktu_awal_magang=mock_date,
+            waktu_akhir_magang=mock_date,
+            batas_akhir_pendaftaran=mock_date,
+            berkas_persyaratan=list_berkas,
+            deskripsi='deskripsi1',
+            requirement='requirement1',
+            opd_foreign_key_id=self.opd1.id
+        )
+
         self.client.force_login(self.account1)
 
         self.lamar1 = UserLamarMagang.objects.create(
             application_letter="test",
             lowongan_foreign_key_id=self.lowongan3.id,
             user_foreign_key_id=self.user1.id,
-            status_lamaran="Wawancara",
+            status_lamaran="pending",
             notes_status_lamaran="Test"
         )
         self.lamar2 = UserLamarMagang.objects.create(
             lowongan_foreign_key_id=self.lowongan4.id,
             user_foreign_key_id=self.user1.id
+        )
+        self.lamar3 = UserLamarMagang.objects.create(
+            application_letter="test",
+            lowongan_foreign_key_id=self.lowongan8.id,
+            user_foreign_key_id=self.user1.id,
+            status_lamaran="wawancara",
+            notes_status_lamaran="Test"
         )
 
     def test_object_user_lamar_magang_is_created(self):
@@ -355,20 +474,47 @@ class UserLamarMagangModelTest(TestCase):
         id_user = self.user1.id
         self.client.force_login(self.account1)
         Account.objects.filter(pk=id_user).update(is_user=True)
-        response = self.client.get(url_form_lamar+str(self.lowongan3.id)+"/")
+        response = self.client.get(url_form_lamar+str(self.lowongan5.id)+"/")
         self.assertEqual(response.status_code, 200)
 
     def test_status_lamaran_default_pending(self):
-        self.assertEqual(self.lamar2.status_lamaran, "Pending")
+        self.assertEqual(self.lamar2.status_lamaran, "pending")
     
     def test_notes_status_lamaran_default_tidak_ada_catatan(self):
         self.assertEqual(self.lamar2.notes_status_lamaran, "Tidak Ada Catatan")
         
     def test_status_lamaran_not_default_pending(self):
-        self.assertNotEqual(self.lamar1.status_lamaran, "Pending")
+        self.assertNotEqual(self.lamar3.status_lamaran, "pending")
     
     def test_notes_status_lamaran_not_default_tidak_ada_catatan(self):
         self.assertNotEqual(self.lamar1.notes_status_lamaran, "Tidak Ada Catatan")
+
+    def test_first_post_lamaran(self):
+        id_user = self.user1.id
+        self.client.force_login(self.account1)
+        Account.objects.filter(pk=id_user).update(is_user=True)
+        data_form_lamar = {
+            "application_letter":"first",
+            "lowongan_foreign_key_id":self.lowongan6.id,
+            "user_foreign_key_id":self.user1.id,
+            "file_berkas_tambahan":self.test_file_cv
+        }
+        self.client.post(url_form_lamar+str(self.lowongan6.id)+"/", enctype=encypte_multipart, data=data_form_lamar)
+        self.assertTrue(UserLamarMagang.objects.filter(application_letter="first").exists())
+
+    def test_first_post_lamaran_with_cv(self):
+        id_user = self.user1.id
+        self.client.force_login(self.account1)
+        Account.objects.filter(pk=id_user).update(is_user=True)
+        data_form_lamar = {
+            "file_cv":self.test_file_cv_2,
+            "application_letter":"first",
+            "lowongan_foreign_key_id":self.lowongan7.id,
+            "user_foreign_key_id":self.user1.id,
+            "file_berkas_tambahan":self.test_file_cv
+        }
+        self.client.post(url_form_lamar+str(self.lowongan7.id)+"/", enctype=encypte_multipart, data=data_form_lamar)
+        self.assertTrue(UserLamarMagang.objects.filter(application_letter="first").exists())
 
     def test_post_lamar(self):
         id_user = self.user1.id
@@ -382,6 +528,65 @@ class UserLamarMagangModelTest(TestCase):
         }
         self.client.post(url_form_lamar+str(self.lowongan3.id)+"/", enctype=encypte_multipart, data=data_form_lamar)
         self.assertTrue(UserLamarMagang.objects.filter(application_letter="hei").exists())
+    
+    def test_update_lamar(self):
+        id_user = self.user1.id
+        self.client.force_login(self.account1)
+        Account.objects.filter(pk=id_user).update(is_user=True)
+        data_form_lamar = {
+            "application_letter":"aaaa",
+            "lowongan_foreign_key_id":self.lowongan3.id,
+            "user_foreign_key_id":self.user1.id,
+            "file_berkas_tambahan":self.test_file_cv
+        }
+        self.client.post(url_form_lamar+str(self.lowongan3.id)+"/", enctype=encypte_multipart, data=data_form_lamar)
+        self.assertTrue(UserLamarMagang.objects.filter(application_letter="aaaa").exists())
+    
+    def test_update_lamar_status_wawancara(self):
+        id_user = self.user1.id
+        self.client.force_login(self.account1)
+        Account.objects.filter(pk=id_user).update(is_user=True)
+        data_form_lamar = {
+            "application_letter":"wawancara",
+            "lowongan_foreign_key_id":self.lowongan8.id,
+            "user_foreign_key_id":self.user1.id,
+            "file_berkas_tambahan":self.test_file_cv
+        }
+        self.client.post(url_form_lamar+str(self.lowongan8.id)+"/", enctype=encypte_multipart, data=data_form_lamar)
+        self.assertFalse(UserLamarMagang.objects.filter(application_letter="wawancara").exists())
+
+    def test_update_url_lamar(self):
+        id_user = self.user1.id
+        self.client.force_login(self.account1)
+        Account.objects.filter(pk=id_user).update(is_user=True)
+        response = self.client.get(url_form_lamar+str(self.lowongan3.id)+"/")
+        self.assertTrue(response.status_code, 200)
+    
+    def test_post_lamar_with_cv(self):
+        id_user = self.user1.id
+        self.client.force_login(self.account1)
+        Account.objects.filter(pk=id_user).update(is_user=True)
+        data_form_lamar = {
+            "file_cv":self.test_file_cv_2,
+            "application_letter":"cvcv",
+            "lowongan_foreign_key_id":self.lowongan4.id,
+            "user_foreign_key_id":self.user1.id,
+            "file_berkas_tambahan":self.test_file_cv
+        }
+        self.client.post(url_form_lamar+str(self.lowongan4.id)+"/", enctype=encypte_multipart, data=data_form_lamar)
+        self.assertTrue(UserLamarMagang.objects.filter(application_letter="cvcv").exists())
+    
+    def test_redirect_post_lamar_field_missing(self):
+        id_user = self.user1.id
+        self.client.force_login(self.account1)
+        Account.objects.filter(pk=id_user).update(is_user=True)
+        data_form_lamar = {
+            "application_letter":"nofiletest",
+            "lowongan_foreign_key_id":self.lowongan5.id,
+            "user_foreign_key_id":self.user1.id,
+        }
+        self.client.post(url_form_lamar+str(self.lowongan5.id)+"/", enctype=encypte_multipart, data=data_form_lamar)
+        self.assertFalse(UserLamarMagang.objects.filter(application_letter="nofiletest").exists())
 
     def test_is_not_user_to_lamar(self):
         response = self.client.get(url_form_lamar+str(self.lowongan3.id)+"/")
@@ -399,20 +604,3 @@ class UserLamarMagangModelTest(TestCase):
         }
         response = self.client.post(url_form_lamar+"12800/", enctype=encypte_multipart, data=data_form_lamar)
         self.assertEqual(response.status_code, 302)
-    
-    def test_pass_when_cv_exist_dan_file_request_empty(self):
-        id_user = self.user1.id
-        self.user1.userprofile.cv = self.test_file_cv
-        self.user1.userprofile.save()
-        self.client.force_login(self.account1)
-        Account.objects.filter(pk=id_user).update(is_user=True)
-        data_form_lamar = {
-            "application_letter":"hei",
-            "lowongan_foreign_key_id":self.lowongan5.id,
-            "user_foreign_key_id":self.user1.id,
-            "file_berkas_tambahan":self.test_file_cv
-        }
-        response = self.client.post(url_form_lamar+str(self.lowongan5.id)+"/", enctype=encypte_multipart, data=data_form_lamar)
-        self.assertEqual(response.status_code, 302)
-        self.user1.userprofile.delete()
-
