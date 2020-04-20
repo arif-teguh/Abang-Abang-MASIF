@@ -4,11 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" href='{% static "/css/detail_lowongan.css" %}'>
+    {% include 'import-bootstrap-jquery.html' %}
     <title>Detail Lowongan</title>
 </head>
 <body>
 
-{% include 'navbar.html' %}
+{% include 'navbar-no-bootstrap.html' %}
 
 {% for i in data %}
     <div class="pg-container">
