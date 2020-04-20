@@ -29,11 +29,11 @@ for (i = 0; i < acc.length; i++) {
     label.style.display = "block";
     form.style.display = "block";
     if(val.localeCompare('DITERIMA') == 0){
-      form.type="datetime-local";
+      form.placeholder="Tanggal ke Kesbangpol" 
       label.innerHTML = 'Datang ke kesbangpol pada :'
     }
     else if (val.localeCompare('DITOLAK') == 0){
-      form.placeholder="Masukkan catatan"
+      form.placeholder="Masukkan catatan" 
       label.innerHTML = 'Tambahkan catatan :'
     }
     else if (val.localeCompare('WAWANCARA') == 0){
