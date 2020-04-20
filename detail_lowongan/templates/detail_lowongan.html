@@ -42,7 +42,7 @@
                 <p>Tenaga yang dibutuhkan : {{ i.kuota_peserta }}<br>
                     Durasi magang : {{ i.waktu_awal_magang }} - {{ i.waktu_akhir_magang }}
                 </p>
-                <button type="button" class="btn btn-primary mt-auto">Lamar Sekarang</button>
+                <button onclick="window.location.href='/lowongan/user/lamar/{{ i.id }}'" type="button" class="btn btn-primary mt-auto">Lamar Sekarang</button>
             </div>
         </div>
         <div class="row">
