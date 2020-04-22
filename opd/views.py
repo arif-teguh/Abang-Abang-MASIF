@@ -67,7 +67,6 @@ def opd_download_file(request ,id_user , id_lowongan):
 
 def opd_download_cv(request ,id_user, id_lowongan ):
     try :
-        userlamarmagang = UserLamarMagang.objects.get(user_foreign_key = id_user , lowongan_foreign_key = id_lowongan)
         if(cek_id_lowongan_dan_opd(request , id_lowongan)):
             pelamar = Account.objects.get(id = id_user)
             if(pelamar.userprofile.cv):
@@ -128,7 +127,7 @@ def opd_verification(request, token):
         opd_name = opd_from_verification_list.name
         email = opd_from_verification_list.email
         phone = opd_from_verification_list.phone
-    except:
+    except OpdVerificationList.DoesNotExist:
         return redirect('/opd/verification/404')
     if request.method == 'POST':
         form = OpdConfirmationForm(request.POST)
