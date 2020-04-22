@@ -279,7 +279,6 @@ def user_see_status_lamaran(request, id_user_lamar_magang):
             return HttpResponse('[ERROR] Lamaran Not Found')
 
         if lamaran_obj.user_foreign_key.email == request.user.email:
-            # return HttpResponse(lamaran_obj)
             context = {
                 'lamaran_obj': lamaran_obj
             }
