@@ -1,7 +1,11 @@
-from django.test import TestCase
+import tempfile
+import shutil
+from django.test import TestCase, override_settings
 from django.core.files.uploadedfile import SimpleUploadedFile
 from .models import Artikel
 
+MEDIA_ROOT = tempfile.mkdtemp()
+@override_settings(MEDIA_ROOT=MEDIA_ROOT)
 class ArtikelModelTest(TestCase):
     def setUp(self):
         self.test_file_jpg1 = SimpleUploadedFile("foto1.jpg", b"file_content")
@@ -18,6 +22,11 @@ class ArtikelModelTest(TestCase):
         )
         self.artikel1.save()
         self.artikel2.save()
+
+    @classmethod
+    def tearDownClass(cls):
+        shutil.rmtree(MEDIA_ROOT, ignore_errors=True)
+        super().tearDownClass()
 
     def test_object_artikel_is_created(self):
         self.assertTrue(type(self.artikel1), Artikel)
