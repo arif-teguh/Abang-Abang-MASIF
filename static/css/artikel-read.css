@@ -1,0 +1,33 @@
+#artikel-lainnya-title {
+    margin-top: 40px;
+}
+
+#page-container {
+    margin-top: 1em;
+}
+
+#article-image {
+    object-fit: cover;
+    width: 100%;
+}
+
+#article-content {
+    margin-top: 1em;
+    white-space: pre-wrap;
+}
+
+.artikel-lain-card {
+    width: 100%;
+    margin-bottom: 1em;
+}
+
+.artikel-lain-image {
+    object-fit: cover;
+    height: 120px;
+}
+
+.artikel-card-wrapper, .artikel-card-wrapper:hover, artikel-card-wrapper:visited {
+    color: inherit;
+    text-decoration: inherit;
+
+}

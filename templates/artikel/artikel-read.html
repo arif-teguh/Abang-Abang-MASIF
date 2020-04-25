@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block head %}
+    <link rel="stylesheet" href="/static/css/artikel-read.css">
+
+    <title>{{ artikel.judul }}</title>
+{% endblock %}
+
+
+{% block body %}
+    {% include 'navbar-no-bootstrap.html' %}
+    <div class="container" id="page-container">
+        {% if not error %}
+            <div class="row">
+                <div class="col-12 col-md-9">
+                    <h2 class="text-center">{{ artikel.judul }}</h2>
+                    <img src="/media/{{ artikel.foto_artikel }}" alt="article image" id="article-image">
+                    <p id="article-content">{{ artikel.deskripsi }}</p>
+                </div>
+                <div class="col-12 col-md-3">
+                    <h5 class="text-center" id="artikel-lainnya-title">Artikel Lainnya</h5>
+                    {% for artikel in all_other_article %}
+                        <a class="artikel-card-wrapper" href="/artikel/{{ artikel.pk }}/">
+                            <div class="card artikel-lain-card">
+                                <img class="card-img-top artikel-lain-image" src="/media/{{ artikel.foto_artikel }}/"
+                                     alt="Gambar Artikel">
+                                <div class="card-body">
+                                    <h6 class="card-title text-center">{{ artikel.judul }}</h6>
+
+                                </div>
+                            </div>
+                        </a>
+                    {% endfor %}
+                </div>
+
+            </div>
+        {% else %}
+            <h1 class="text-center">Maaf, Artikel Tidak Ditemukan</h1>
+
+        {% endif %}
+    </div>
+{% endblock %}
