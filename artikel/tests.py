@@ -4,13 +4,17 @@ from .models import Artikel
 
 class ArtikelModelTest(TestCase):
     def setUp(self):
+        self.test_file_jpg1 = SimpleUploadedFile("foto1.jpg", b"file_content")
+        self.test_file_jpg2 = SimpleUploadedFile("foto2.jpg", b"file_content")
         self.artikel1 = Artikel.objects.create(
             judul='judul1',
             deskripsi='deskripsi1',
+            foto_artikel=self.test_file_jpg1
         )
         self.artikel2 = Artikel.objects.create(
             judul='judul2',
             deskripsi='deskripsi2',
+            foto_artikel=self.test_file_jpg2
         )
         self.artikel1.save()
         self.artikel2.save()
@@ -34,6 +38,13 @@ class ArtikelModelTest(TestCase):
 
     def test_deskripsi_artikel1_artikel2_not_equal(self):
         self.assertNotEqual(self.artikel1.deskripsi, self.artikel2.deskripsi)
+
+    def test_foto_artikel_is_not_none(self):
+        self.assertIsNotNone(self.artikel1.foto_artikel)
+
+    def test_artikel_artikel1_artikel2_not_equal(self):
+        self.assertNotEqual(self.artikel1.foto_artikel,
+                            self.artikel2.foto_artikel)
 
     def test_waktu_dibuat_not_none(self):
         self.assertIsNotNone(self.artikel1.waktu_dibuat)
