@@ -16,7 +16,7 @@
         <div class="outer-box">
             <div class="row inner-box">
                 <div class="col-2 col1">
-                    <img src="{% static 'img/image 6.png' %}">
+                    <img src="{% static 'img/image 6.png' %}" alt="logo-dinas">
                     <p>Dinas Depok</p>
                 </div>
                 <div class="col-9 align-self-center col2">
@@ -34,11 +34,11 @@
     <div class="container">
         <div class="row">
             <div class="col-8" style="text-align: left">
-                <b id="bold-text">Deskripsi Job</b>
+                <strong id="bold-text">Deskripsi Job</strong>
                 <p>{{ i.deskripsi }}</p>
             </div>
             <div class="col-4" style="text-align: left">
-                <b id="bold-text">Detail</b>
+                <strong id="bold-text">Detail</strong>
                 <p>Tenaga yang dibutuhkan : {{ i.kuota_peserta }}<br>
                     Durasi magang : {{ i.waktu_awal_magang }} - {{ i.waktu_akhir_magang }}
                 </p>
@@ -47,7 +47,7 @@
         </div>
         <div class="row">
             <div class="col">
-                <b id="bold-text">Syarat</b>
+                <strong id="bold-text">Syarat</strong>
                 <p>
                     {{ i.requirement }}
                 </p>
