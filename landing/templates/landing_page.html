@@ -56,7 +56,7 @@
 
                     <div class="row img-row">
                         <div class="col-3">
-                            <img class="card-lowongan-img" src="{% static 'img/Ellipse 14.png' %}">
+                            <img class="card-lowongan-img" src="{% static 'img/Ellipse 14.png' %}" alt="cari-lowongan">
                         </div>
                         <div class="col-9">
                             <h6 class="card-lowongan-judul-lowongan">{{ item.judul }}</h6>
@@ -96,7 +96,6 @@
 
 
             $('.magang-terbaru-autoplay').slick({
-                variableWidth: true,
                 dots: true,
                 infinite: false,
                 speed: 300,
@@ -104,7 +103,7 @@
                 slidesToScroll: 1,
                 responsive: [
                     {
-                        breakpoint: 1024,
+                        breakpoint: 1200,
                         settings: {
                             slidesToShow: 3,
                             slidesToScroll: 1,
@@ -113,7 +112,7 @@
                         }
                     },
                     {
-                        breakpoint: 768,
+                        breakpoint: 990,
                         settings: {
                             center: true,
                             autoplay: true,
@@ -122,9 +121,9 @@
                         }
                     },
                     {
-                        breakpoint: 600,
+                        breakpoint: 745,
                         settings: {
-                            slidesToShow: 2,
+                            slidesToShow: 1,
                             slidesToScroll: 1
                         }
                     },

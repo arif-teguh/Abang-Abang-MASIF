@@ -4,15 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" href='{% static "/css/cari_lowongan.css" %}'>
-    <link rel="stylesheet" type="text/css" href='{% static "DataTables/datatables.min.css" %}'/>
-    <script src="jquery-3.4.1.min.js"></script>
+    <script src="{% static 'jquery/jquery-3.4.1.min.js' %}"></script>
 
-
+    {% include 'import-bootstrap-jquery.html' %}
     <title>Cari Lowongan</title>
 </head>
 <body>
 
-{% include 'navbar.html' %}
+{% include 'navbar-no-bootstrap.html' %}
 
 <div class="pg-container">
     <div class="row">
@@ -37,26 +36,20 @@
 
             </div>
         </div>
+
         <div class="col-sm">
-{#            <form class="form-inline">#}
-            <form>
-                <input id="search-box" type="text" name="fname" placeholder="Cari Judul...">
-                <input onclick="searchFunc()" type="button" class="btn btn-primary" value = "Cari"/>
+            <form onsubmit="return searchFunc();">
+                <input onsubmit="searchFunc()" id="search-box" type="text" placeholder="Cari Judul...">
+                <input id="search-btn" onclick="searchFunc()" class="btn btn-primary" type="submit"/>
             </form>
-{#            <div>#}
-{#    <input id="search" name="search" type="text" class="query-search" placeholder="Search...">#}
-{#    <input onclick="setGetParameter()" type="button" class="btn btn-primary" value = "View Details"/>#}
-{#</div>#}
         </div>
     </div>
-
-
 
     {% for i in data %}
         <div class="outer-box">
             <div class="row inner-box">
                 <div class="col-2 col1">
-                    <img src="{% static 'img/image 6.png' %}">
+                    <img src="{% static 'img/image 6.png' %}" alt="opd-logo">
                     <p>Dinas Depok</p>
                 </div>
                 <div class="col-9 align-self-center col2">
@@ -78,12 +71,13 @@
 
 <script type="text/javascript">
 
-function searchFunc(){
-    console.log("kesini");
-    const search_word = $("#search-box").val();
-    console.log(search_word)
-    window.location.href = "/cari-lowongan/searching/" + search_word
-}
+    function searchFunc() {
+        console.log("kesini");
+        const search_word = $("#search-box").val();
+        console.log(search_word)
+        window.location.href = "/cari-lowongan/searching/" + search_word
+        return false
+    }
 </script>
 
 </html>

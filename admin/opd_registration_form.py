@@ -1,5 +1,7 @@
 from django import forms
 
+from account.models import Account
+from admin.models import OpdVerificationList
 
 class OpdRegistrationForm(forms.Form):
     opd_name = forms.CharField(
@@ -24,3 +26,20 @@ class OpdRegistrationForm(forms.Form):
                 'type': 'text',
                         'placeholder': 'Nomor Telepon',
             }))
+
+    def check(self):
+        cleaned_data = super().clean()
+        email = cleaned_data.get("email")
+        err = []
+        try:
+            Account.objects.get(email=email)
+            raise forms.ValidationError('OPD Already registered')
+        except Account.DoesNotExist as e:
+            err = e
+        try:
+            OpdVerificationList.objects.get(email=email)
+            raise forms.ValidationError(
+                'Please check your inbox for verification')
+        except OpdVerificationList.DoesNotExist as e:
+            err = e
+        return err

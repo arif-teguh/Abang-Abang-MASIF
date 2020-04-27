@@ -14,7 +14,6 @@ class OpdAuthenticationForm(AuthenticationForm):
         'inactive': "This account is inactive."
     }
 
-
     username = UsernameField(
         widget=forms.TextInput(
             attrs={

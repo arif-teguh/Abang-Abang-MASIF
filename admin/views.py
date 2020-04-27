@@ -2,6 +2,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.sites.shortcuts import get_current_site
+from django.core.exceptions import ValidationError
 
 from account.models import Account
 from admin.opd_registration_form import OpdRegistrationForm
@@ -50,33 +51,38 @@ def admin_list_opd(request):
 
 def admin_register_opd(request):
     if user_is_admin(request):
+        err = []
         if request.method == 'POST':
             form = OpdRegistrationForm(request.POST)
             if form.is_valid():
-                name = form.cleaned_data['opd_name']
-                email = form.cleaned_data['email']
-                phone = form.cleaned_data['phone']
-                secret = generate_opd_token()
-                new_account = OpdVerificationList(
-                    secret=secret,
-                    name=name,
-                    email=email,
-                    phone=phone
-                )
-                new_account.save()
-                base_url = get_current_site(request).domain
-                verif_url = base_url + '/opd/verification/' + secret
-                send_verification_email(verif_url, email)
-                return render(
-                    request,
-                    'activation_link.html'
+                try:
+                    form.check()
+                    name = form.cleaned_data['opd_name']
+                    email = form.cleaned_data['email']
+                    phone = form.cleaned_data['phone']
+                    secret = generate_opd_token()
+                    new_account = OpdVerificationList(
+                        secret=secret,
+                        name=name,
+                        email=email,
+                        phone=phone
                     )
+                    new_account.save()
+                    base_url = get_current_site(request).domain
+                    verif_url = base_url + '/opd/verification/' + secret
+                    send_verification_email(verif_url, email)
+                    return render(
+                        request,
+                        'activation_link.html'
+                        )
+                except ValidationError as e:
+                    err = e
         else:
             form = OpdRegistrationForm()
         return render(
             request,
             'admin/admin_register_opd.html',
-            {'form': form}
+            {'form': form, 'err': err}
         )
     else:
         return redirect('/admin/login')

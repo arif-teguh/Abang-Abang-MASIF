@@ -7,6 +7,7 @@ from django.shortcuts import render, redirect
 from django.utils.datastructures import MultiValueDictKeyError
 from django.contrib import messages
 from django.contrib.sites.shortcuts import get_current_site
+from django.core.exceptions import ValidationError
 
 from account.models import Account
 from account.models import UserProfile
@@ -92,7 +93,7 @@ def sex_validator(post):
 
 def phone_number_validator(post):
     phone_number = post['phone']
-    if re.match(r'^\+?1?\d{3,15}$', phone_number):
+    if 3 <= len(phone_number) < 15:
         return {'result': True, 'message': 'success'}
     return {'result': False, 'message': 'Nomor telepon salah'}
 
@@ -187,54 +188,76 @@ def get_all_lamaran_for_dashboard_table(request):
 
 
 def user_register(request):
+    err = []
     if request.method == 'POST':
         form = UserRegistrationForm(request.POST)
         if form.is_valid():
-            name = form.cleaned_data['user_name']
-            email = form.cleaned_data['email']
-            phone = form.cleaned_data['phone']
-            secret = generate_user_token()
-            password = form.cleaned_data['password']
-            new_account = UserVerificationList(
-                secret=secret,
-                name=name,
-                email=email,
-                phone=phone,
-                password=password
-            )
-            new_account.save()
-            base_url = get_current_site(request).domain
-            verif_url = base_url+'/user/verification/'+secret
-            send_verification_email(verif_url, email)
-            return render(
-                request,
-                'activation_link.html',
-            )
+            try:
+                form.check()
+                name = form.cleaned_data['user_name']
+                email = form.cleaned_data['email']
+                phone = form.cleaned_data['phone']
+                secret = generate_user_token()
+                password = form.cleaned_data['password']
+                new_account = UserVerificationList(
+                    secret=secret,
+                    name=name,
+                    email=email,
+                    phone=phone,
+                    password=password
+                )
+                new_account.save()
+                base_url = get_current_site(request).domain
+                verif_url = base_url+'/user/verification/'+secret
+                send_verification_email(verif_url, email)
+                return render(
+                    request,
+                    'activation_link.html',
+                )
+            except ValidationError as e:
+                err = e
     else:
         form = UserRegistrationForm()
-    return render(request, 'user/user_register.html', {'form': form})
+    return render(request,
+                  'user/user_register.html',
+                  {'form': form, 'err': err})
 
 
 def user_verification(request, token):
-    try:
-        user_from_verification_list = UserVerificationList.objects.get(
-            secret=token)
-        user_name = user_from_verification_list.name
-        email = user_from_verification_list.email
-        phone = user_from_verification_list.phone
-        password = user_from_verification_list.password
-    except UserVerificationList.DoesNotExist:
-        return redirect('/user/verification/404')
-    new_user = Account.objects.create_user(email, password)
-    new_user.name = user_name
-    new_user.phone = phone
-    new_user.is_user = True
-    new_user.save()
-    create_user = UserProfile(user=new_user, unique_pelamar_attribute='user')
-    create_user.save()
-    user_from_verification_list.delete()
-    messages.success(request, 'User Verified')
-    return redirect("/user/login")
+    if token == 'google-oauth2':
+        google_user = Account.objects.get(email=request.user.email)
+        google_is_user = google_user.is_user
+        if google_user.name == "" and google_user.phone == "" and not google_is_user:
+            google_user.name = "Pelamar"
+            google_user.phone = "081122232222"
+            google_user.is_user = True
+            google_user.save()
+            create_user = UserProfile(user=google_user, unique_pelamar_attribute='user')
+            create_user.save()
+            messages.success(request, 'User Verified')
+            return redirect("/")
+        else:
+            return redirect("/")
+    else:
+        try:
+            user_from_verification_list = UserVerificationList.objects.get(
+                secret=token)
+            user_name = user_from_verification_list.name
+            email = user_from_verification_list.email
+            phone = user_from_verification_list.phone
+            password = user_from_verification_list.password
+        except UserVerificationList.DoesNotExist:
+            return redirect('/user/verification/404')
+        new_user = Account.objects.create_user(email, password)
+        new_user.name = user_name
+        new_user.phone = phone
+        new_user.is_user = True
+        new_user.save()
+        create_user = UserProfile(user=new_user, unique_pelamar_attribute='user')
+        create_user.save()
+        user_from_verification_list.delete()
+        messages.success(request, 'User Verified')
+        return redirect("/user/login")
 
 
 def user_verification_redirect(request):
@@ -256,7 +279,6 @@ def user_see_status_lamaran(request, id_user_lamar_magang):
             return HttpResponse('[ERROR] Lamaran Not Found')
 
         if lamaran_obj.user_foreign_key.email == request.user.email:
-            # return HttpResponse(lamaran_obj)
             context = {
                 'lamaran_obj': lamaran_obj
             }
