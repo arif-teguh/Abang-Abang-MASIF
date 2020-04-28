@@ -91,3 +91,5 @@ Staging:
     - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
   script:
     - ssh -tt ec2-user@ec2-18-139-21-63.ap-southeast-1.compute.amazonaws.com "cd abang-abang-masif/ && git checkout staging && git pull origin staging && docker-compose up -d"
+  only:
+    - staging
