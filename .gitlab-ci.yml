@@ -81,11 +81,13 @@ Staging:
   stage: deploy_staging
   image: ubuntu:latest
   before_script:
-    - apt-get update -y
-    - apt-get install openssh-server -y
-    - pwd && ls -a
-    - chmod 600 .ssh/dev_team.pem
-    - ssh -i .ssh/dev_team.pem ec2-user@ec2-3-0-51-204.ap-southeast-1.compute.amazonaws.com
+    - apt-get update -qq
+    - apt-get install -qq git
+    - 'which ssh-agent || ( apt-get install -qq openssh-client )'
+    - chmod 600 .ssh/ppl_masif.pem
+    - eval $(ssh-agent -s)
+    - mkdir -p ~/.ssh
+    - ssh-add .ssh/ppl_masif.pem
+    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
   script:
-    - cd abang-abang-masif/ && git pull origin staging
-    - docker-compose up -d
+    - ssh -tt ec2-user@ec2-18-139-21-63.ap-southeast-1.compute.amazonaws.com "cd abang-abang-masif/ && git checkout staging && git pull origin staging && docker-compose up -d"
