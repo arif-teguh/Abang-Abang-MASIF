@@ -19,7 +19,7 @@ for (i = 0; i < acc.length; i++) {
     }
   });
 }
-/*
+
 for (i = 0; i < acc.length; i++) {
   select[i].addEventListener("click", function() {
     this.classList.toggle("active");
@@ -28,15 +28,14 @@ for (i = 0; i < acc.length; i++) {
     var val = this.value
     label.style.display = "block";
     form.style.display = "block";
-    if(val.localeCompare('DITERIMA') == 0){
-      form.placeholder="Tanggal ke Kesbangpol" 
-      label.innerHTML = 'Datang ke kesbangpol pada :'
-    }
-    else if (val.localeCompare('DITOLAK') == 0){
+    
+    if (val.localeCompare('DITOLAK') == 0){
+      form.type = 'text'
       form.placeholder="Masukkan catatan" 
       label.innerHTML = 'Tambahkan catatan :'
     }
     else if (val.localeCompare('WAWANCARA') == 0){
+      form.type = 'datetime-local'
       form.placeholder="Tanggal wawancara"
       label.innerHTML = 'Wawancara pada :'
     }
@@ -47,7 +46,7 @@ for (i = 0; i < acc.length; i++) {
   });
 }
 
-
+/*
 function redirect(x,y) {
   if (id == x){
     isi = document.getElementById('form-'+x).value
