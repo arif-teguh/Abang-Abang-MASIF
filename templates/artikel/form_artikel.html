@@ -1,4 +1,4 @@
-<html lang="en">
+<html>
   <head>
     <meta charset="UTF-8">
     <title>Form Pembuatan Artikel</title>
@@ -12,23 +12,20 @@
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.16/dist/summernote-bs4.min.js"></script>
   </head>
   <body>
-    <form method="POST" action="{% url 'post_form_artikel' %}">
-        {% csrf_token %}
-        <h1>
-            Formulir Pembuatan Artikel
-        </h1>
-        {{ form.as_p }}
-        <br>
-        <button type="submit" class="btn btn-primary">Posting Artikel</button>
-    </form>
-    <script>
-      $('#id_deskripsi').summernote({
-        placeholder: 'Hello Bootstrap 4',
-        tabsize: 2,
-        height: 100,
-        codeviewFilter: false,
-        codeviewIframeFilter: true
-      });
-    </script>
+    <div class="container-fluid">
+      <div class="row-12">
+        <form method="POST" action="{% url 'post_form_artikel' %}">
+          {% csrf_token %}
+          <h1>
+              Formulir Pembuatan Artikel
+          </h1>
+          {{ form.as_p }}
+          <br>
+          <button type="submit" class="btn btn-primary">Posting Artikel</button>
+        </form>
+      </div>
+      
+      <script src="/static/js/artikel_form.js"></script>
+    </div>
   </body>
 </html>
