@@ -1,10 +1,13 @@
 from datetime import datetime
+import tempfile
 
 from django.shortcuts import render, HttpResponseRedirect
 from django.contrib.auth import authenticate, login
 from django.core.exceptions import ValidationError
 from django.views.decorators.csrf import csrf_exempt
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
+from django.template.loader import render_to_string
+from weasyprint import HTML
 
 from account.models import UserProfile
 from lowongan.models import UserLamarMagang
@@ -86,3 +89,38 @@ def post_jadwal_lamaran_kesbangpol(request, user_lamar_id):
     except ValueError:
         err = {'err': 'Invalid date format'}
         return JsonResponse(err)
+
+def get_rekomendasi_pdf(request, user_lamar_id):
+    data = {}
+    try:
+        user_lamar = UserLamarMagang.objects.get(id=user_lamar_id)
+        user_account = user_lamar.user_foreign_key
+        user_profile = UserProfile.objects.get(user=user_account)
+        lowongan = user_lamar.lowongan_foreign_key
+        name = user_account.name
+        institution = user_profile.institution
+        address = user_profile.address
+        contact = user_account.phone
+        title = lowongan.judul
+        location = lowongan.opd_foreign_key.name
+        magang_start = lowongan.waktu_awal_magang
+        magang_end = lowongan.waktu_akhir_magang
+        duration = magang_start.strftime("%d/%m/%Y") + ' s.d. '+ magang_end.strftime("%d/%m/%Y")
+        category = lowongan.kategori
+        data = {
+            "name": name,
+            "institution": institution,
+            "address": address,
+            "contact": contact,
+            "title": title,
+            "location": location,
+            "duration": duration,
+            "category": category
+        }
+        html_template = render_to_string('kesbangpol_pdf.html', data)
+        pdf_file = HTML(string=html_template).write_pdf()
+        response = HttpResponse(pdf_file, content_type='application/pdf')
+        response['Content-Disposition'] = 'filename="rekomendasi.pdf"'
+    except UserLamarMagang.DoesNotExist:
+        response = HttpResponseRedirect('/kesbangpol/')
+    return response

@@ -19,6 +19,9 @@
         .usertanggal {
             margin-right: 20px;
         }
+        .button-disabled {
+            pointer-events: none;
+        }
     </style>
 {% endblock %}
 
@@ -49,8 +52,9 @@
                         <th scope="col">No</th>
                         <th scope="col">Nama Pelamar</th>
                         <th scope="col">Opd</th>
-                        <th scope="col">Verifikasi User</th>
+                        <th scope="col">Detail Lamaran</th>
                         <th scope="col">Tanggal</th>
+                        <th scope="col">Rekomendasi</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -59,11 +63,17 @@
                             <th scope="row" class="align-middle">{{ forloop.counter }}</th>
                             <td class="align-middle">{{ user.user_foreign_key.name }}</td>
                             <td class="align-middle">{{ user.lowongan_foreign_key.opd_foreign_key.name }}</td>
-                            <td class="align-middle"><button type="button" class="btn btn-primary" data-toggle="modal" onclick="showModal('{{ user.id }}')">Verifikasi</button></td>
+                            <td class="align-middle"><button type="button" class="btn btn-outline-primary" data-toggle="modal" onclick="showModal('{{ user.id }}')">Lihat Detail</button></td>
                             {% if user.tanggal_kesbangpol %}
-                                <td class="align-middle"><span class="usertanggal">{{ user.tanggal_kesbangpol }}</span><button type="button" class="btn btn-primary" data-toggle="modal" onclick="showModalTanggal('{{ user.id }}')">Update</button></td>
+                                <td class="align-middle"><span class="usertanggal">{{ user.tanggal_kesbangpol }}</span><button type="button" class="btn btn-outline-primary" data-toggle="modal" onclick="showModalTanggal('{{ user.id }}')">Update</button></td>
+                                <td class="align-middle"><button type="button" class="btn btn-primary" data-toggle="modal" onclick="showPdf('{{ user.id }}')">Terbitkan Rekomendasi</button></td>
                             {% else %}
-                            <td class="align-middle"><button type="button" class="btn btn-primary" data-toggle="modal" onclick="showModalTanggal('{{ user.id }}')">Add</button></td>
+                                <td class="align-middle"><button type="button" class="btn btn-primary" data-toggle="modal" onclick="showModalTanggal('{{ user.id }}')">Berikan Tanggal</button></td>
+                                <td class="align-middle">
+                                    <span class="d-inline-block" tabindex="0" data-toggle="tooltip" data-placement="right" title="Pastikan tanggal telah terisi">
+                                        <button type="button" class="btn btn-secondary button-disabled" disabled>Terbitkan Rekomendasi</button>
+                                    </span>
+                                </td>
                             {% endif %}
                           </tr>
                         {% endfor %}
@@ -117,7 +127,13 @@
     <script>
         $(document).ready(function () {
             $('#user-accepted').DataTable();
+            $('[data-toggle="tooltip"]').tooltip()
         });
+
+        function showPdf(id) {
+            url = "/kesbangpol/lamaran/" + id + "/rekomendasi/"
+            window.location.href = url
+        }
 
         function showModal(id) {
             $.ajax({
