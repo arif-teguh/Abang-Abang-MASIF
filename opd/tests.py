@@ -568,7 +568,7 @@ class test_sort_by_deadline(TestCase):
 
     def test_sorting_other_param_response_status(self):
         response = Client().get('/opd/sorting/batas-akhir/dtogijt')
-        self.assertNorEqual(response.status_code, 200)
+        self.assertNotEqual(response.status_code, 200)
         self.assertEqual(response.status_code, 302)
 
     def test_sorting_page_response_status_post(self):
@@ -590,7 +590,7 @@ class test_sort_by_waktu_magang(TestCase):
     def test_sorting_other_param_response_status(self):
         response = Client().get('/opd/sorting/waktu-magang/dtogijt')
         self.assertEqual(response.status_code, 302)
-        self.assertNorEqual(response.status_code, 200)
+        self.assertNotEqual(response.status_code, 200)
 
     def test_sorting_page_response_status_post(self):
         response1 = Client().post(url_sort_asc2)
