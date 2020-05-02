@@ -14,7 +14,7 @@
   <body>
     <div class="container-fluid">
       <div class="row-12">
-        <form method="POST" action="{% url 'post_form_artikel' %}">
+        <form method="POST" action="{% url 'post_form_artikel' %}" enctype="multipart/form-data">
           {% csrf_token %}
           <h1>
               Formulir Pembuatan Artikel
