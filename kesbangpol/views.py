@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.shortcuts import render, HttpResponseRedirect
 from django.contrib.auth import authenticate, login
 from django.core.exceptions import ValidationError
@@ -58,4 +60,26 @@ def get_user_lamaran_detail(request, user_lamar_id):
 
     except UserLamarMagang.DoesNotExist:
         err = {'err': 'User Not Exist'}
+        return JsonResponse(err)
+
+@csrf_exempt
+def post_jadwal_lamaran_kesbangpol(request, user_lamar_id):
+    try:
+        user_lamar = UserLamarMagang.objects.get(id=user_lamar_id)
+        request_data = request.POST.get('tanggal_kesbangpol', None)
+        request_data = request_data.strip()
+        date_object = datetime.strptime(request_data, '%d/%m/%Y').date()
+        user_lamar.tanggal_kesbangpol = date_object
+        user_lamar.status_kesbangpol = "DITERIMA"
+        user_lamar.save()
+        data = {
+            'success': "Success update date"
+        }
+        return JsonResponse(data)
+
+    except UserLamarMagang.DoesNotExist:
+        err = {'err': 'User Not Exist'}
+        return JsonResponse(err)
+    except ValueError:
+        err = {'err': 'Invalid date format'}
         return JsonResponse(err)
