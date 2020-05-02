@@ -31,6 +31,9 @@ def kesbangpol_login(request):
 def kesbangpol_dashboard(request):
     if not request.user.is_authenticated:
         return HttpResponseRedirect('/kesbangpol/login')
+    
+    if not request.user.is_kesbangpol:
+        return HttpResponseRedirect('/')
 
     user_diterima_opd = UserLamarMagang.objects.filter(
         status_lamaran="DITERIMA")
