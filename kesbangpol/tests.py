@@ -201,3 +201,113 @@ class KesbangpolDashboardTest(TestCase):
             {'bagian': 'kat1', 'durasi': 397, 'institution': 'UI',
              'judul': 'judul1', 'name': 'Test Name', 'opd': 'OPD Name'}
         )
+    
+    def test_kesbangpol_update_meeting_date_lamaran_not_exist(self):
+        self.client.login(username=self.email, password=self.password)
+        response = self.client.post(
+            "/kesbangpol/lamaran/1/tanggal/",
+            {
+                "tanggal_kesbangpol": '09/20/2020'
+            })
+        self.assertEqual(response.status_code, 200)
+        self.assertJSONEqual(
+            str(response.content, encoding='utf8'),
+            {'err': 'User Not Exist'}
+        )
+    
+    def test_kesbangpol_update_meeting_date(self):
+        secret_password = '12345678'
+        opd = Account.objects.create_user(email='opd@mail.com',
+                                          password=secret_password)
+        opd.is_opd = True
+        opd.name = "OPD Name"
+        opd.save()
+
+        user = Account.objects.create_user(email='user@mail.com',
+                                           password=secret_password)
+        user.is_user = True
+        user.name = "Test Name"
+        user.save()
+
+        user_profile = UserProfile(user=user)
+        user_profile.institution = "UI"
+        user_profile.save()
+
+        akhir = datetime.date(2012, 12, 12)
+        awal = datetime.date(2011, 11, 11)
+        lowongan = Lowongan.objects.create(
+            judul='judul1',
+            kategori='kat1',
+            kuota_peserta=10,
+            waktu_awal_magang=awal,
+            waktu_akhir_magang=akhir,
+            batas_akhir_pendaftaran=akhir,
+            berkas_persyaratan=['Kartu Keluarga'],
+            deskripsi='deskripsi1',
+            requirement='requirement1',
+            opd_foreign_key_id=opd.id
+        )
+        lowongan.save()
+
+        lamar = UserLamarMagang(application_letter='a',
+                                lowongan_foreign_key=lowongan,
+                                user_foreign_key=user,
+                                status_lamaran='DITERIMA')
+        lamar.save()
+
+        response = self.client.post('/kesbangpol/lamaran/'+str(lamar.id)+'/tanggal/',
+            {
+                "tanggal_kesbangpol": '22/11/2020'
+            })
+        self.assertEqual(response.status_code, 200)
+
+    def test_kesbangpol_update_meeting_date_fail_invalid_date_time(self):
+        secret_password = '12345678'
+        opd = Account.objects.create_user(email='opd@mail.com',
+                                          password=secret_password)
+        opd.is_opd = True
+        opd.name = "OPD Name"
+        opd.save()
+
+        user = Account.objects.create_user(email='user@mail.com',
+                                           password=secret_password)
+        user.is_user = True
+        user.name = "Test Name"
+        user.save()
+
+        user_profile = UserProfile(user=user)
+        user_profile.institution = "UI"
+        user_profile.save()
+
+        akhir = datetime.date(2012, 12, 12)
+        awal = datetime.date(2011, 11, 11)
+        lowongan = Lowongan.objects.create(
+            judul='judul1',
+            kategori='kat1',
+            kuota_peserta=10,
+            waktu_awal_magang=awal,
+            waktu_akhir_magang=akhir,
+            batas_akhir_pendaftaran=akhir,
+            berkas_persyaratan=['Kartu Keluarga'],
+            deskripsi='deskripsi1',
+            requirement='requirement1',
+            opd_foreign_key_id=opd.id
+        )
+        lowongan.save()
+
+        lamar = UserLamarMagang(application_letter='a',
+                                lowongan_foreign_key=lowongan,
+                                user_foreign_key=user,
+                                status_lamaran='DITERIMA')
+        lamar.save()
+
+        response = self.client.post(
+            '/kesbangpol/lamaran/'+ str(lamar.id) +'/tanggal/',
+            {
+                "tanggal_kesbangpol": ''
+            })
+        self.assertEqual(response.status_code, 200)
+        self.assertJSONEqual(
+            str(response.content, encoding='utf8'),
+            {'err': 'Invalid date format'}
+        )
