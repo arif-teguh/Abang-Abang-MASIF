@@ -126,6 +126,11 @@ class KesbangpolDashboardTest(TestCase):
             email=self.email, password=self.password)
         self.user_test_account.is_kesbangpol = True
         self.user_test_account.save()
+        self.email_not_kesbangpol = "not@kesbangpol.com"
+        self.user_test_not_kesbangpol = Account.objects.create_user(
+            email=self.email_not_kesbangpol, password=self.password
+        )
+        self.user_test_not_kesbangpol.save()
 
     def tearDown(self):
         # Clean up run after every test method.
@@ -139,6 +144,12 @@ class KesbangpolDashboardTest(TestCase):
         self.client.login(username=self.email, password=self.password)
         response = self.client.get('/kesbangpol/')
         self.assertEqual(response.status_code, 200)
+
+    def test_dashboard_kesbangpol_redirect_if_user_not_kesbangpol(self):
+        self.client.login(username=self.email_not_kesbangpol,
+                          password=self.password)
+        response = self.client.get('/kesbangpol/')
+        self.assertEqual(response.status_code, 302)
 
     def test_dashboard_kesbangpol_html_if_user_login(self):
         self.client.login(username=self.email, password=self.password)
