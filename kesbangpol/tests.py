@@ -322,3 +322,53 @@ class KesbangpolDashboardTest(TestCase):
             str(response.content, encoding='utf8'),
             {'err': 'Invalid date format'}
         )
+
+    def test_kesbangpol_generate_pdf_fail_lamaran_not_exist(self):
+        id_lamaran_not_available = '1'
+        response = self.client.get('/kesbangpol/lamaran/'+id_lamaran_not_available+'/rekomendasi/')
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, "/kesbangpol/")
+
+    def test_kesbangpol_generate_pdf_success(self):
+        secret_password = '12345678'
+        opd = Account.objects.create_user(email='opd@mail.com',
+                                          password=secret_password)
+        opd.is_opd = True
+        opd.name = "OPD Name"
+        opd.save()
+
+        user = Account.objects.create_user(email='user@mail.com',
+                                           password=secret_password)
+        user.is_user = True
+        user.name = "Test Name"
+        user.save()
+
+        user_profile = UserProfile(user=user)
+        user_profile.institution = "UI"
+        user_profile.save()
+
+        akhir = datetime.date(2012, 12, 12)
+        awal = datetime.date(2011, 11, 11)
+        lowongan = Lowongan.objects.create(
+            judul='judul1',
+            kategori='kat1',
+            kuota_peserta=10,
+            waktu_awal_magang=awal,
+            waktu_akhir_magang=akhir,
+            batas_akhir_pendaftaran=akhir,
+            berkas_persyaratan=['Kartu Keluarga'],
+            deskripsi='deskripsi1',
+            requirement='requirement1',
+            opd_foreign_key_id=opd.id
+        )
+        lowongan.save()
+
+        lamar = UserLamarMagang(application_letter='a',
+                                lowongan_foreign_key=lowongan,
+                                user_foreign_key=user,
+                                status_lamaran='DITERIMA')
+        lamar.save()
+
+        response = self.client.get('/kesbangpol/lamaran/'+str(lamar.id)+'/rekomendasi/')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['content-type'], 'application/pdf')
