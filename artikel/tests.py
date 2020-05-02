@@ -150,3 +150,62 @@ class ArtikelFormTest(TestCase):
         response = self.client.post(url_update, data_artikel)
         self.assertTrue(Artikel.objects.filter(judul="judul_update").exists())
         self.assertEqual(response.status_code, 302)
+
+@override_settings(MEDIA_ROOT=MEDIA_ROOT)
+class ArtikelReadTest(TestCase):
+    def setUp(self):
+        self.test_file_jpg1 = SimpleUploadedFile("fotosatu.jpg", b"file_content")
+        self.test_file_jpg2 = SimpleUploadedFile("fotodua.jpg", b"file_content")
+        self.artikel1 = Artikel.objects.create(
+            judul='judulsatu',
+            deskripsi='deskripsisatu',
+            foto_artikel=self.test_file_jpg1
+        )
+        self.artikel2 = Artikel.objects.create(
+            judul='juduldua',
+            deskripsi='deskripsidua',
+            foto_artikel=self.test_file_jpg2
+        )
+        self.artikel1.save()
+        self.artikel2.save()
+        self.all_other_article_test = Artikel.objects.all().exclude(pk=self.artikel1.pk)
+        self.client = Client()
+        self.article_one_url = '/artikel/{}/'.format(self.artikel1.pk)
+        self.article_two_url = '/artikel/{}/'.format(self.artikel2.pk)
+        self.response_read_article = self.client.get(self.article_one_url)
+
+    @classmethod
+    def tearDownClass(cls):
+        shutil.rmtree(MEDIA_ROOT, ignore_errors=True)
+        super().tearDownClass()
+
+    def test_get_all_other_article_query_in_article_read_should_return_all_articles_except_article_being_read(self):
+        self.assertEqual(list(self.all_other_article_test),
+                         list(self.response_read_article.context['all_other_article'])
+                         )
+
+    def test_get_all_other_article_query_in_article_read_has_article_should_not_return_empty_list(self):
+        self.assertNotEqual([], list(self.response_read_article.context['all_other_article']))
+
+    def test_get_all_other_article_query_no_article_in_db_in_article_read_should_not_return_empty_list(self):
+        Artikel.objects.all().delete()
+
+        self.assertEqual([], list(self.client.get(self.article_one_url).context['all_other_article']))
+
+    def test_get_article_by_pk_in_article_read_should_return_correct_article(self):
+        self.assertEqual(self.artikel1, self.response_read_article.context['artikel'])
+
+    def test_get_article_by_pk_in_article_read_should_not_return_wrong_article(self):
+        self.assertNotEqual(self.artikel2, self.response_read_article.context['artikel'])
+
+    def test_access_correct_article_should_not_return_error_true(self):
+        self.assertFalse(self.response_read_article.context['error'])
+
+    def test_access_wrong_article_should_return_error_true(self):
+        self.assertTrue(self.client.get('/artikel/999/').context['error'])
+
+    def test_access_article_page_should_return_200(self):
+        self.assertEqual(200, self.response_read_article.status_code)
+
+    def test_access_wrong_article_should_return_200(self):
+        self.assertEqual(200, self.client.get('/artikel/12345/').status_code)
