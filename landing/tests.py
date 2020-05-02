@@ -33,7 +33,6 @@ class LandingPageUnitTest(TestCase):
         self.mock_opd.name = 'MockOPDName'
         self.mock_opd.save()
 
-        self.client_get_landing = Client().get('/')
         self.article_one = Artikel.objects.create(
             judul='MockJudul1',
             deskripsi='MockDeskripsiLanding1',
@@ -46,6 +45,7 @@ class LandingPageUnitTest(TestCase):
         )
         self.article_one.save()
         self.article_two.save()
+        self.client_get_landing = Client().get('/')
 
     def test_landing_page_should_return_code_200(self):
         self.assertEqual(self.client_get_landing.status_code, 200)
