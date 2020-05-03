@@ -15,15 +15,27 @@
   <body>
     <div class="container-fluid">
       <div class="row-12">
-        <form method="POST" action="{% url 'post_form_artikel' %}" enctype="multipart/form-data">
-          {% csrf_token %}
-          <h1>
-              Formulir Pembuatan Artikel
-          </h1>
-          {{ form.as_p }}
-          <br>
-          <button type="submit" class="btn btn-primary">Posting Artikel</button>
-        </form>
+        {%if type == 'update'%}
+          <form method="POST" action="{% url 'update_form_artikel' form.instance.pk %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <h1>
+                Formulir Pembuatan Artikel
+            </h1>
+            {{ form.as_p }}
+            <br>
+            <button type="submit" class="btn btn-primary">Posting Artikel</button>
+          </form>
+        {% else %}
+          <form method="POST" action="{% url 'post_form_artikel' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <h1>
+                Formulir Pembuatan Artikel
+            </h1>
+            {{ form.as_p }}
+            <br>
+            <button type="submit" class="btn btn-primary">Posting Artikel</button>
+          </form>
+        {% endif %}
       </div>
       
       <script src="/static/js/artikel_form.js"></script>

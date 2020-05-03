@@ -49,10 +49,12 @@ def update_form_artikel(request, id_artikel):
                            request.FILES or None,
                            instance=artikel_data)
         if form.is_valid():
+            print(form.data)
             form.save()
             return redirect("/")
     response = {
-        'form': form
+        'form': form,
+        'type':'update'
     }
     return render(request, dir_form_artikel, response)
 
