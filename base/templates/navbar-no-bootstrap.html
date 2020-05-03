@@ -59,10 +59,10 @@
             {% else %}
 
                 <li class="nav-item active ml-sm-auto">
-                    <a class="nav-link" href="/">Login <span class="sr-only">(current)</span></a>
+                    <a class="nav-link" href="{% url 'user_login' %}">Login <span class="sr-only">(current)</span></a>
                 </li>
                 <li class="nav-item active">
-                    <a class="nav-link" href="/">Daftar <span class="sr-only">(current)</span></a>
+                    <a class="nav-link" href="{% url 'user_register' %}">Daftar <span class="sr-only">(current)</span></a>
                 </li>
 
             {% endif %}

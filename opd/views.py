@@ -1,124 +1,128 @@
-from django.shortcuts import render , redirect
-from django.contrib.auth.hashers import check_password
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
-from django.core.exceptions import ObjectDoesNotExist 
-from lowongan.models import Lowongan , UserLamarMagang
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
-from lowongan.models import Lowongan
+
+from account.models import Account, OpdProfile
 from admin.models import OpdVerificationList
-from account.models import Account, OpdProfile  , UserProfile
+from lowongan.models import Lowongan
+from lowongan.models import UserLamarMagang
+from user.forms import ProfilePictureForm
+from .forms import EditOpdProfileForm
 from .opd_confirmation_form import OpdConfirmationForm
 
 opd_home = '/opd/'
 home = '/'
 
+
 def opd_login(request):
     return render(request, 'opd_login.html')
 
+
 @csrf_exempt
-def opd_update_lamaran(request , id_lowongan , id_user , status , catatan):
-    try :
-        userlamarmagang = UserLamarMagang.objects.get(user_foreign_key = id_user , lowongan_foreign_key = id_lowongan)
-        if(cek_id_lowongan_dan_opd(request , id_lowongan)):
+def opd_update_lamaran(request, id_lowongan, id_user, status, catatan):
+    try:
+        userlamarmagang = UserLamarMagang.objects.get(user_foreign_key=id_user, lowongan_foreign_key=id_lowongan)
+        if (cek_id_lowongan_dan_opd(request, id_lowongan)):
             userlamarmagang.status_lamaran = status
             userlamarmagang.notes_status_lamaran = catatan
             userlamarmagang.save()
-            return redirect('/opd/lowongan/list-pendaftar-'+id_lowongan+'/')
-        else :
+            return redirect('/opd/lowongan/list-pendaftar-' + id_lowongan + '/')
+        else:
             return redirect(opd_home)
-    except ObjectDoesNotExist :
+    except ObjectDoesNotExist:
         return redirect(opd_home)
 
 
 def opd_list_pendaftar(request, id_lowongan):
-    #cek apakah user sudah login dan user harus opd
+    # cek apakah user sudah login dan user harus opd
     if request.user.is_authenticated and request.user.is_opd:
-        if(cek_id_lowongan_dan_opd(request, id_lowongan)):
-            lowongan = Lowongan.objects.get(id = id_lowongan)
-            lamaran = UserLamarMagang.objects.filter(lowongan_foreign_key = id_lowongan)
-            return render(request,'opd_list_pendaftar.html',
-            {'lowongan': lowongan ,
-              'lamaran' : lamaran
-               } )
+        if (cek_id_lowongan_dan_opd(request, id_lowongan)):
+            lowongan = Lowongan.objects.get(id=id_lowongan)
+            lamaran = UserLamarMagang.objects.filter(lowongan_foreign_key=id_lowongan)
+            return render(request, 'opd_list_pendaftar.html',
+                          {'lowongan': lowongan,
+                           'lamaran': lamaran
+                           })
         else:
             return redirect(opd_home)
     else:
         return redirect(home)
 
 
-def opd_download_file(request ,id_user , id_lowongan):
+def opd_download_file(request, id_user, id_lowongan):
     try:
-        userlamarmagang = UserLamarMagang.objects.get(user_foreign_key = id_user , lowongan_foreign_key = id_lowongan)
-        if(cek_id_lowongan_dan_opd(request , id_lowongan)):
+        userlamarmagang = UserLamarMagang.objects.get(user_foreign_key=id_user, lowongan_foreign_key=id_lowongan)
+        if (cek_id_lowongan_dan_opd(request, id_lowongan)):
             filename = userlamarmagang.file_berkas_tambahan.name.split('/')[-1]
-            if(userlamarmagang.file_berkas_tambahan):
+            if (userlamarmagang.file_berkas_tambahan):
                 response = HttpResponse(userlamarmagang.file_berkas_tambahan, content_type='text/plain')
                 response['Content-Disposition'] = 'attachment; filename=%s' % filename
                 return response
-            else :
+            else:
                 return HttpResponse('tidak ada file')
-        else :
+        else:
             return redirect(opd_home)
-    except ObjectDoesNotExist :
+    except ObjectDoesNotExist:
         return redirect(opd_home)
-    
-    
 
-def opd_download_cv(request ,id_user, id_lowongan ):
-    try :
-        if(cek_id_lowongan_dan_opd(request , id_lowongan)):
-            pelamar = Account.objects.get(id = id_user)
-            if(pelamar.userprofile.cv):
+
+def opd_download_cv(request, id_user, id_lowongan):
+    try:
+        if (cek_id_lowongan_dan_opd(request, id_lowongan)):
+            pelamar = Account.objects.get(id=id_user)
+            if (pelamar.userprofile.cv):
                 filename = pelamar.userprofile.cv.name.split('/')[-1]
                 response = HttpResponse(pelamar.userprofile.cv, content_type='text/plain')
                 response['Content-Disposition'] = 'attachment; filename=%s' % filename
                 return response
-            else :
+            else:
                 return HttpResponse('tidak ada file')
-        else :
+        else:
             return redirect(opd_home)
-    except ObjectDoesNotExist :
+    except ObjectDoesNotExist:
         return redirect(opd_home)
 
-        
-#Fungsi untuk mengecek apakah opd yang 
+
+# Fungsi untuk mengecek apakah opd yang
 # mengakses data lowongan adalah opd terkait
 def cek_id_lowongan_dan_opd(request, id_lowongan):
-    try :
-        lowongan = Lowongan.objects.get(id = id_lowongan)
-        if(lowongan.opd_foreign_key_id == request.user.id ):
+    try:
+        lowongan = Lowongan.objects.get(id=id_lowongan)
+        if (lowongan.opd_foreign_key_id == request.user.id):
             return True
         else:
             return False
-    except ObjectDoesNotExist :
+    except ObjectDoesNotExist:
         return False
+
 
 def opd_home(request):
     if request.user.is_authenticated and request.user.is_opd:
-        list_lowongan = Lowongan.objects.filter(opd_foreign_key = request.user.id)
-        
-        return render(request,'opd_lowongan.html', {'list_lowongan': list_lowongan})
+        list_lowongan = Lowongan.objects.filter(opd_foreign_key=request.user.id)
+
+        return render(request, 'opd_lowongan.html', {'list_lowongan': list_lowongan})
     else:
         return redirect(home)
 
 
-def opd_detail_lowongan(request,id_lowongan):
-    if cek_id_lowongan_dan_opd(request ,id_lowongan) :
-        lowongan = Lowongan.objects.get(id = id_lowongan)
-        return render(request,'opd_detail_lowongan.html' , {'lowongan': lowongan})
+def opd_detail_lowongan(request, id_lowongan):
+    if cek_id_lowongan_dan_opd(request, id_lowongan):
+        lowongan = Lowongan.objects.get(id=id_lowongan)
+        return render(request, 'opd_detail_lowongan.html', {'lowongan': lowongan})
     else:
         return redirect(home)
 
 
-def opd_tutup_lowongan(request , id_lowongan):
-        if cek_id_lowongan_dan_opd(request ,id_lowongan):
-            lowongan = Lowongan.objects.get(id = id_lowongan)
-            lowongan.is_lowongan_masih_berlaku = not (lowongan.is_lowongan_masih_berlaku)
-            lowongan.save()
-            return redirect(opd_home)
-        else:
-            return redirect(home)
+def opd_tutup_lowongan(request, id_lowongan):
+    if cek_id_lowongan_dan_opd(request, id_lowongan):
+        lowongan = Lowongan.objects.get(id=id_lowongan)
+        lowongan.is_lowongan_masih_berlaku = not (lowongan.is_lowongan_masih_berlaku)
+        lowongan.save()
+        return redirect(opd_home)
+    else:
+        return redirect(home)
+
 
 def opd_verification(request, token):
     try:
@@ -156,10 +160,74 @@ def opd_verification(request, token):
         }
     )
 
+
 def opd_verification_not_found(request):
     return render(
         request,
         'opd/opd_verification_404.html'
     )
+
+
 def opd_verification_redirect(request):
     return redirect("/")
+
+
+OPD_DASHBOARD = '/opd/'
+
+
+def opd_edit_profile_handler(request, pk):
+    if is_permitted_to_edit(request, pk):
+        if request.method == 'POST':
+            form = EditOpdProfileForm(request.POST)
+
+            if form.is_valid():
+                account_obj = Account.objects.get(pk=pk)
+                account_obj.phone = request.POST['phone']
+                account_obj.opdprofile.address = request.POST['address']
+                account_obj.opdprofile.save()
+                account_obj.save()
+                return redirect(OPD_DASHBOARD)
+
+            return HttpResponse(form.errors)
+        else:
+            return HttpResponse("Access Denied")
+    return HttpResponse("No Permission")
+
+
+def upload_profile_picture_opd(request, pk):
+    if is_permitted_to_edit(request, pk):
+        if request.method == 'POST':
+            form = ProfilePictureForm(request.POST, request.FILES)
+            if form.is_valid():
+                to_be_edited_user = Account.objects.get(pk=pk)
+                to_be_edited_user.profile_picture = request.FILES['profile_picture']
+                to_be_edited_user.save()
+
+            return redirect('/opd/editprofile/{}/'.format(pk))
+    return HttpResponse("ERROR No Permission")
+
+
+def is_permitted_to_edit(req, pk):
+    return req.user.is_authenticated and (
+                (pk == req.user.pk and req.user.is_opd) or req.user.is_superuser or req.user.is_admin)
+
+
+def opd_edit_profile_view(request, pk):
+    opd_edit_profile_html = 'opd/opd-edit-profile.html'
+    try:
+        account_obj = Account.objects.get(pk=pk)
+    except Account.DoesNotExist:
+        return render(request, opd_edit_profile_html, {'permitted': False})
+
+    context = {
+        'account_obj': account_obj,
+        'pk': pk,
+        'form': EditOpdProfileForm(),
+        'photo_form': ProfilePictureForm(),
+        'permitted': False,
+    }
+
+    if is_permitted_to_edit(request, pk):
+        context['permitted'] = True
+
+    return render(request, opd_edit_profile_html, context)
