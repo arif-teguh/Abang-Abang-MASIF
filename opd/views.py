@@ -53,7 +53,6 @@ def sort_by_batas_akhir(request, param):
 
 
 def search_by_judul(request, param):
-    filter_obj = Lowongan.objects.filter(opd_foreign_key = request.user.id)
     if request.method == 'GET':
         response = {}
         obj_lowongan = Lowongan.objects.filter(
