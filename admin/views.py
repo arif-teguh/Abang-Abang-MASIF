@@ -1,13 +1,13 @@
+from django.contrib.sites.shortcuts import get_current_site
+from django.core.exceptions import ValidationError
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
-from django.contrib.sites.shortcuts import get_current_site
-from django.core.exceptions import ValidationError
 
 from account.models import Account
 from admin.opd_registration_form import OpdRegistrationForm
-from .models import OpdVerificationList
 from .mailing import send_verification_email
+from .models import OpdVerificationList
 from .token import generate_opd_token
 
 
@@ -25,7 +25,8 @@ def get_all_opd():
 
 def user_is_admin(request):
     return request.user.is_authenticated and \
-        request.user.is_admin
+           request.user.is_admin
+
 
 def admin_login(request):
     return render(request, 'admin/admin_login.html')
@@ -48,6 +49,7 @@ def admin_list_opd(request):
 
     else:
         return redirect('/admin/login/')
+
 
 def admin_register_opd(request):
     if user_is_admin(request):
@@ -74,7 +76,7 @@ def admin_register_opd(request):
                     return render(
                         request,
                         'activation_link.html'
-                        )
+                    )
                 except ValidationError as e:
                     err = e
         else:

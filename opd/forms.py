@@ -2,6 +2,21 @@ from django import forms
 
 
 class EditOpdProfileForm(forms.Form):
+    name_field = forms.TextInput(
+        attrs={
+            'class': 'form-control',
+            'type': 'text',
+            'placeholder': 'Nama',
+        }
+    )
+
+    name = forms.CharField(
+        max_length=120,
+        min_length=1,
+        widget=name_field,
+        label="Nama ",
+    )
+
     phone_field = forms.TextInput(
         attrs={
             'class': 'form-control',

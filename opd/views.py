@@ -1,7 +1,7 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
-from django.views.decorators.csrf import csrf_exempt, requires_csrf_token
+from django.views.decorators.csrf import csrf_exempt
 
 from account.models import Account, OpdProfile
 from admin.models import OpdVerificationList
@@ -181,10 +181,13 @@ def opd_edit_profile_handler(request, pk):
 
         if form.is_valid():
             account_obj = Account.objects.get(pk=pk)
+            account_obj.name = request.POST['name']
             account_obj.phone = request.POST['phone']
             account_obj.opdprofile.address = request.POST['address']
             account_obj.opdprofile.save()
             account_obj.save()
+            if request.user.is_admin:
+                return redirect('/admin/listopd/')
             return redirect(OPD_DASHBOARD)
 
         return HttpResponse(form.errors)
@@ -216,11 +219,16 @@ def opd_edit_profile_view(request, pk):
         account_obj = Account.objects.get(pk=pk)
     except Account.DoesNotExist:
         return render(request, opd_edit_profile_html, {'permitted': False})
+    current_opd_data = {
+        'name': account_obj.name,
+        'address': account_obj.opdprofile.address,
+        'phone': account_obj.phone,
+    }
 
     context = {
         'account_obj': account_obj,
         'pk': pk,
-        'form': EditOpdProfileForm(),
+        'form': EditOpdProfileForm(current_opd_data),
         'photo_form': ProfilePictureForm(),
         'permitted': False,
     }

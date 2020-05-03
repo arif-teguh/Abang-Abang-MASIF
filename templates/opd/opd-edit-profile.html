@@ -37,9 +37,8 @@
 
                         </div>
                     </div>
-                    <p>Nama : <br>{{ account_obj.name }}</p>
                     <p>Email : <br>{{ account_obj.email }}</p>
-                    <form action="/opd/editprofile/{{ request.user.pk }}/post/" method="post">
+                    <form action="/opd/editprofile/{{ account_obj.pk }}/post/" method="post">
                         {% csrf_token %}
 
                         {{ form }}
