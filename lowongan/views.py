@@ -114,7 +114,11 @@ def update_lamar_lowongan(request, id_lowongan, lamaran):
 @login_required
 def form_lamar_lowongan(request, id_lowongan):
     url_dashboard_user = "/user/dashboard/"
-    if request.user.is_user == False:
+    pelamar = request.user.userprofile 
+    if (request.user.is_user == False or
+        pelamar.address ==  'Not set' or 
+        pelamar.institution ==  'Not set' or 
+        pelamar.education ==  'Not set') :
         return redirect('/')
 
     try:
