@@ -29,6 +29,10 @@ class UserLamarMagang(models.Model):
         ("WAWANCARA", "WAWANCARA"),
         ("MENUNGGU", "MENUNGGU")
     )
+    KESBANGPOL_STATUS = (
+        ("MENUNGGU_OPD", "MENUNGGU_OPD"),
+        ("DITERIMA", "DITERIMA")
+    )
     application_letter = models.TextField(max_length=2000)
     file_berkas_tambahan = models.FileField()
     lowongan_foreign_key = models.ForeignKey(Lowongan, on_delete=models.CASCADE,
@@ -37,3 +41,6 @@ class UserLamarMagang(models.Model):
                                          related_name='RelasiLowonganAndUser')
     status_lamaran = models.CharField(max_length=20, default="MENUNGGU", choices=CHOICE)
     notes_status_lamaran = models.TextField(max_length=1000, default="Tidak Ada Catatan")
+    status_kesbangpol = models.CharField(max_length=20, default="MENUNGGU_OPD",
+                                         choices=KESBANGPOL_STATUS)
+    tanggal_kesbangpol = models.DateField(blank=True, null=True)
