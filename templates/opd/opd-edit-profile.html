@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block head %}
+    <link rel="stylesheet" href="/static/css/user/user-profile-detail-dashboard.css">
+
+    <link rel="stylesheet" href="/static/css/opd-edit-profile.css">
+    <title>Edit Profil OPD</title>
+
+{% endblock %}
+{% block body %}
+    {% include 'navbar-no-bootstrap.html' %}
+    <div class="container">
+        {% if permitted %}
+            <h2 class="page-title text-center">Edit Profil OPD</h2>
+
+            <div class="row">
+                <div class="input-wrapper col-12 col-sm-1 col-md-2"></div>
+                <div class="input-wrapper col-12 col-sm-10 col-md-8">
+                    <div id="profile-picture-col" class="col-12 col-sm-auto">
+                        <span id="foto-keterangan">Klik untuk ganti foto</span>
+                        <div class="image-upload">
+                            <label for="id_profile_picture">
+
+                                {% if account_obj.profile_picture %}
+                                    <img style="image-orientation: flip;" id="profile_picture"
+                                         src="/media/{{ account_obj.profile_picture }}" alt="pp">
+                                {% else %}
+                                    <img id="profile_picture" src="/static/img/add_photo.png" alt="pp">
+                                {% endif %}
+
+                            </label>
+                            <form id="form-profile-picture" method="post" enctype="multipart/form-data"
+                                  action="{% url 'opd_edit_upload_pp' account_obj.pk %}">
+                                {% csrf_token %}
+                                <span style="display: none">{{ photo_form.profile_picture }}</span>
+
+                            </form>
+
+                        </div>
+                    </div>
+                    <p>Email : <br>{{ account_obj.email }}</p>
+                    <form action="/opd/editprofile/{{ account_obj.pk }}/post/" method="post">
+                        {% csrf_token %}
+
+                        {{ form }}
+                        <div id="submit-wrapper">
+
+                            <button id="submit-button" class="ml-auto btn btn-primary" type="submit">
+                                Submit
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+                <div class="input-wrapper col-12 col-sm-1 col-md-2"></div>
+            </div>
+
+        {% else %}
+            <!-- Error handling for permission -->
+            <h1 class="page-title text-center">BUKAN OPD TIDAK PERMITTED</h1>
+        {% endif %}
+
+    </div>
+
+    <script>
+        document.getElementById("id_profile_picture").onchange = function () {
+            document.getElementById("form-profile-picture").submit();
+        };
+
+    </script>
+{% endblock %}
+
+

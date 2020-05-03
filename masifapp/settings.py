@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'account',
     'user',
     'kesbangpol',
+    'artikel'
 ]
 
 AUTHENTICATION_BACKENDS = (
