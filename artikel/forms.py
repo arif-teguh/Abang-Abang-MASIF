@@ -12,14 +12,16 @@ class ArtikelForm(forms.ModelForm):
         }
         model = Artikel
         fields = [
-            "judul", "deskripsi", "foto_artikel"
+            "judul", "foto_artikel", "deskripsi"
         ]
-        widget = {
+        widgets = {
             "judul" : forms.TextInput(
                 attrs=attribute_text_input
             ),
             "deskripsi" : forms.Textarea(
                 attrs=attribute_text_area
-            ),
-            "foto_artikel" : forms.FileInput()
+            )
+        }
+        labels = {
+            "foto_artikel" : "Foto Sampul Artikel"
         }
