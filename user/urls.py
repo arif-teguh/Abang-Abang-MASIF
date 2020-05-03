@@ -13,6 +13,7 @@ urlpatterns = [
     path('dashboard/api/get-all-lamaran-for-dashboard-table/', views.get_all_lamaran_for_dashboard_table,
          name='get_all_lamaran_for_dashboard_table'),
     path('register/', views.user_register, name='user_register'),
+    path('register-google/', views.user_register2_google, name='user_register2_google'),
     path(
         'login/',
         LoginView.as_view(
