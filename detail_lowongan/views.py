@@ -11,7 +11,8 @@ def detail_lowongan(request, id_lowongan):
         pelamar = request.user.userprofile
         if(pelamar.address ==  'Not set' or 
             pelamar.institution ==  'Not set' or 
-            pelamar.education ==  'Not set'):
+            pelamar.education ==  'Not set' or 
+            pelamar.sex ==  'm'  ):
             kelengkapan = 'tidak_lengkap'
     else :
         kelengkapan = 'tidak_lengkap'

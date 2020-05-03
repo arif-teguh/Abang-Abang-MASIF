@@ -118,7 +118,8 @@ def form_lamar_lowongan(request, id_lowongan):
     if (request.user.is_user == False or
         pelamar.address ==  'Not set' or 
         pelamar.institution ==  'Not set' or 
-        pelamar.education ==  'Not set') :
+        pelamar.education ==  'Not set' or
+        pelamar.sex ==  'n'  ) :
         return redirect('/')
 
     try:
