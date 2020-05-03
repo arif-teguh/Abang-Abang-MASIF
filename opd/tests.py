@@ -571,6 +571,7 @@ class OpdEditProfileTest(TestCase):
         self.test_file_foto = SimpleUploadedFile("foto.jpg", b"file_content")
         self.test_address = 'test'
         self.phone = '12345'
+        self.DEFAULT_NAME = "TESTNAME"
 
     def tearDown(self):
         pass
@@ -629,7 +630,7 @@ class OpdEditProfileTest(TestCase):
     def test_opd_should_be_able_to_edit_profile(self):
         response = self.client_login_opd.post(
             self.edit_profile_page_url + '{}/post/'.format(self.opd_satu.pk),
-            {'phone': self.phone, 'address': self.test_address}
+            {'phone': self.phone, 'address': self.test_address, 'name': self.DEFAULT_NAME}
         )
 
         account = Account.objects.get(pk=self.opd_satu.pk)
@@ -639,27 +640,30 @@ class OpdEditProfileTest(TestCase):
     def test_opd_shouldnot_be_able_to_edit_other_opd_profile(self):
         response = self.client_login_opd.post(
             self.edit_profile_page_url + '{}/post/'.format(self.opd_dua.pk),
-            {'phone': self.phone, 'address': self.test_address}
+            {'phone': self.phone, 'address': self.test_address, 'name': self.DEFAULT_NAME}
         )
 
         account = Account.objects.get(pk=self.opd_dua.pk)
         self.assertNotEqual(account.opdprofile.address, self.test_address)
         self.assertNotEqual(account.phone, self.phone)
+        self.assertNotEqual(account.name, self.DEFAULT_NAME)
 
     def test_admin_should_be_able_to_edit_any_opd(self):
         self.client_login_admin.post(
             self.edit_profile_page_url + '{}/post/'.format(self.opd_satu.pk),
-            {'phone': self.phone, 'address': self.test_address}
+            {'phone': self.phone, 'address': self.test_address, 'name': self.DEFAULT_NAME}
         )
 
         self.client_login_admin.post(
             self.edit_profile_page_url + '{}/post/'.format(self.opd_dua.pk),
-            {'phone': self.phone, 'address': self.test_address}
+            {'phone': self.phone, 'address': self.test_address, 'name': self.DEFAULT_NAME}
         )
 
         account1 = Account.objects.get(pk=self.opd_dua.pk)
         account2 = Account.objects.get(pk=self.opd_dua.pk)
         self.assertEqual(account1.opdprofile.address, self.test_address)
         self.assertEqual(account1.phone, self.phone)
+        self.assertEqual(account1.name, self.DEFAULT_NAME)
         self.assertEqual(account2.opdprofile.address, self.test_address)
         self.assertEqual(account2.phone, self.phone)
+        self.assertEqual(account2.name, self.DEFAULT_NAME)
