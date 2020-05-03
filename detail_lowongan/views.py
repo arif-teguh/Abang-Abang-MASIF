@@ -9,9 +9,10 @@ def detail_lowongan(request, id_lowongan):
     kelengkapan = 'lengkap'
     if(request.user.is_authenticated):
         pelamar = request.user.userprofile
-        if(pelamar.address ==  'Not set' or 
-            pelamar.institution ==  'Not set' or 
-            pelamar.education ==  'Not set' or 
+        not_set = 'Not set'
+        if(pelamar.address ==  not_set or 
+            pelamar.institution ==  not_set or 
+            pelamar.education ==  not_set or 
             pelamar.sex ==  'm'  ):
             kelengkapan = 'tidak_lengkap'
     else :
