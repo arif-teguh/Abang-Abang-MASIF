@@ -7,11 +7,12 @@ from account.models import Account
 from lowongan.models import Lowongan
 from . import views
 
-
 # Create your tests here.
 mock_date = datetime.date(2012, 12, 12)
 url_detail_lowongan = '/cari-lowongan/detail-lowongan/'
 class TestingDetailLowongan(TestCase):
+    URL_detail_lowongan = '/cari-lowongan/detail-lowongan/'
+
     def setUp(self):
         self.account1 = Account.objects.create_superuser(email="test@mail.com", password="1234")
         self.client.force_login(self.account1)

@@ -3,6 +3,7 @@ from django.test import Client
 from django.urls import resolve
 from . import views
 
+
 class TestingCariLowongan(TestCase):
     URL_CARI_LOWONGAN = '/cari-lowongan/'
 
@@ -28,8 +29,7 @@ class TestingCariLowongan(TestCase):
         self.assertEqual(response.status_code, 302)
 
 
-
-class test_sort_by_deadline(TestCase):
+class TestSortByDeadline(TestCase):
 
     def test_sorting_asc_page_response_status(self):
         response = Client().get('/cari-lowongan/sorting/batas-akhir/asc')
@@ -49,7 +49,8 @@ class test_sort_by_deadline(TestCase):
         self.assertEqual(response1.status_code, 302)
         self.assertEqual(response2.status_code, 302)
 
-class test_sort_by_waktu_magang(TestCase):
+
+class TestSortByWaktuMagang(TestCase):
 
     def test_sorting_asc_page_response_status(self):
         response = Client().get('/cari-lowongan/sorting/waktu-magang/asc')
@@ -69,7 +70,8 @@ class test_sort_by_waktu_magang(TestCase):
         self.assertEqual(response1.status_code, 302)
         self.assertEqual(response2.status_code, 302)
 
-class test_search(TestCase):
+
+class TestSearch(TestCase):
 
     def test_search_page_response_status(self):
         response = Client().get('/cari-lowongan/searching/end')
