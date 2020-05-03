@@ -1,20 +1,17 @@
 {% extends 'base.html' %}
 {% load static %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    {% block head %}
-        <link rel="stylesheet" type="text/css" href='{% static "/css/landing.css" %}'>
 
-        <link rel="stylesheet" type="text/css" href="/static/slick/slick.css"/>
-        <link rel="stylesheet" type="text/css" href="/static/slick/slick-theme.css"/>
-        <script type="text/javascript" src="/static/slick/slick.min.js"></script>
-        <title>Beranda</title>
-    {% endblock %}
+{% block head %}
+    <link rel="stylesheet" type="text/css" href='{% static "/css/landing.css" %}'>
 
-</head>
-<body>
+    <link rel="stylesheet" type="text/css" href="/static/slick/slick.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/slick/slick-theme.css"/>
+    <script type="text/javascript" src="/static/slick/slick.min.js"></script>
+    <title>Beranda</title>
+{% endblock %}
+
+
 {% block body %}
     {% include 'navbar-no-bootstrap.html' %}
     <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel" data-interval="false">
@@ -117,8 +114,14 @@
 
 
     <script>
-        $(document).ready(function () {
+        let imageSelect = $('.carousel-img');
+        let width = imageSelect[0].width;
+        const calculatedHeight = 0.3320 * width;
+        imageSelect.css("max-height", calculatedHeight);
+        console.log("JALAN!!!");
+        console.log(calculatedHeight);
 
+        $(document).ready(function () {
 
             $('.magang-terbaru-autoplay').slick({
                 dots: true,
@@ -167,6 +170,3 @@
     </script>
 
 {% endblock %}
-
-</body>
-</html>

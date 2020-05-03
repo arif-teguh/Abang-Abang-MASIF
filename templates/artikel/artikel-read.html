@@ -14,7 +14,7 @@
                 <div class="col-12 col-md-9">
                     <h2 class="text-center">{{ artikel.judul }}</h2>
                     <img src="/media/{{ artikel.foto_artikel }}" alt="article image" id="article-image">
-                    <p id="article-content">{{ artikel.deskripsi }}</p>
+                    <div id="article-content">{{ artikel.deskripsi|safe }}</div>
                 </div>
                 <div class="col-12 col-md-3">
                     <h5 class="text-center" id="artikel-lainnya-title">Artikel Lainnya</h5>
