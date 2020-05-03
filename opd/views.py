@@ -1,7 +1,7 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_exempt, requires_csrf_token
 
 from account.models import Account, OpdProfile
 from admin.models import OpdVerificationList
@@ -176,22 +176,20 @@ OPD_DASHBOARD = '/opd/'
 
 
 def opd_edit_profile_handler(request, pk):
-    if is_permitted_to_edit(request, pk):
-        if request.method == 'POST':
-            form = EditOpdProfileForm(request.POST)
+    if is_permitted_to_edit(request, pk) and request.method == 'POST':
+        form = EditOpdProfileForm(request.POST)
 
-            if form.is_valid():
-                account_obj = Account.objects.get(pk=pk)
-                account_obj.phone = request.POST['phone']
-                account_obj.opdprofile.address = request.POST['address']
-                account_obj.opdprofile.save()
-                account_obj.save()
-                return redirect(OPD_DASHBOARD)
+        if form.is_valid():
+            account_obj = Account.objects.get(pk=pk)
+            account_obj.phone = request.POST['phone']
+            account_obj.opdprofile.address = request.POST['address']
+            account_obj.opdprofile.save()
+            account_obj.save()
+            return redirect(OPD_DASHBOARD)
 
-            return HttpResponse(form.errors)
-        else:
-            return HttpResponse("Access Denied")
-    return HttpResponse("No Permission")
+        return HttpResponse(form.errors)
+    else:
+        return HttpResponse("Access Denied")
 
 
 def upload_profile_picture_opd(request, pk):
@@ -209,7 +207,7 @@ def upload_profile_picture_opd(request, pk):
 
 def is_permitted_to_edit(req, pk):
     return req.user.is_authenticated and (
-                (pk == req.user.pk and req.user.is_opd) or req.user.is_superuser or req.user.is_admin)
+            (pk == req.user.pk and req.user.is_opd) or req.user.is_superuser or req.user.is_admin)
 
 
 def opd_edit_profile_view(request, pk):
