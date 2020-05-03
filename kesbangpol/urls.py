@@ -8,5 +8,10 @@ urlpatterns = [
     path('', views.kesbangpol_dashboard,
          name='kesbangpol_dashboard'),
     path('lamaran/<int:user_lamar_id>/', views.get_user_lamaran_detail,
-          name='detail_lamaran')
+         name='detail_lamaran'),
+    path('lamaran/<int:user_lamar_id>/tanggal/',
+         views.post_jadwal_lamaran_kesbangpol,
+         name='post_tanggal'),
+    path('lamaran/<int:user_lamar_id>/rekomendasi/', views.get_rekomendasi_pdf,
+         name='rekomendasi'),
 ]

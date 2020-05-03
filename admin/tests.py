@@ -371,7 +371,7 @@ class EmailTest(TestCase):
         mail.outbox = []
 
     def test_invalid_email(self):
-        with self.assertRaises(ValueError):
+        with self.assertRaises(ValidationError):
             mailing.send_verification_email(self.verification_url,
                                             "test.com")
 

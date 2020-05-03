@@ -1,11 +1,12 @@
-{% extends 'base.html' %}
+
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
-{% block head %}
+
     <meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" href='{% static "/css/cari_lowongan.css" %}'>
+    {% include 'import-bootstrap-jquery.html' %}
 
     <style>
         .opd-logo {
@@ -19,16 +20,16 @@
     </style>
 
     <title>OPD Dashboard</title>
-    {% endblock %}
+    
 </head>
 <body>
-{% block body %}
+
 {% include 'navbar-no-bootstrap.html' %}
 <div class="container" id="container-dashboard-opd">
     <div class="row">
         <div class="col">
             <div class="row">
-                <div><img class="opd-logo" src="https://www.pmidpi.com/wp-content/uploads/2015/07/person-placeholder.jpg"></div>
+                <div><img class="opd-logo" src="https://www.pmidpi.com/wp-content/uploads/2015/07/person-placeholder.jpg" alt="opd-logo"></div>
                 <div class="col">
                     <h3>{{ user.name }}</h3>
                     <h5>Pemerintah Kota Depok</h5>
@@ -51,31 +52,80 @@
 
 
 <div class="pg-container">
+    <div class="row">
+        <div class="col-sm">
+            <div class="dropdown show">
+                <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                   data-toggle="dropdown"
+                   aria-haspopup="true" aria-expanded="false">
+                    Urutkan Berdasarkan :
+                </a>
 
-{% for each in list_lowongan reversed %}
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                    <a class="dropdown-item" href="/opd/sorting/waktu-magang/asc">Waktu Mulai Magang
+                        [ascending]</a>
+                    <a class="dropdown-item" href="/opd/sorting/waktu-magang/desc">Waktu Mulai Magang
+                        [descending]</a>
+                    <a class="dropdown-item" href="/opd/sorting/batas-akhir/asc">Batas Akhir Pendaftaran
+                        [ascending]</a>
+                    <a class="dropdown-item" href="/opd/sorting/batas-akhir/desc">Batas Akhir Pendaftaran
+                        [descending]</a>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="col-sm">
+            <form onsubmit="return searchFunc();">
+                <input onsubmit="searchFunc()" id="search-box" type="text" placeholder="Cari Judul...">
+                <input id="search-btn" onclick="searchFunc()" class="btn btn-primary" type="submit"/>
+            </form>
+        </div>
+    </div>
+
+
+
+
+{% for each in data reversed %}
 <div class="outer-box">
         <div class="row inner-box">
             <div class="col-2 col1">
-                <img src="{% static 'img/image 6.png' %}">
-                
+                <img src="{% static 'img/image 6.png' %}" alt="lowongan">
+                <p>Dinas Depok</p>
             </div>
             <div class="col-9 align-self-center col2">
                 <p id="judul-lowongan">{{ each.judul }}</p>
-                <p>{{ each.kategori }}</p>
+                <p>Kategori: {{ each.kategori }}</p>
                 <p>Jumlah pelamar : {{each.list_pendaftar_key.count}}</p>
             </div>
             <div class="col-1 d-flex align-items-end flex-column col3">
             <pre>
 
-                <a href="/opd/lowongan/list-pendaftar-{{each.id}}/"  class="btn btn-primary mt-auto">Lihat pelamar</a>
-                <a href="/opd/lowongan/detail-{{each.id}}/"  class="btn btn-primary mt-auto">Detail Lowongan</a>
+                 <button onclick="window.location.href='/opd/lowongan/list-pendaftar-{{each.id}}/'" type="button" class="btn btn-primary mt-auto">Lihat pelamar</button>
+                 <button onclick="window.location.href='/opd/lowongan/detail-{{each.id}}/'" type="button" class="btn btn-primary mt-auto">Detail Lowongan</button>
             </pre>
             </div>
         </div>
     </div>
     {% endfor %}
 
-</div>
-{% endblock %}
+<script type="text/javascript">
+
+    function searchFunc() {
+        search_word = $("#search-box").val();
+        if(search_word.localeCompare('') != 0){
+        window.location.href = "/opd/searching/" + search_word;
+        }
+        else {
+            window.alert('Isi parameter sebelum search');
+        }
+        
+    }
+</script>
+
+ <script src="{% static 'jquery/jquery-3.4.1.min.js' %}"></script>
+
+
+
 </body>
 </html>

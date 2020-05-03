@@ -21,7 +21,11 @@ test_email_addr = 'test@mail.com'
 kartu_keluarga = 'Kartu Keluarga'
 url_opd_tutup_buka_lowongan = '/opd/lowongan/buka-tutup/'
 mock_date = datetime.date(2012, 12, 12)
-
+url_sort_asc = '/opd/sorting/batas-akhir/asc'
+url_sort_asc2 = '/opd/sorting/waktu-magang/asc'
+url_sort_desc = '/opd/sorting/batas-akhir/desc'
+url_sort_desc2 = '/opd/sorting/waktu-magang/desc'
+url_search = '/opd/searching/end'
 class LoginOpdUnitTest(TestCase):
     #login
     def test_page_title_opd_login(self):
@@ -549,3 +553,57 @@ class TestOpdDownload(TestCase):
     def test_tutup_lowongan_yang_bukan_miliknya(self):
         response = self.client.get(url_opd_tutup_buka_lowongan + str(self.lowongan2.id)+'/')
         self.assertEqual('/' , response.url)
+
+
+
+class test_sort_by_deadline(TestCase):
+
+    def test_sorting_asc_page_response_status(self):
+        response = Client().get(url_sort_asc)
+        self.assertEqual(response.status_code, 200)
+
+    def test_sorting_desc_page_response_status(self):
+        response = Client().get(url_sort_desc)
+        self.assertEqual(response.status_code, 200)
+
+    def test_sorting_other_param_response_status(self):
+        response = Client().get('/opd/sorting/batas-akhir/dtogijt')
+        self.assertNotEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 302)
+
+    def test_sorting_page_response_status_post(self):
+        response1 = Client().post(url_sort_asc)
+        response2 = Client().post(url_sort_desc)
+        self.assertEqual(response1.status_code, 302)
+        self.assertEqual(response2.status_code, 302)
+
+class test_sort_by_waktu_magang(TestCase):
+
+    def test_sorting_asc_page_response_status(self):
+        response = Client().get(url_sort_asc2)
+        self.assertEqual(response.status_code, 200)
+
+    def test_sorting_desc_page_response_status(self):
+        response = Client().get(url_sort_desc2)
+        self.assertEqual(response.status_code, 200)
+
+    def test_sorting_other_param_response_status(self):
+        response = Client().get('/opd/sorting/waktu-magang/dtogijt')
+        self.assertEqual(response.status_code, 302)
+        self.assertNotEqual(response.status_code, 200)
+
+    def test_sorting_page_response_status_post(self):
+        response1 = Client().post(url_sort_asc2)
+        response2 = Client().post(url_sort_desc2)
+        self.assertEqual(response1.status_code, 302)
+        self.assertEqual(response2.status_code, 302)
+
+class test_search(TestCase):
+
+    def test_search_page_response_status(self):
+        response = Client().get(url_search)
+        self.assertEqual(response.status_code, 200)
+
+    def test_search_page_response_status_post(self):
+        response = Client().post(url_search)
+        self.assertEqual(response.status_code, 302)

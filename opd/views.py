@@ -13,6 +13,56 @@ from .opd_confirmation_form import OpdConfirmationForm
 opd_home = '/opd/'
 home = '/'
 
+template_opd_lowongan = 'opd_lowongan.html'
+
+
+def sort_by_waktu_magang(request, param):
+    filter_obj = Lowongan.objects.filter(opd_foreign_key = request.user.id)
+    if request.method == 'GET':
+        response = {}
+        if param == 'asc':
+            obj_lowongan = filter_obj.order_by('waktu_awal_magang')
+            response['data'] = obj_lowongan
+            return render(request, template_opd_lowongan, response)
+        elif param == 'desc':
+            obj_lowongan = filter_obj.order_by('-waktu_awal_magang')
+            response['data'] = obj_lowongan
+            return render(request, template_opd_lowongan, response)
+        else:
+            return redirect(opd_home)
+    else:
+        return redirect(opd_home)
+
+
+def sort_by_batas_akhir(request, param):
+    filter_obj = Lowongan.objects.filter(opd_foreign_key = request.user.id)
+    if request.method == 'GET':
+        response = {}
+        if param == 'asc':
+            obj_lowongan = filter_obj.order_by('batas_akhir_pendaftaran')
+            response['data'] = obj_lowongan
+            return render(request, template_opd_lowongan, response)
+        elif param == 'desc':
+            obj_lowongan = filter_obj.order_by('-batas_akhir_pendaftaran')
+            response['data'] = obj_lowongan
+            return render(request, template_opd_lowongan, response)
+        else:
+            return redirect(opd_home)
+    else:
+        return redirect(opd_home)
+
+
+def search_by_judul(request, param):
+    if request.method == 'GET':
+        response = {}
+        obj_lowongan = Lowongan.objects.filter(
+            judul__contains=param).order_by('judul')
+        response['data'] = obj_lowongan
+        return render(request, template_opd_lowongan, response)
+    else:
+        return redirect(opd_home)
+
+
 def opd_login(request):
     return render(request, 'opd_login.html')
 
@@ -53,7 +103,6 @@ def opd_download_file(request ,id_user , id_lowongan):
         if(cek_id_lowongan_dan_opd(request , id_lowongan)):
             filename = userlamarmagang.file_berkas_tambahan.name.split('/')[-1]
             if(userlamarmagang.file_berkas_tambahan):
-                #filename = os.path.basename(userlamarmagang.file_berkas_tambahan.name)
                 response = HttpResponse(userlamarmagang.file_berkas_tambahan, content_type='text/plain')
                 response['Content-Disposition'] = 'attachment; filename=%s' % filename
                 return response
@@ -68,12 +117,10 @@ def opd_download_file(request ,id_user , id_lowongan):
 
 def opd_download_cv(request ,id_user, id_lowongan ):
     try :
-        userlamarmagang = UserLamarMagang.objects.get(user_foreign_key = id_user , lowongan_foreign_key = id_lowongan)
         if(cek_id_lowongan_dan_opd(request , id_lowongan)):
             pelamar = Account.objects.get(id = id_user)
             if(pelamar.userprofile.cv):
                 filename = pelamar.userprofile.cv.name.split('/')[-1]
-                #filename = os.path.basename(userlamarmagang.file_berkas_tambahan.name)
                 response = HttpResponse(pelamar.userprofile.cv, content_type='text/plain')
                 response['Content-Disposition'] = 'attachment; filename=%s' % filename
                 return response
@@ -99,9 +146,9 @@ def cek_id_lowongan_dan_opd(request, id_lowongan):
 
 def opd_home(request):
     if request.user.is_authenticated and request.user.is_opd:
-        list_lowongan = Lowongan.objects.filter(opd_foreign_key = request.user.id)
+        data = Lowongan.objects.filter(opd_foreign_key = request.user.id)
         
-        return render(request,'opd_lowongan.html', {'list_lowongan': list_lowongan})
+        return render(request,'opd_lowongan.html', {'data': data})
     else:
         return redirect(home)
 
@@ -130,7 +177,7 @@ def opd_verification(request, token):
         opd_name = opd_from_verification_list.name
         email = opd_from_verification_list.email
         phone = opd_from_verification_list.phone
-    except:
+    except OpdVerificationList.DoesNotExist:
         return redirect('/opd/verification/404')
     if request.method == 'POST':
         form = OpdConfirmationForm(request.POST)

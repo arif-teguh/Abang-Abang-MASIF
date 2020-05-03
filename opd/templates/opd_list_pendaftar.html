@@ -10,14 +10,6 @@
         <link rel="stylesheet" type="text/css" href='{% static "/css/opd_list_pendaftar.css" %}'>
 
         <title>List pendaftar</title>
-        <style>
-            .inp {
-                padding: 0 18px;
-                display: none;
-                background-color: white;
-                overflow: hidden;
-            }
-        </style>
     {% endblock %}
 </head>
 <body>
@@ -64,7 +56,7 @@
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-1">
-                                    <img class="foto-profil" src="/media/{{ item.user_foreign_key.profile_picture }}">
+                                    <img class="foto-profil" src="/media/{{ item.user_foreign_key.profile_picture }}" alt="foto-profil">
                                 </div>
                                 <div class="col-11 info-col">
                                     <h6>{{ item.user_foreign_key.userprofile.education|upper }}
@@ -100,6 +92,7 @@
                             <div class="row buttons-row justify-content-end">
 
                                 <div class="col-3">
+                                <label>Ubah status Pelamar</label>
                                     <select id="select-{{ item.user_foreign_key.id }}" class="btn btn-primary">
                                         <option value = "---"> --- </option>
                                         <option value = "DITERIMA">Terima</option>
@@ -107,13 +100,13 @@
                                         <option   value="WAWANCARA">Wawancara</option>
                                     </select>
                                     
-                                    <label id='label-{{ each.user_foreign_key.id }}'></label><input type="text"  
-                                                                                                    class='inp'                                                                                                  
+                                    <label id='label-{{ each.user_foreign_key.id }}'>Catatan :</label><input type="text"  
+                                                                                                                                                                                             
                                                                                                     id="form-{{ item.user_foreign_key.id }}">
                                     <h6></h6>
                                     <button class="btn btn-primary"
                                             onclick='redirect2({{ item.user_foreign_key.id }},{{ item.lowongan_foreign_key.id }})'>
-                                        kirim
+                                        Simpan
                                     </button>                 
                                 
                                                                                                     
