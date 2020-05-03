@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-{% block head %}
+
     <meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" href='{% static "/css/cari_lowongan.css" %}'>
     {% include 'import-bootstrap-jquery.html' %}
@@ -20,10 +20,10 @@
     </style>
 
     <title>OPD Dashboard</title>
-    {% endblock %}
+    
 </head>
 <body>
-{% block body %}
+
 {% include 'navbar-no-bootstrap.html' %}
 <div class="container" id="container-dashboard-opd">
     <div class="row">
@@ -126,6 +126,6 @@
  <script src="{% static 'jquery/jquery-3.4.1.min.js' %}"></script>
 
 
-{% endblock %}
+
 </body>
 </html>
