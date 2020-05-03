@@ -6,9 +6,8 @@ from lowongan.models import Lowongan
 
 
 def query_n_number_of_newest_lowongan(n):
-    return Lowongan.objects.all().order_by('-id')[:n]
-
-
+    return Lowongan.objects.filter(is_lowongan_masih_berlaku=True).order_by('-id')[:n]
+    
 def landing(request):
     list_of_lowongan = query_n_number_of_newest_lowongan(7)
     context = {

@@ -19,7 +19,7 @@ for (i = 0; i < acc.length; i++) {
     }
   });
 }
-
+/*
 for (i = 0; i < acc.length; i++) {
   select[i].addEventListener("click", function() {
     this.classList.toggle("active");
@@ -47,7 +47,7 @@ for (i = 0; i < acc.length; i++) {
   });
 }
 
-/*
+
 function redirect(x,y) {
   if (id == x){
     isi = document.getElementById('form-'+x).value

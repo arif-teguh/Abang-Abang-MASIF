@@ -10,14 +10,6 @@
         <link rel="stylesheet" type="text/css" href='{% static "/css/opd_list_pendaftar.css" %}'>
 
         <title>List pendaftar</title>
-        <style>
-            .inp {
-                padding: 0 18px;
-                display: none;
-                background-color: white;
-                overflow: hidden;
-            }
-        </style>
     {% endblock %}
 </head>
 <body>
@@ -107,8 +99,8 @@
                                         <option   value="WAWANCARA">Wawancara</option>
                                     </select>
                                     
-                                    <label id='label-{{ each.user_foreign_key.id }}'></label><input type="text"  
-                                                                                                    class='inp'                                                                                                  
+                                    <label id='label-{{ each.user_foreign_key.id }}'>Catatan :</label><input type="text"  
+                                                                                                                                                                                             
                                                                                                     id="form-{{ item.user_foreign_key.id }}">
                                     <h6></h6>
                                     <button class="btn btn-primary"

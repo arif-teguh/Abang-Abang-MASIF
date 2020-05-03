@@ -114,3 +114,4 @@ modules.xml
 #environment
 venv/
 env/
+.ssh/
