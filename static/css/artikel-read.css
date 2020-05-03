@@ -9,6 +9,7 @@
 #article-image {
     object-fit: contain;
     width: 100%;
+    max-height: 260px;
 }
 
 #article-content {

@@ -1,0 +1,29 @@
+#title-artikel {
+    margin-top: 1em;
+}
+
+.article-img {
+    object-fit: contain;
+}
+
+.article-card-body {
+    padding: 0;
+}
+
+.card-artikel {
+    width: 18rem;
+    margin-top: 1rem;
+
+}
+
+a.nostyle:link {
+    text-decoration: inherit;
+    color: inherit;
+    cursor: pointer;
+}
+
+a.nostyle:visited {
+    text-decoration: inherit;
+    color: inherit;
+    cursor: auto;
+}

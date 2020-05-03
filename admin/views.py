@@ -6,6 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from account.models import Account
 from admin.opd_registration_form import OpdRegistrationForm
+from artikel.models import Artikel
 from .mailing import send_verification_email
 from .models import OpdVerificationList
 from .token import generate_opd_token
@@ -97,3 +98,13 @@ def admin_delete_opd(request):
         Account.objects.filter(pk=pk)[0].delete()
         return HttpResponse('Delete OPD Success')
     return HttpResponse('Forbidden')
+
+
+def information_page(request):
+    if user_is_admin(request):
+        context = {
+            "articles": list(Artikel.objects.all()),
+        }
+        return render(request, 'admin/admin-info-page.html', context)
+    else:
+        return redirect('/admin/login')
