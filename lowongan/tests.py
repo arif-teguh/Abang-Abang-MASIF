@@ -353,7 +353,11 @@ class UserLamarMagangModelTest(TestCase):
         self.client = Client()
         self.account1 = Account.objects.create_superuser(email="test@mail.com", password="1234")
         self.user1 = Account.objects.all()[0]
-        user_profile = UserProfile(user=self.user1)
+        user_profile = UserProfile(user=self.user1 , 
+            address =  'test',
+            education = 'test',
+            institution = 'test',
+            sex =  'm'  )
         user_profile.save()
         self.test_file_cv = SimpleUploadedFile("testcv.pdf", b"file_content")
         self.test_file_cv_2 = SimpleUploadedFile("testcv2.pdf", b"file_content")
