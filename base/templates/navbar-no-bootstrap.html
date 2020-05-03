@@ -41,6 +41,10 @@
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                         {% if request.user.is_opd %}
+                            <a class="dropdown-item" href="{% url 'opd_edit_profile_view' request.user.pk %}">
+                                Edit Profil
+                            </a>
+                            <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="/opd/">Halaman OPD</a>
                             <div class="dropdown-divider"></div>
                         {% endif %}
@@ -62,7 +66,8 @@
                     <a class="nav-link" href="{% url 'user_login' %}">Login <span class="sr-only">(current)</span></a>
                 </li>
                 <li class="nav-item active">
-                    <a class="nav-link" href="{% url 'user_register' %}">Daftar <span class="sr-only">(current)</span></a>
+                    <a class="nav-link" href="{% url 'user_register' %}">Daftar <span
+                            class="sr-only">(current)</span></a>
                 </li>
 
             {% endif %}
