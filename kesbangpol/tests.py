@@ -126,6 +126,11 @@ class KesbangpolDashboardTest(TestCase):
             email=self.email, password=self.password)
         self.user_test_account.is_kesbangpol = True
         self.user_test_account.save()
+        self.email_not_kesbangpol = "not@kesbangpol.com"
+        self.user_test_not_kesbangpol = Account.objects.create_user(
+            email=self.email_not_kesbangpol, password=self.password
+        )
+        self.user_test_not_kesbangpol.save()
 
     def tearDown(self):
         # Clean up run after every test method.
@@ -139,6 +144,12 @@ class KesbangpolDashboardTest(TestCase):
         self.client.login(username=self.email, password=self.password)
         response = self.client.get('/kesbangpol/')
         self.assertEqual(response.status_code, 200)
+
+    def test_dashboard_kesbangpol_redirect_if_user_not_kesbangpol(self):
+        self.client.login(username=self.email_not_kesbangpol,
+                          password=self.password)
+        response = self.client.get('/kesbangpol/')
+        self.assertEqual(response.status_code, 302)
 
     def test_dashboard_kesbangpol_html_if_user_login(self):
         self.client.login(username=self.email, password=self.password)
@@ -191,7 +202,7 @@ class KesbangpolDashboardTest(TestCase):
         lamar = UserLamarMagang(application_letter='a',
                                 lowongan_foreign_key=lowongan,
                                 user_foreign_key=user,
-                                status_lamaran='Diterima')
+                                status_lamaran='DITERIMA')
         lamar.save()
 
         response = self.client.get('/kesbangpol/lamaran/'+str(lamar.id)+'/')
@@ -201,3 +212,163 @@ class KesbangpolDashboardTest(TestCase):
             {'bagian': 'kat1', 'durasi': 397, 'institution': 'UI',
              'judul': 'judul1', 'name': 'Test Name', 'opd': 'OPD Name'}
         )
+    
+    def test_kesbangpol_update_meeting_date_lamaran_not_exist(self):
+        self.client.login(username=self.email, password=self.password)
+        response = self.client.post(
+            "/kesbangpol/lamaran/1/tanggal/",
+            {
+                "tanggal_kesbangpol": '09/20/2020'
+            })
+        self.assertEqual(response.status_code, 200)
+        self.assertJSONEqual(
+            str(response.content, encoding='utf8'),
+            {'err': 'User Not Exist'}
+        )
+    
+    def test_kesbangpol_update_meeting_date(self):
+        secret_password = '12345678'
+        opd = Account.objects.create_user(email='opd@mail.com',
+                                          password=secret_password)
+        opd.is_opd = True
+        opd.name = "OPD Name"
+        opd.save()
+
+        user = Account.objects.create_user(email='user@mail.com',
+                                           password=secret_password)
+        user.is_user = True
+        user.name = "Test Name"
+        user.save()
+
+        user_profile = UserProfile(user=user)
+        user_profile.institution = "UI"
+        user_profile.save()
+
+        akhir = datetime.date(2012, 12, 12)
+        awal = datetime.date(2011, 11, 11)
+        lowongan = Lowongan.objects.create(
+            judul='judul1',
+            kategori='kat1',
+            kuota_peserta=10,
+            waktu_awal_magang=awal,
+            waktu_akhir_magang=akhir,
+            batas_akhir_pendaftaran=akhir,
+            berkas_persyaratan=['Kartu Keluarga'],
+            deskripsi='deskripsi1',
+            requirement='requirement1',
+            opd_foreign_key_id=opd.id
+        )
+        lowongan.save()
+
+        lamar = UserLamarMagang(application_letter='a',
+                                lowongan_foreign_key=lowongan,
+                                user_foreign_key=user,
+                                status_lamaran='DITERIMA')
+        lamar.save()
+
+        response = self.client.post('/kesbangpol/lamaran/'+str(lamar.id)+'/tanggal/',
+            {
+                "tanggal_kesbangpol": '22/11/2020'
+            })
+        self.assertEqual(response.status_code, 200)
+
+    def test_kesbangpol_update_meeting_date_fail_invalid_date_time(self):
+        secret_password = '12345678'
+        opd = Account.objects.create_user(email='opd@mail.com',
+                                          password=secret_password)
+        opd.is_opd = True
+        opd.name = "OPD Name"
+        opd.save()
+
+        user = Account.objects.create_user(email='user@mail.com',
+                                           password=secret_password)
+        user.is_user = True
+        user.name = "Test Name"
+        user.save()
+
+        user_profile = UserProfile(user=user)
+        user_profile.institution = "UI"
+        user_profile.save()
+
+        akhir = datetime.date(2012, 12, 12)
+        awal = datetime.date(2011, 11, 11)
+        lowongan = Lowongan.objects.create(
+            judul='judul1',
+            kategori='kat1',
+            kuota_peserta=10,
+            waktu_awal_magang=awal,
+            waktu_akhir_magang=akhir,
+            batas_akhir_pendaftaran=akhir,
+            berkas_persyaratan=['Kartu Keluarga'],
+            deskripsi='deskripsi1',
+            requirement='requirement1',
+            opd_foreign_key_id=opd.id
+        )
+        lowongan.save()
+
+        lamar = UserLamarMagang(application_letter='a',
+                                lowongan_foreign_key=lowongan,
+                                user_foreign_key=user,
+                                status_lamaran='DITERIMA')
+        lamar.save()
+
+        response = self.client.post(
+            '/kesbangpol/lamaran/'+ str(lamar.id) +'/tanggal/',
+            {
+                "tanggal_kesbangpol": ''
+            })
+        self.assertEqual(response.status_code, 200)
+        self.assertJSONEqual(
+            str(response.content, encoding='utf8'),
+            {'err': 'Invalid date format'}
+        )
+
+    def test_kesbangpol_generate_pdf_fail_lamaran_not_exist(self):
+        id_lamaran_not_available = '1'
+        response = self.client.get('/kesbangpol/lamaran/'+id_lamaran_not_available+'/rekomendasi/')
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, "/kesbangpol/")
+
+    def test_kesbangpol_generate_pdf_success(self):
+        secret_password = '12345678'
+        opd = Account.objects.create_user(email='opd@mail.com',
+                                          password=secret_password)
+        opd.is_opd = True
+        opd.name = "OPD Name"
+        opd.save()
+
+        user = Account.objects.create_user(email='user@mail.com',
+                                           password=secret_password)
+        user.is_user = True
+        user.name = "Test Name"
+        user.save()
+
+        user_profile = UserProfile(user=user)
+        user_profile.institution = "UI"
+        user_profile.save()
+
+        akhir = datetime.date(2012, 12, 12)
+        awal = datetime.date(2011, 11, 11)
+        lowongan = Lowongan.objects.create(
+            judul='judul1',
+            kategori='kat1',
+            kuota_peserta=10,
+            waktu_awal_magang=awal,
+            waktu_akhir_magang=akhir,
+            batas_akhir_pendaftaran=akhir,
+            berkas_persyaratan=['Kartu Keluarga'],
+            deskripsi='deskripsi1',
+            requirement='requirement1',
+            opd_foreign_key_id=opd.id
+        )
+        lowongan.save()
+
+        lamar = UserLamarMagang(application_letter='a',
+                                lowongan_foreign_key=lowongan,
+                                user_foreign_key=user,
+                                status_lamaran='DITERIMA')
+        lamar.save()
+
+        response = self.client.get('/kesbangpol/lamaran/'+str(lamar.id)+'/rekomendasi/')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['content-type'], 'application/pdf')

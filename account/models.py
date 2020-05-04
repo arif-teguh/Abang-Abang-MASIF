@@ -71,6 +71,7 @@ class OpdProfile(models.Model):
     )
     # Temporary Attribute
     unique_opd_attribute = models.CharField(max_length=60)
+    address = models.CharField(null=False, blank=False, max_length=120, default="Belum ada alamat")
 
     def __str__(self):
         return "<OPD Profile> {}".format(self.unique_opd_attribute)
@@ -135,6 +136,7 @@ class PelamarProfile(models.Model):
 
     def __str__(self):
         return "<PELAMAR Profile> {}".format(self.unique_pelamar_attribute)
+
 
 class KesbangpolProfile(models.Model):
     user = models.OneToOneField(

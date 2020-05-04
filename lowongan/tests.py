@@ -1,7 +1,8 @@
 import datetime
 import json
 import shutil
-from django.test import TestCase, Client
+import tempfile
+from django.test import TestCase, Client, override_settings
 from django.urls import resolve
 from django.apps import apps
 from account.models import Account, OpdProfile, UserProfile
@@ -26,6 +27,7 @@ url_form_edit_kategori = "/lowongan/admin/form/edit-kategori/"
 templates_dir = "templates/"
 template_lowongan_dir = templates_dir+"lowongan/"
 template_json_dir = templates_dir+"kategori.json"
+MEDIA_ROOT = tempfile.mkdtemp()
 
 class LowonganFormTest(TestCase):
 
@@ -345,12 +347,17 @@ class AppsTest(TestCase):
         self.assertEqual(LowonganConfig.name, 'lowongan')
         self.assertEqual(apps.get_app_config('lowongan').name, 'lowongan')
 
+@override_settings(MEDIA_ROOT=MEDIA_ROOT)
 class UserLamarMagangModelTest(TestCase):
     def setUp(self):
         self.client = Client()
         self.account1 = Account.objects.create_superuser(email="test@mail.com", password="1234")
         self.user1 = Account.objects.all()[0]
-        user_profile = UserProfile(user=self.user1)
+        user_profile = UserProfile(user=self.user1 , 
+            address =  'test',
+            education = 'test',
+            institution = 'test',
+            sex =  'm'  )
         user_profile.save()
         self.test_file_cv = SimpleUploadedFile("testcv.pdf", b"file_content")
         self.test_file_cv_2 = SimpleUploadedFile("testcv2.pdf", b"file_content")
@@ -459,6 +466,11 @@ class UserLamarMagangModelTest(TestCase):
             status_lamaran="WAWANCARA",
             notes_status_lamaran="Test"
         )
+
+    @classmethod
+    def tearDownClass(cls):
+        shutil.rmtree(MEDIA_ROOT, ignore_errors=True)
+        super().tearDownClass()
 
     def test_object_user_lamar_magang_is_created(self):
         self.assertTrue(type(self.lamar1), UserLamarMagang)

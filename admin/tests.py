@@ -1,21 +1,25 @@
+from django.core import mail
+from django.core.exceptions import ValidationError
 from django.forms import forms
 from django.http import HttpRequest
 from django.test import TestCase, Client
 from django.urls import resolve
-from django.core import mail
 
 from account.models import Account
 from admin import views
 from admin.admin_login_form import AdminAuthenticationForm
 from admin.opd_registration_form import OpdRegistrationForm
-from .models import OpdVerificationList
+from artikel.models import Artikel
 from . import mailing, token
+from .models import OpdVerificationList
 
 TEST_EMAIL = 'test@mail.com'
 TEST_PASSWORD = '12345678'
 URL_ADMIN_LOGIN = '/admin/login/'
 URL_ADMIN_BASE = '/admin/'
 URL_ADMIN_DELETE_OPD = '/admin/listopd/deleteopd/'
+
+
 class AdminUnitTest(TestCase):
     def setUp(self):
         # Setup run before every test method.
@@ -343,7 +347,57 @@ class AdminUnitTest(TestCase):
         response = self.client.get(URL_ADMIN_DELETE_OPD)
         html_response = response.content.decode('utf8')
         self.assertEqual("Forbidden", html_response)
-        
+
+    def information_test_setUp(self):
+        self.artikel1 = Artikel.objects.create(
+            judul='judulsatu',
+            deskripsi='deskripsisatu',
+            foto_artikel='mockfotosatu',
+        )
+        self.artikel2 = Artikel.objects.create(
+            judul='juduldua',
+            deskripsi='deskripsidua',
+            foto_artikel='mockfotodua',
+        )
+        self.artikel1.save()
+        self.artikel2.save()
+        self.admin_information_url = '/admin/information/'
+        self.test_mail_admin = 'admin@mail.com'
+        self.test_mail_password = '332211'
+        self.admin_obj_test = Account.objects.create_user(email=self.test_mail_admin,
+                                                          password=self.test_mail_password)
+        self.admin_obj_test.is_admin = True
+        self.admin_obj_test.save()
+        self.client_admin_loggedin = Client()
+        self.client_admin_loggedin.login(username=self.test_mail_admin, password=self.test_mail_password)
+        self.response_logged_in_info_page = self.client_admin_loggedin.get(self.admin_information_url)
+
+    def test_admin_information_logged_in_should_return_200(self):
+        self.information_test_setUp()
+        self.assertEqual(self.response_logged_in_info_page.status_code, 200)
+
+    def test_admin_information_not_logged_in_should_return_302(self):
+        self.information_test_setUp()
+        response = Client().get(self.admin_information_url)
+        self.assertEqual(response.status_code, 302)
+
+    def test_information_page_query_all_artikel_should_return_all_article(self):
+        self.information_test_setUp()
+        self.assertEqual(self.response_logged_in_info_page.context['articles'], [self.artikel1, self.artikel2])
+
+    def test_information_page_should_not_return_empty_list(self):
+        self.information_test_setUp()
+        self.assertNotEqual(self.response_logged_in_info_page.context['articles'], [])
+
+    def test_information_page_no_article_should_return_empty_list(self):
+        self.information_test_setUp()
+        self.artikel1.delete()
+        self.artikel2.delete()
+        self.assertEqual(
+            self.client_admin_loggedin.get(self.admin_information_url).context.get('articles', None), [])
+        self.assertNotEqual(self.response_logged_in_info_page.context['articles'], [self.artikel1, self.artikel2])
+
+
 class EmailTest(TestCase):
     verification_url = '/user/verification/token'
     recipient_email = 'test@test.com'
@@ -370,7 +424,7 @@ class EmailTest(TestCase):
         mail.outbox = []
 
     def test_invalid_email(self):
-        with self.assertRaises(ValueError):
+        with self.assertRaises(ValidationError):
             mailing.send_verification_email(self.verification_url,
                                             "test.com")
 
@@ -379,11 +433,19 @@ class EmailTest(TestCase):
         secret_length = len(secret)
         self.assertEqual(secret_length, 22)
 
+
 class OpdRegistrationTest(TestCase):
+    SECOND_EMAIL = 'a@a.com'
+
     def setUp(self):
         # Setup run before every test method.
         self.client = Client()
         self.request = HttpRequest()
+        self.SECRET = 'qdawedcvdswe1'
+        self.PHONE = '1234567'
+        self.DATA = {'opd_name': "test", 'email': TEST_EMAIL,
+                     'phone': self.PHONE,
+                     'secret': self.SECRET}
         Account.objects.create_superuser(email=TEST_EMAIL, password=TEST_PASSWORD)
         self.created_mock_user = Account.objects.all()[0]
         self.client.login(username=TEST_EMAIL, password=TEST_PASSWORD)
@@ -413,12 +475,49 @@ class OpdRegistrationTest(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual('/admin/login', response.url)
 
-    def test_create_opd(self):
+    def test_create_opd_duplicated(self):
+        with self.assertRaises(ValidationError):
+            form = OpdRegistrationForm(self.DATA)
+            if form.is_valid():
+                form.check()
+
+    def test_create_opd_form_failed_already_on_verification_list(self):
+        verification_list = OpdVerificationList(
+            secret=self.SECRET,
+            name="Test",
+            email=self.SECOND_EMAIL,
+            phone=self.PHONE
+        )
+        verification_list.save()
+
+        self.DATA['email'] = self.SECOND_EMAIL
+
+        with self.assertRaises(ValidationError):
+            form = OpdRegistrationForm(self.DATA)
+            if form.is_valid():
+                form.check()
+
+    def test_create_opd_form_success(self):
+        self.DATA['email'] = self.SECOND_EMAIL
+        form = OpdRegistrationForm(self.DATA)
+        if form.is_valid():
+            checked_form = form.check()
+        self.assertTrue(form.is_valid())
+        self.assertIsNotNone(checked_form)
+
+    def test_register_opd_failed_user_already_registered(self):
         user_count = OpdVerificationList.objects.count()
         response = self.client.post(
             "/admin/listopd/register/",
-            {'opd_name': "test", 'email': "test@test.com", 'phone': "123"})
+            self.DATA)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(OpdVerificationList.objects.count(), user_count+1)
-        
-    
+        self.assertEqual(OpdVerificationList.objects.count(), user_count)
+
+    def test_register_opd_success(self):
+        user_count = OpdVerificationList.objects.count()
+        self.DATA['email'] = self.SECOND_EMAIL
+        response = self.client.post(
+            "/admin/listopd/register/",
+            self.DATA)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(OpdVerificationList.objects.count(), user_count + 1)

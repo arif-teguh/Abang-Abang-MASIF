@@ -1,10 +1,12 @@
 from datetime import datetime
 
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client
 from django.test import TestCase
 from django.urls import resolve
 
 from account.models import Account
+from artikel.models import Artikel
 from lowongan.models import Lowongan
 from . import views
 from .views import query_n_number_of_newest_lowongan
@@ -31,6 +33,18 @@ class LandingPageUnitTest(TestCase):
         self.mock_opd.name = 'MockOPDName'
         self.mock_opd.save()
 
+        self.article_one = Artikel.objects.create(
+            judul='MockJudul1',
+            deskripsi='MockDeskripsiLanding1',
+            foto_artikel=SimpleUploadedFile("mock1.jpg", b"file_content")
+        )
+        self.article_two = Artikel.objects.create(
+            judul='MockJudul2',
+            deskripsi='Mock Deskripsi Landing2',
+            foto_artikel=SimpleUploadedFile("mock1.jpg", b"file_content")
+        )
+        self.article_one.save()
+        self.article_two.save()
         self.client_get_landing = Client().get('/')
 
     def test_landing_page_should_return_code_200(self):
@@ -102,3 +116,9 @@ class LandingPageUnitTest(TestCase):
     def test_query_5_lowongan_exist_0_lowongan_should_return_0_lowongan(self):
         self.assertEqual(len(query_n_number_of_newest_lowongan(5)), 0)
         self.assertEqual(list(query_n_number_of_newest_lowongan(5)), [])
+
+    def test_query_all_article_should_return_all_article(self):
+        self.assertEqual(list(self.client_get_landing.context['articles']), list(Artikel.objects.all()))
+
+    def test_query_all_article_should_not_return_empty_list(self):
+        self.assertNotEqual(list(self.client_get_landing.context['articles']), [])

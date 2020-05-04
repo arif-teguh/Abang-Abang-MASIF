@@ -2,6 +2,7 @@ stages:
   - lint
   - test
   - sonarqube
+  - deploy_staging
 
 services:
   - postgres:12-alpine
@@ -75,3 +76,22 @@ SonarScanner:
   dependencies:
     - Lint
     - Test
+
+Staging:
+  stage: deploy_staging
+  image: ubuntu:latest
+  before_script:
+    - apt-get update -qq
+    - apt-get install -qq git
+    - 'which ssh-agent || ( apt-get install -qq openssh-client )'
+    - mkdir -p .ssh
+    - echo "$DEPLOYMENT_SSH" | tr -d '\r' > .ssh/ppl_masif.pem
+    - chmod 700 .ssh/ppl_masif.pem
+    - eval $(ssh-agent -s)
+    - mkdir -p ~/.ssh
+    - ssh-add .ssh/ppl_masif.pem
+    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+  script:
+    - ssh -tt $DEPLOYMENT_SERVER "cd abang-abang-masif/ && git checkout staging && git pull origin staging && docker-compose up -d"
+  only:
+    - staging

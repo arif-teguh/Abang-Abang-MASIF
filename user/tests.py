@@ -840,24 +840,3 @@ class UserUnitTest(TestCase):
         response = self.client.get('/user/dashboard/status-lamaran/2/')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content.decode('utf-8'), '[ERROR] Permission Denied')
-
-
-class UserFunctionalTest(TestCase):
-    def setUp(self):
-        chrome_options = webdriver.ChromeOptions()
-        chrome_options.add_argument('--no-sandbox')
-        chrome_options.add_argument('--window-size=1420,1080')
-        chrome_options.add_argument('--headless')
-        chrome_options.add_argument('--disable-gpu')
-        self.driver = webdriver.Chrome(
-            chrome_options=chrome_options,
-            executable_path='./chromedriver',
-        )
-
-    def tearDown(self):
-        self.driver.quit()
-        super(UserFunctionalTest, self).tearDown()
-
-    # This function is just to make sure that chromedriver is properly installed on gitlab pipeline
-    def test_input_status_selenium(self):
-        self.driver.get(url='http://localhost:8000/')

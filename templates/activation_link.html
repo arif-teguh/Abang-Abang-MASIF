@@ -6,12 +6,15 @@
 {% endblock %}
 
 {% block body %}
-{% include 'navbar.html' %}
+{% include 'navbar-no-bootstrap.html' %}
 <div class="container-fluid">
-    <div class="row justify-content-center" style="height: 100vh">
+    <div class="row justify-content-center" style="height: 40vh">
         <div class="col-6 align-self-center">
             <h3>Registration Complete! Please check your email</h3>
             <a href="/"><button type="button" class="btn btn-primary">Back to Homepage</button></a>
+            {% if request.user.is_admin %}
+                <a href="/admin/listopd/"><button type="button" class="btn btn-success">Back to List OPD</button></a>
+            {% endif %}
         </div>
     </div>
 </div>

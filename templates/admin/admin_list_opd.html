@@ -36,14 +36,15 @@
         <div class="row justify-content-center">
             <h3>Daftar Akun OPD</h3>
         </div>
-        <table id="example" class="display" style="width:100%">
+        <table id="example" class="display" style="width:100%" aria-hidden="true">
             <thead>
             <tr>
-                <th>No</th>
-                <th>Nama OPD</th>
-                <th>Email</th>
-                <th>Telepon</th>
-                <th>Delete</th>
+                <th id="no">No</th>
+                <th id="opd-name">Nama OPD</th>
+                <th id="email">Email</th>
+                <th id="phone">Telepon</th>
+                <th id="alamat">Alamat</th>
+                <th id="delete">Action</th>
             </tr>
             </thead>
             <tbody>
@@ -53,9 +54,14 @@
                     <td> {{ opd.name }}</td>
                     <td> {{ opd.email }}</td>
                     <td> {{ opd.phone }}</td>
+                    <td> {{ opd.opdprofile.address|slice:"0:10" }}</td>
                     <td>
                         <button class="btn btn-danger" data-toggle="modal" data-target="#exampleModalLong"
                                 onclick="deleteButton('{{ opd.pk }}', '{{ opd.name }}')">Delete
+                        </button>
+                        <button class="btn btn-primary" data-toggle="modal"
+                                onclick="window.location = '{% url 'opd_edit_profile_view' opd.pk %}'">
+                            Edit
                         </button>
                     </td>
                 </tr>

@@ -25,7 +25,7 @@ SECRET_KEY = os.getenv(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["localhost", "0.0.0.0", "127.0.0.1", "masif.herokuapp.com"]
+ALLOWED_HOSTS = ["localhost", "0.0.0.0", "127.0.0.1", "masif.herokuapp.com", "ppl.azharaiz.com", "3.0.51.204", "18.139.21.63"]
 
 # Application definition
 
@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'account',
     'user',
     'kesbangpol',
+    'artikel'
 ]
 
 AUTHENTICATION_BACKENDS = (

@@ -1,7 +1,8 @@
 import datetime
-import re
 
 from django.contrib import messages
+from django.contrib.sites.shortcuts import get_current_site
+from django.core.exceptions import ValidationError
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.utils.datastructures import MultiValueDictKeyError
@@ -10,22 +11,17 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ValidationError
 from django.contrib.auth.decorators import login_required
 
-from account.models import Account
-from account.models import UserProfile
+from account.models import UserProfile, Account
+from admin.mailing import send_verification_email
 from lowongan.models import UserLamarMagang
 from user.forms import EditUserProfileForm, CVForm, ProfilePictureForm
 from user.models import UserVerificationList
 from .token import generate_user_token
 from .user_registration_form import UserRegistrationForm
-from account.models import UserProfile, Account
-from admin.mailing import send_verification_email
-from user.models import UserVerificationList
-from user.forms import EditUserProfileForm, CVForm, ProfilePictureForm
-from .user_registration_form import UserRegistrationForm
-from .token import generate_user_token
 
 URL_USER_DASHBOARD = '/user/dashboard/'
 ERROR_PAGE_NOT_FOUND = 'ERROR 404 Page not found'
+
 
 def account_is_user(request):
     try:
@@ -67,7 +63,6 @@ def delete_cv(request):
 
 def user_dashboard(request):
     if account_is_user(request):
-
         return render(request, 'user/user-dashboard.html',
                       {'form_pp': ProfilePictureForm(),
                        'user': request.user, 'form_cv': CVForm()})
@@ -94,7 +89,7 @@ def sex_validator(post):
 
 def phone_number_validator(post):
     phone_number = post['phone']
-    if re.match(r'^\+?1?\d{3,15}$', phone_number):
+    if 3 <= len(phone_number) < 15:
         return {'result': True, 'message': 'success'}
     return {'result': False, 'message': 'Nomor telepon salah'}
 
@@ -145,7 +140,7 @@ def user_edit_profile(request):
         else:
             born_date_in_database = str(
                 request.user.userprofile.born_date
-                ).split('-')
+            ).split('-')
             shown_born_date = '{}/{}/{}'.format(born_date_in_database[2],
                                                 born_date_in_database[1],
                                                 born_date_in_database[0])
@@ -209,7 +204,7 @@ def user_register(request):
                 )
                 new_account.save()
                 base_url = get_current_site(request).domain
-                verif_url = base_url+'/user/verification/'+secret
+                verif_url = base_url + '/user/verification/' + secret
                 send_verification_email(verif_url, email)
                 return render(
                     request,
@@ -298,7 +293,6 @@ def user_see_status_lamaran(request, id_user_lamar_magang):
             return HttpResponse('[ERROR] Lamaran Not Found')
 
         if lamaran_obj.user_foreign_key.email == request.user.email:
-            # return HttpResponse(lamaran_obj)
             context = {
                 'lamaran_obj': lamaran_obj
             }
