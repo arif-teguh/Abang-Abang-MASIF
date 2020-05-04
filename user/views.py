@@ -6,6 +6,10 @@ from django.core.exceptions import ValidationError
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.utils.datastructures import MultiValueDictKeyError
+from django.contrib import messages
+from django.contrib.sites.shortcuts import get_current_site
+from django.core.exceptions import ValidationError
+from django.contrib.auth.decorators import login_required
 
 from account.models import UserProfile, Account
 from admin.mailing import send_verification_email
@@ -214,6 +218,24 @@ def user_register(request):
                   'user/user_register.html',
                   {'form': form, 'err': err})
 
+@login_required
+def user_register2_google(request):
+    err = []
+    if request.method == 'POST':
+        form = UserRegistrationForm(request.POST)
+        try:
+            google_user = Account.objects.get(email=request.user.email)
+            google_user.name = request.POST['user_name']
+            google_user.phone = request.POST['phone']
+            google_user.save()
+            messages.success(request, 'User Verified')
+            return redirect("/")
+        except ValidationError as e:
+            err = e
+    else:
+        form = UserRegistrationForm()
+    return render(request, 'user/user_register2_google.html', {'form': form, 'err': err})
+
 
 def user_verification(request, token):
     if token == 'google-oauth2':
@@ -221,13 +243,13 @@ def user_verification(request, token):
         google_is_user = google_user.is_user
         if google_user.name == "" and google_user.phone == "" and not google_is_user:
             google_user.name = "Pelamar"
-            google_user.phone = "081122232222"
+            google_user.phone = ""
             google_user.is_user = True
             google_user.save()
             create_user = UserProfile(user=google_user, unique_pelamar_attribute='user')
             create_user.save()
             messages.success(request, 'User Verified')
-            return redirect("/")
+            return redirect("/user/register-google/")
         else:
             return redirect("/")
     else:

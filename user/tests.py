@@ -20,6 +20,7 @@ from .user_registration_form import UserRegistrationForm
 
 URL_USER_LOGIN = '/user/login/'
 
+
 class PelamarRegistrationTest(TestCase):
     def setUp(self):
         # Setup run before every test method.
@@ -64,7 +65,7 @@ class PelamarRegistrationTest(TestCase):
             self.DATA)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(UserVerificationList.objects.count(), user_count + 1)
-    
+
     def test_create_user_failed(self):
         user_count = UserVerificationList.objects.count()
 
@@ -105,6 +106,7 @@ class PelamarRegistrationTest(TestCase):
             form = UserRegistrationForm(self.DATA)
             if form.is_valid():
                 form.check()
+
 
 class PelamarValidationTest(TestCase):
     def setUp(self):
@@ -178,6 +180,68 @@ class TestViews(TestCase):
     def test_page_template(self):
         response = Client().get(URL_USER_LOGIN)
         self.assertTemplateUsed(response, 'user_login.html')
+
+
+class UserGoogleUnitTest(TestCase):
+    URL_REGISTER2_USER_GOOGLE = '/user/register-google/'
+    EMAIL_TEST = 'google@gmail.com'
+    PASSWORD_TEST = 'google'
+
+    def setUp(self):
+        self.client = Client()
+        self.request = HttpRequest()
+        self.created_mock_user = Account.objects.create_user(
+            email=self.EMAIL_TEST,
+            password=self.PASSWORD_TEST,
+        )
+        self.created_mock_user.name = 'Mock Name'
+        self.created_mock_user.is_user = True
+        self.created_mock_user.save()
+        self.user_name = "Mock Google User"
+        self.phone = "0812346523"
+        self.DATA = {
+            'user_name': self.user_name,
+            'phone': self.phone,
+        }
+
+    def test_user_without_login_page_response_status(self):
+        response = self.client.get(self.URL_REGISTER2_USER_GOOGLE)
+        self.assertEqual(response.status_code, 302)
+
+    def test_user_login_already_page_response_status(self):
+        self.client.login(username=self.EMAIL_TEST, password=self.PASSWORD_TEST)
+        response = self.client.get(self.URL_REGISTER2_USER_GOOGLE)
+        self.assertEqual(response.status_code, 200)
+
+    def test_submit_data(self):
+        self.client.login(username=self.EMAIL_TEST, password=self.PASSWORD_TEST)
+        self.client.post(
+            self.URL_REGISTER2_USER_GOOGLE,
+            self.DATA
+        )
+        user_obj = Account.objects.get(email=self.EMAIL_TEST)
+        user_name_match = user_obj.name == self.DATA['user_name']
+        phone_number_match = user_obj.phone == self.DATA['phone']
+        self.assertTrue(user_name_match)
+        self.assertTrue(phone_number_match)
+
+    def test_page_title_register_user_page(self):
+        self.client.login(username=self.EMAIL_TEST, password=self.PASSWORD_TEST)
+        response = self.client.get(self.URL_REGISTER2_USER_GOOGLE)
+        html_response = response.content.decode('utf8')
+        self.assertIn('<title>Daftar Pelamar</title>', html_response)
+
+    def test_page_submit_button_exist(self):
+        self.client.login(username=self.EMAIL_TEST, password=self.PASSWORD_TEST)
+        response = self.client.get(self.URL_REGISTER2_USER_GOOGLE)
+        html_response = response.content.decode('utf8')
+        self.assertIn('<button type="submit"', html_response)
+
+    def test_page_header_form_text(self):
+        self.client.login(username=self.EMAIL_TEST, password=self.PASSWORD_TEST)
+        response = self.client.get(self.URL_REGISTER2_USER_GOOGLE)
+        html_response = response.content.decode('utf8')
+        self.assertIn('Lengkapi Data <br> Akun Pelamar', html_response)
 
 
 class UserUnitTest(TestCase):
