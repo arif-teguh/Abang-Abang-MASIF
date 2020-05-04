@@ -95,6 +95,10 @@ def update_lamar_lowongan(request, id_lowongan, lamaran):
                 user_foreign_key=user,
                 lowongan_foreign_key=lowongan
             ).update(status_lamaran="MENUNGGU")
+            UserLamarMagang.objects.filter(
+                user_foreign_key=user,
+                lowongan_foreign_key=lowongan
+            ).update(notes_status_lamaran="Tidak Ada Catatan")
             if file_cv is not False:
                 user_profile.cv = file_cv
                 user_profile.save()
@@ -116,14 +120,18 @@ def form_lamar_lowongan(request, id_lowongan):
     url_dashboard_user = "/user/dashboard/"
     pelamar = request.user.userprofile 
     not_set = 'Not set'
-    if ( (Lowongan.objects.get(pk=id_lowongan).is_lowongan_masih_berlaku) == False or
-        request.user.is_user == False or
-        pelamar.address ==  not_set or 
-        pelamar.institution ==  not_set or 
-        pelamar.education ==  not_set or
-        pelamar.sex ==  'n'  ) :
-        return redirect('/')
-
+    try:
+        if ( (Lowongan.objects.get(id = id_lowongan ).is_lowongan_masih_berlaku) == False or
+            request.user.is_user == False or
+            pelamar.address ==  not_set or 
+            pelamar.institution ==  not_set or 
+            pelamar.education ==  not_set or
+            pelamar.sex ==  'n'  ) :
+            return redirect('/')
+    except ObjectDoesNotExist:
+        return redirect("/")
+    
+    
     try:
         user = request.user
         lowongan = Lowongan.objects.get(pk=id_lowongan)
