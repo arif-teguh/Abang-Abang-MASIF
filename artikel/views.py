@@ -5,7 +5,7 @@ from .models import Artikel
 
 dir_form_artikel = 'artikel/form_artikel.html'
 dir_form_debugger = 'artikel/debug.html'
-
+url_artikel = "/artikel/"
 
 @login_required
 def show_form_artikel(request):
@@ -32,8 +32,7 @@ def post_form_artikel(request):
                                            False)
         )
         data_artikel.save()
-        print("masuk gan")
-        return redirect("/")
+        return redirect(url_artikel+str(data_artikel.id))
     return redirect("/")
 
 
@@ -49,9 +48,8 @@ def update_form_artikel(request, id_artikel):
                            request.FILES or None,
                            instance=artikel_data)
         if form.is_valid():
-            print(form.data)
             form.save()
-            return redirect("/")
+            return redirect(url_artikel+str(id_artikel))
     response = {
         'form': form,
         'type':'update'
