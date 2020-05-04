@@ -50,10 +50,38 @@
 
         <div class="row lamaran-info-row">
             <div class="col-12 col-md-2">
+                <h5>Status Kesbangpol</h5>
+            </div>
+            <div class="col-12 col-md-2">
+                <div class="state-text-wrapper">
+                    {{ lamaran_obj.status_kesbangpol }}
+                </div>
+
+            </div>
+        </div>
+
+        <div class="row lamaran-info-row">
+            <div class="col-12 col-md-2">
                 <h5>Catatan</h5>
             </div>
             <div class="col-12 col-md-10">
-                <p style="white-space: pre-line;">{{ lamaran_obj.notes_status_lamaran }}</p>
+                <p>
+                    {% if lamaran_obj.status_lamaran == "WAWANCARA" %}
+                        Jadwal wawancara ke opd pada tanggal {{ lamaran_obj.notes_status_lamaran }}
+                    {% else %}
+                        {{ lamaran_obj.notes_status_lamaran }}
+                    {% endif %}
+                </p>
+
+            </div>
+        </div>
+
+        <div class="row lamaran-info-row">
+            <div class="col-12 col-md-2">
+                <h5>Catatan Kesbangpol</h5>
+            </div>
+            <div class="col-12 col-md-10">
+                <p style="white-space: pre-line;">Datang ke Kesbangpol pada tanggal {{ lamaran_obj.tanggal_kesbangpol }}</p>
 
             </div>
         </div>
