@@ -13,7 +13,8 @@
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.16/dist/summernote-bs4.min.js"></script>
   </head>
   <body>
-    <div class="container-fluid">
+  {% include 'navbar-admin-page.html' %}
+    <div class="container-fluid mb-5">
       <div class="row-12">
         {%if type == 'update'%}
           <form method="POST" action="{% url 'update_form_artikel' form.instance.pk %}" enctype="multipart/form-data">
@@ -34,10 +35,12 @@
             {{ form.as_p }}
             <br>
             <button type="submit" class="btn btn-primary">Posting Artikel</button>
+              <button class="btn btn-danger" onclick="window.location.href = '{% url 'admin_info_page' %}'">Batal</button>
           </form>
+
         {% endif %}
       </div>
-      
+
       <script src="/static/js/artikel_form.js"></script>
     </div>
   </body>
