@@ -40,6 +40,7 @@
                 <strong id="bold-text">Detail</strong>
                 <p>Tenaga yang dibutuhkan : {{ i.kuota_peserta }}<br>
                     Durasi magang : {{ i.waktu_awal_magang }} - {{ i.waktu_akhir_magang }}
+                    <p id = '{{status}}2'> </p>
                 </p>
                 <button id = '{{status}}2' onclick="window.location.href='/lowongan/user/lamar/{{ i.id }}'" type="button" class="btn btn-primary mt-auto">Lamar Sekarang</button>
             </div>
@@ -57,6 +58,7 @@
 <script>
 document.getElementById('tidak_lengkap').disabled = true;
 document.getElementById('tidak_lengkap2').disabled = true;
+document.getElementById('tidak_lengkap3').innerHTML = 'Lengkapi data profile diri terlebih dahulu sebelum melamar';
 </script>
 </body>
 </html>

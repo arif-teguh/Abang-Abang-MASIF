@@ -66,7 +66,8 @@
                                     <span class="email">{{ item.user_foreign_key.email }}</span>
                                     <span class="address">{{ item.user_foreign_key.userprofile.address }}</span>
                                     <h6>Status lamaran : {{item.status_lamaran}}</h6>
-                                    <h6>Catatan dari opd : {{item.notes_status_lamaran}}</h6>
+                                    <h6 id = 'notes' value = '{{item.status_lamaran}}'>{{item.notes_status_lamaran}}</h6>
+                                    <h6 id = 'notes2'>Kekesbangpol pada tanggal : {{item.tanggal_kesbangpol}}</h6>
                                 </div>
 
                             </div>
