@@ -5,7 +5,8 @@ URL_CARI_LOWONGAN = '/cari-lowongan/'
 TEMPLATE_CARI_LOWONGAN = 'cari_lowongan.html'
 
 filter_obj = Lowongan.objects.filter()
-
+template = 'cari_lowongan.html'
+redirect_url = '/cari-lowongan/'
 
 def cari_lowongan(request):
     if request.method == 'GET':

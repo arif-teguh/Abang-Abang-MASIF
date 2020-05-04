@@ -14,6 +14,7 @@
 
 
 #profile_picture {
+    cursor: pointer;
     object-fit: cover;
     object-position: center; /* Center the image within the element */
     width: 200px;
@@ -51,6 +52,19 @@
     font-weight: bold;
 }
 
+#submit-button {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+#submit-wrapper {
+    display: grid;
+    width: 100%;
+}
+
+#foto-keterangan {
+    /*color: rgba(0, 0, 0, 0.4);*/
+}
 
 /*// Small devices (landscape phones, 576px and up)*/
 @media (min-width: 576px) {

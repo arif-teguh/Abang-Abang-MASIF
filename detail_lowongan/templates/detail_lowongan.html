@@ -10,7 +10,6 @@
 <body>
 
 {% include 'navbar-no-bootstrap.html' %}
-
 {% for i in data %}
     <div class="pg-container">
         <div class="outer-box">
@@ -25,7 +24,7 @@
                     <p>{{ i.batas_akhir_pendaftaran }}</p>
                 </div>
                 <div class="col-1 d-flex align-items-end flex-column col3">
-                    <button type="button" class="btn btn-primary mt-auto disabled">Lamar</button>
+                    <button id = '{{status}}' onclick="window.location.href='/lowongan/user/lamar/{{ i.id }}'" type="button" class="btn btn-primary mt-auto">Lamar Sekarang</button>
                 </div>
             </div>
         </div>
@@ -42,7 +41,7 @@
                 <p>Tenaga yang dibutuhkan : {{ i.kuota_peserta }}<br>
                     Durasi magang : {{ i.waktu_awal_magang }} - {{ i.waktu_akhir_magang }}
                 </p>
-                <button onclick="window.location.href='/lowongan/user/lamar/{{ i.id }}'" type="button" class="btn btn-primary mt-auto">Lamar Sekarang</button>
+                <button id = '{{status}}2' onclick="window.location.href='/lowongan/user/lamar/{{ i.id }}'" type="button" class="btn btn-primary mt-auto">Lamar Sekarang</button>
             </div>
         </div>
         <div class="row">
@@ -55,6 +54,9 @@
         </div>
     </div>
 {% endfor %}
-
+<script>
+document.getElementById('tidak_lengkap').disabled = true;
+document.getElementById('tidak_lengkap2').disabled = true;
+</script>
 </body>
 </html>
