@@ -116,7 +116,8 @@ def form_lamar_lowongan(request, id_lowongan):
     url_dashboard_user = "/user/dashboard/"
     pelamar = request.user.userprofile 
     not_set = 'Not set'
-    if (request.user.is_user == False or
+    if ( (Lowongan.objects.get(pk=id_lowongan).is_lowongan_masih_berlaku) == False or
+        request.user.is_user == False or
         pelamar.address ==  not_set or 
         pelamar.institution ==  not_set or 
         pelamar.education ==  not_set or
