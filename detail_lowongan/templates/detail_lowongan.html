@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" href='{% static "/css/detail_lowongan.css" %}'>
+    <link rel="stylesheet" type="text/css" href='{% static "/css/baseStyle.css" %}'>
     {% include 'import-bootstrap-jquery.html' %}
     <title>Detail Lowongan</title>
 </head>
@@ -15,16 +16,19 @@
         <div class="outer-box">
             <div class="row inner-box">
                 <div class="col-2 col1">
-                    <img src="{% static 'img/image 6.png' %}" alt='opd-logo'>
-                    <p>Dinas Depok</p>
+                    <img class="profpic-opd-small" src="/media/{{ i.opd_foreign_key.profile_picture }}" alt='opd-logo'>
+                    <p>{{ i.opd_foreign_key.name }}</p>
                 </div>
                 <div class="col-9 align-self-center col2">
                     <p id="judul-lowongan">{{ i.judul }}</p>
                     <p>{{ i.kategori }}</p>
+                    <p>{{ i.opd_foreign_key.opdprofile.address }}</p>
                     <p>{{ i.batas_akhir_pendaftaran }}</p>
                 </div>
                 <div class="col-1 d-flex align-items-end flex-column col3">
-                    <button id = '{{status}}' onclick="window.location.href='/lowongan/user/lamar/{{ i.id }}'" type="button" class="btn btn-primary mt-auto">Lamar Sekarang</button>
+                    <button id='{{ status }}' onclick="window.location.href='/lowongan/user/lamar/{{ i.id }}'"
+                            type="button" class="btn btn-primary mt-auto d-none">Lamar Sekarang
+                    </button>
                 </div>
             </div>
         </div>
@@ -42,7 +46,9 @@
                     Durasi magang : {{ i.waktu_awal_magang }} - {{ i.waktu_akhir_magang }}
                     <p id = '{{status}}2'> </p>
                 </p>
-                <button id = '{{status}}2' onclick="window.location.href='/lowongan/user/lamar/{{ i.id }}'" type="button" class="btn btn-primary mt-auto">Lamar Sekarang</button>
+                <button id='{{ status }}2' onclick="window.location.href='/lowongan/user/lamar/{{ i.id }}'"
+                        type="button" class="btn btn-primary mt-auto">Lamar Sekarang
+                </button>
             </div>
         </div>
         <div class="row">

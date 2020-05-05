@@ -41,9 +41,32 @@
                 <h5>Status Lamaran</h5>
             </div>
             <div class="col-12 col-md-2">
-                <div class="state-text-wrapper">
-                    {{ lamaran_obj.status_lamaran }}
-                </div>
+                {% if lamaran_obj.status_lamaran == "DITERIMA" and lamaran_obj.status_kesbangpol == "DITERIMA" %}
+                    <div class="state-text-wrapper bg-success">
+                        {{ lamaran_obj.status_lamaran }}
+                    </div>
+
+                {% elif lamaran_obj.status_lamaran == "DITERIMA" and lamaran_obj.status_kesbangpol == "MENUNGGU_OPD" %}
+                    <div class="state-text-wrapper bg-primary">
+                        {{ lamaran_obj.status_lamaran }}
+                    </div>
+                {% elif lamaran_obj.status_lamaran == "DITOLAK" %}
+                    <div class="state-text-wrapper bg-danger">
+                        {{ lamaran_obj.status_lamaran }}
+                    </div>
+                {% elif lamaran_obj.status_lamaran == "WAWANCARA" %}
+                    <div class="state-text-wrapper bg-warning">
+                        {{ lamaran_obj.status_lamaran }}
+                    </div>
+                {% elif lamaran_obj.status_lamaran == "MENUNGGU" %}
+                    <div class="state-text-wrapper bg-secondary">
+                        {{ lamaran_obj.status_lamaran }}
+                    </div>
+
+
+
+
+                {% endif %}
 
             </div>
         </div>
@@ -53,8 +76,48 @@
                 <h5>Catatan</h5>
             </div>
             <div class="col-12 col-md-10">
-                <p style="white-space: pre-line;">{{ lamaran_obj.notes_status_lamaran }}</p>
+                {% if lamaran_obj.status_lamaran == "DITERIMA" and lamaran_obj.status_kesbangpol == "DITERIMA" %}
+                    <p>
+                        Datang ke kantor
+                        <span class="font-weight-bold">
+                        Kesbangpol
+                        </span>
+                        pada tanggal
+                        <span class="font-weight-bold">
+                            {{ lamaran_obj.tanggal_kesbangpol }}
+                        </span>
 
+
+                    </p>
+                {% elif lamaran_obj.status_lamaran == "DITERIMA" and lamaran_obj.status_kesbangpol == "MENUNGGU_OPD" %}
+                    <p>Lamaran sedang diproses oleh Kesbangpol</p>
+                {% elif lamaran_obj.status_lamaran == "DITOLAK" %}
+                    <p style="white-space: pre-line;">{{ lamaran_obj.notes_status_lamaran }}</p>
+                {% elif lamaran_obj.status_lamaran == "WAWANCARA" %}
+                    <p>
+                        Datang ke kantor
+                        <span class="font-weight-bold">
+                        {{ lamaran_obj.lowongan_foreign_key.opd_foreign_key.name }}
+                        </span>
+                        di
+                        <span class="font-weight-bold">
+                        {{ lamaran_obj.lowongan_foreign_key.opd_foreign_key.opdprofile.address }}
+                        </span>
+                        pada tanggal
+                        <span class="font-weight-bold">
+                            {{ lamaran_obj.notes_status_lamaran|slice:"0:10" }}
+                        </span>
+                        pukul
+                        <span class="font-weight-bold">
+                            {{ lamaran_obj.notes_status_lamaran|slice:"11:" }}
+                        </span>
+
+                    </p>
+
+                {% elif lamaran_obj.status_lamaran == "MENUNGGU" %}
+                    <p>Lamaran sedang diproses oleh OPD terkait</p>
+
+                {% endif %}
             </div>
         </div>
 
