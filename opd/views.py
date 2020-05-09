@@ -196,7 +196,7 @@ def opd_verification(request, token):
             create_opd = OpdProfile(user=new_user, unique_opd_attribute="opd")
             create_opd.save()
             opd_from_verification_list.delete()
-            return redirect("/opd/login")
+            return redirect("/user/login")
     else:
         form = OpdConfirmationForm()
     return render(

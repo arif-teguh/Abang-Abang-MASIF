@@ -11,7 +11,6 @@ from admin.models import OpdVerificationList
 from lowongan.models import Lowongan, UserLamarMagang
 from opd import views
 from .forms import EditOpdProfileForm
-from .opd_login_form import OpdAuthenticationForm
 
 home = '/'
 url_opd_login = '/opd/login/'
@@ -30,34 +29,9 @@ url_sort_asc2 = '/opd/sorting/waktu-magang/asc'
 url_sort_desc = '/opd/sorting/batas-akhir/desc'
 url_sort_desc2 = '/opd/sorting/waktu-magang/desc'
 url_search = '/opd/searching/end'
+
+
 class LoginOpdUnitTest(TestCase):
-    # login
-    def test_page_title_opd_login(self):
-        request = HttpRequest()
-        response = views.opd_login(request)
-        html_response = response.content.decode('utf8')
-        self.assertIn('<title>OPD Login</title>', html_response)
-
-    def test_opd_login_template(self):
-        response = self.client.get(url_opd_login)
-        self.assertTemplateUsed(response, 'opd_login.html')
-
-    def test_submit_button_exist(self):
-        request = HttpRequest()
-        response = views.opd_login(request)
-        html_response = response.content.decode('utf8')
-        self.assertIn('<button type="submit"', html_response)
-
-    def test_opd_login_page_is_set_up_as_expected(self):
-        response = Client().get(url_opd_login)
-        self.assertEqual(200, response.status_code)
-        form = response.context['form']
-        self.assertTrue(isinstance(form, OpdAuthenticationForm), type(form).__mro__)
-
-    def test_displays_opd_login_form(self):
-        response = Client().get(url_opd_login)
-        self.assertIsInstance(response.context["form"], OpdAuthenticationForm)
-
     def test_opd_page_not_authenticated(self):
         response = Client().get(url_opd_index)
         self.assertEqual(response.status_code, 302)
@@ -538,8 +512,8 @@ class TestOpdDownload(TestCase):
         self.assertEqual('/', response.url)
 
     def test_tutup_lowongan_yang_bukan_miliknya(self):
-        response = self.client.get(url_opd_tutup_buka_lowongan + str(self.lowongan2.id)+'/')
-        self.assertEqual('/' , response.url)
+        response = self.client.get(url_opd_tutup_buka_lowongan + str(self.lowongan2.id) + '/')
+        self.assertEqual('/', response.url)
 
 
 class OpdEditProfileTest(TestCase):
@@ -670,8 +644,6 @@ class OpdEditProfileTest(TestCase):
         self.assertEqual(account2.opdprofile.address, self.test_address)
         self.assertEqual(account2.phone, self.phone)
         self.assertEqual(account2.name, self.DEFAULT_NAME)
-        
-
 
 
 class test_sort_by_deadline(TestCase):
@@ -695,6 +667,7 @@ class test_sort_by_deadline(TestCase):
         self.assertEqual(response1.status_code, 302)
         self.assertEqual(response2.status_code, 302)
 
+
 class test_sort_by_waktu_magang(TestCase):
 
     def test_sorting_asc_page_response_status(self):
@@ -715,6 +688,7 @@ class test_sort_by_waktu_magang(TestCase):
         response2 = Client().post(url_sort_desc2)
         self.assertEqual(response1.status_code, 302)
         self.assertEqual(response2.status_code, 302)
+
 
 class test_search(TestCase):
 
