@@ -19,6 +19,7 @@
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
         
         <link rel="stylesheet" href="/static/css/navbar-no-bootstrap.css">
+        <link rel="stylesheet" href="/static/css/baseStyle.css">
 
         <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
         <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
@@ -51,11 +52,11 @@
                         <div class="card">
                             <div class="card-horizontal">
                                 <div class="img-square-wrapper">
-                                    <img class="" src="http://via.placeholder.com/180x180" alt="Card image cap" height="180px" width="180px">
+                                    <img class="profpic-opd-small" src="/media/{{ lowongan.opd_foreign_key.profile_picture }}" alt="Card image cap" height="180px" width="180px">
                                 </div>
                                 <div class="card-body">
                                     <h4 class="card-title">{{lowongan.judul}}</h4>
-                                    <p class="card-text">Dinas : {{opd.name}} | Kategori : {{lowongan.kategori}}</p>
+                                    <p class="card-text">Dinas : {{opd.name}} | Kategori : {{lowongan.kategori}} | Alamat : {{ lowongan.opd_foreign_key.opdprofile.address }}</p>
                                     <p class="card-text">Batas Akhir : {{lowongan.batas_akhir_pendaftaran}}</p>
                                 </div>
                             </div>

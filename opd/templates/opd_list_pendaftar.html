@@ -26,7 +26,7 @@
                     <div class="row">
                         <div class="col-1"><h6>No.</h6></div>
                         <div class="col-9"><h6>Nama</h6></div>
-
+                        <div class class="col-2"> <h6>Status Lamaran</h6></div>
 
                     </div>
 
@@ -39,6 +39,32 @@
                         <div class="row">
                             <div class="col-1"><h6>{{ forloop.counter }}</h6></div>
                             <div class="col-9"><h6>{{ item.user_foreign_key.name }}</h6></div>
+                            <div class class="col-2"> 
+                                {% if item.status_lamaran == "DITERIMA" and item.status_kesbangpol == "DITERIMA" %}
+                                    <div class="state-text-wrapper bg-success">
+                                        SELESAI
+                                    </div>
+
+                                {% if item.status_lamaran == "DITERIMA" %}
+                                    <div class="state-text-wrapper bg-primary">
+                                        MENUNGGU KESBANGPOL
+                                    </div>
+                                {% elif item.status_lamaran == "DITOLAK" %}
+                                    <div class="state-text-wrapper bg-danger">
+                                        {{ item.status_lamaran }}
+                                    </div>
+                                {% elif item.status_lamaran == "WAWANCARA" %}
+                                    <div class="state-text-wrapper bg-warning">
+                                        {{ item.status_lamaran }}
+                                    </div>
+                                {% elif item.status_lamaran == "MENUNGGU" %}
+                                    <div class="state-text-wrapper bg-secondary">
+                                        {{ item.status_lamaran }}
+                                    </div>
+                                {% endif %}
+
+                            </div>
+
                             <div class="col-2">
 
                                 <h6 class="mb-0">
@@ -89,33 +115,33 @@
                             <a href="/opd/lowongan/file_tambahan-{{ item.user_foreign_key.id }}-{{ item.lowongan_foreign_key.id }}">
                             <button class="btn btn-primary"> Unduh Berkas Tambahan</button>
                             </a>
+                            {% if item.status_lamaran != "DITERIMA" or item.status_kesbangpol != "DITERIMA" %}
+                                <div class="row buttons-row justify-content-end">
 
-                            <div class="row buttons-row justify-content-end">
-
-                                <div class="col-3">
-                                <label>Ubah status Pelamar</label>
-                                    <select id="select-{{ item.user_foreign_key.id }}" class="btn btn-primary">
-                                        <option value = "---"> --- </option>
-                                        <option value = "DITERIMA">Terima</option>
-                                        <option  value="DITOLAK">Tolak</option>
-                                        <option   value="WAWANCARA">Wawancara</option>
-                                    </select>
+                                    <div class="col-3">
+                                    <label>Ubah status Pelamar</label>
+                                        <select id="select-{{ item.user_foreign_key.id }}" class="btn btn-primary">
+                                            <option value = "---"> --- </option>
+                                            <option value = "DITERIMA">Terima</option>
+                                            <option  value="DITOLAK">Tolak</option>
+                                            <option   value="WAWANCARA">Wawancara</option>
+                                        </select>
+                                        
+                                        <label id='label-{{ each.user_foreign_key.id }}'>Catatan :</label><input type="text"  
+                                                                                                                                                                                                
+                                                                                                        id="form-{{ item.user_foreign_key.id }}">
+                                        <h6></h6>
+                                        <button class="btn btn-primary"
+                                                onclick='redirect2({{ item.user_foreign_key.id }},{{ item.lowongan_foreign_key.id }})'>
+                                            Simpan
+                                        </button>                 
                                     
-                                    <label id='label-{{ each.user_foreign_key.id }}'>Catatan :</label><input type="text"  
-                                                                                                                                                                                             
-                                                                                                    id="form-{{ item.user_foreign_key.id }}">
-                                    <h6></h6>
-                                    <button class="btn btn-primary"
-                                            onclick='redirect2({{ item.user_foreign_key.id }},{{ item.lowongan_foreign_key.id }})'>
-                                        Simpan
-                                    </button>                 
-                                
-                                                                                                    
+                                                                                                        
+                                    
+                                    </div>
                                 
                                 </div>
-
-                            </div>
-
+                            {% endif %}
 
                         </div>
                     </div>
