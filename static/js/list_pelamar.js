@@ -2,6 +2,20 @@ var acc = document.getElementsByClassName("click-dropdown dropdown-toggle");
 var select = document.getElementsByTagName("select");
 
 var i;
+var notes_opd = document.getElementById('notes')
+var notes_opd2 = document.getElementById('notes2')
+var isi_notes = notes_opd.innerHTML
+notes_opd1.style.display = "none";
+if(notes_opd.value.localeCompare('WAWANCARA')){
+  notes_opd.style.display = "block";
+  notes_opd.innerHTML = 'Wawancar pada tanggal :' + isi_notes
+  notes_opd2.style.display = "none";
+}
+else if (notes_opd.value.localeCompare('Ditolak'))){
+  notes_opd.style.display = "block";
+  notes_opd.innerHTML = 'Notes lamaran :' + isi_notes
+  notes_opd2.style.display = "none";
+}
 for (i = 0; i < acc.length; i++) {
   acc[i].addEventListener("click", function() {
     this.classList.toggle("active");
