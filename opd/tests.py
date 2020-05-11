@@ -18,6 +18,7 @@ url_opd_login = '/opd/login/'
 url_opd_index = '/opd/'
 url_opd_lowongan_detail = '/opd/lowongan/detail-'
 url_opd_pelamar = '/opd/lowongan/list-pendaftar-'
+url_opd_pelamar_selesai = '/opd/lowongan/list-pendaftar-selesai-'
 url_download_file = '/opd/lowongan/file_tambahan-'
 url_download_cv = '/opd/lowongan/cv_pendaftar-'
 url_update_lamaran = '/opd/proses-'
@@ -394,6 +395,21 @@ class TestCekListPelamar(TestCase):
                                    str(self.account2.id) + '-' + str(self.lowongan1.id)
                                    + '/Diterima/25 maret/')
         self.assertNotEqual(response.status_code, 404)
+
+    
+    def test_response_lamaran_selesai_jika_sudah_login_dan__list_pendaftar_yang_miliknya(self):
+        self.lamaran.status_kesbangpol = "DITERIMA"
+        self.lamaran.save()
+        response = self.client.get(url_opd_pelamar_selesai + str(self.lowongan1.id) + '/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_response_lamaran_selesai_jika_belum_login(self):
+        response = Client().get(url_opd_pelamar_selesai + str(self.lowongan1.id) + '/')
+        self.assertNotEqual(response.status_code, 200)
+
+    def test_response_lamaran_selesai_jika_melihat_list_pendaftar_yang_tidak_miliknya(self):
+        response = self.client.get(url_opd_pelamar_selesai + str(self.lowongan2.id) + '/')
+        self.assertNotEqual(response.status_code, 200)
 
 
 class TestOpdDownload(TestCase):
