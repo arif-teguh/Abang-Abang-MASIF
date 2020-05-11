@@ -8,6 +8,7 @@ urlpatterns = [
     path('sorting/waktu-magang/<str:param>', views.sort_by_waktu_magang),
     path('sorting/batas-akhir/<str:param>', views.sort_by_batas_akhir),
     path('searching/<str:param>', views.search_by_judul),
+    path('lowongan/list-pendaftar-selesai-<str:id_lowongan>/', views.opd_list_pendaftar_selesai),
     path('lowongan/buka-tutup/<str:id_lowongan>/', views.opd_tutup_lowongan, name='opd_tutup_lowongan'),
     path('proses-<str:id_user>-<str:id_lowongan>/<str:status>/<str:catatan>/', views.opd_update_lamaran,
          name='opd_update_lamaran'),

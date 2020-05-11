@@ -72,7 +72,7 @@ def opd_login(request):
 def opd_update_lamaran(request, id_lowongan, id_user, status, catatan):
     try:
         userlamarmagang = UserLamarMagang.objects.get(user_foreign_key=id_user, lowongan_foreign_key=id_lowongan)
-        if (cek_id_lowongan_dan_opd(request, id_lowongan)):
+        if (cek_id_lowongan_dan_opd(request, id_lowongan) and status_kesbangpol != 'DITERIMA'):
             userlamarmagang.status_lamaran = status
             userlamarmagang.notes_status_lamaran = catatan
             userlamarmagang.save()
@@ -97,6 +97,24 @@ def opd_list_pendaftar(request, id_lowongan):
             return redirect(opd_home)
     else:
         return redirect(home)
+
+def opd_list_pendaftar_selesai(request , id_lowongan):
+    try:
+         if request.user.is_authenticated and request.user.is_opd:
+            if (cek_id_lowongan_dan_opd(request, id_lowongan)):
+                lowongan = Lowongan.objects.get(id=id_lowongan)
+                lamaran = UserLamarMagang.objects.filter(lowongan_foreign_key=id_lowongan , status_kesbangpol == 'DITERIMA')
+                return render(request, 'opd_list_pendaftar.html',
+                            {'lowongan': lowongan,
+                            'lamaran': lamaran
+                            })
+            else:
+                return redirect(opd_home)
+        else:
+            return redirect(home)
+     except ObjectDoesNotExist:
+        return redirect(opd_home)
+
 
 
 def opd_download_file(request, id_user, id_lowongan):
