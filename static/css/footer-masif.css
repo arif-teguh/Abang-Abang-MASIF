@@ -1,0 +1,15 @@
+.footer-masif {
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+    color: white;
+    background-color: #005371;
+}
+
+#diskominfo-text-footer {
+    font-weight: bolder;
+}
+
+.footer-row {
+    margin: 0;
+}

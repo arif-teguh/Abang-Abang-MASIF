@@ -18,7 +18,7 @@ template_opd_lowongan = 'opd_lowongan.html'
 
 
 def sort_by_waktu_magang(request, param):
-    filter_obj = Lowongan.objects.filter(opd_foreign_key = request.user.id)
+    filter_obj = Lowongan.objects.filter(opd_foreign_key=request.user.id)
     if request.method == 'GET':
         response = {}
         if param == 'asc':
@@ -36,7 +36,7 @@ def sort_by_waktu_magang(request, param):
 
 
 def sort_by_batas_akhir(request, param):
-    filter_obj = Lowongan.objects.filter(opd_foreign_key = request.user.id)
+    filter_obj = Lowongan.objects.filter(opd_foreign_key=request.user.id)
     if request.method == 'GET':
         response = {}
         if param == 'asc':
@@ -148,9 +148,9 @@ def cek_id_lowongan_dan_opd(request, id_lowongan):
 
 def opd_home(request):
     if request.user.is_authenticated and request.user.is_opd:
-        data = Lowongan.objects.filter(opd_foreign_key = request.user.id)
-        
-        return render(request,'opd_lowongan.html', {'data': data})
+        data = Lowongan.objects.filter(opd_foreign_key=request.user.id)
+
+        return render(request, 'opd_lowongan.html', {'data': data})
     else:
         return redirect(home)
 
@@ -196,7 +196,7 @@ def opd_verification(request, token):
             create_opd = OpdProfile(user=new_user, unique_opd_attribute="opd")
             create_opd.save()
             opd_from_verification_list.delete()
-            return redirect("/opd/login")
+            return redirect("/user/login")
     else:
         form = OpdConfirmationForm()
     return render(
@@ -245,15 +245,14 @@ def opd_edit_profile_handler(request, pk):
 
 
 def upload_profile_picture_opd(request, pk):
-    if is_permitted_to_edit(request, pk):
-        if request.method == 'POST':
-            form = ProfilePictureForm(request.POST, request.FILES)
-            if form.is_valid():
-                to_be_edited_user = Account.objects.get(pk=pk)
-                to_be_edited_user.profile_picture = request.FILES['profile_picture']
-                to_be_edited_user.save()
+    if is_permitted_to_edit(request, pk) and request.method == 'POST':
+        form = ProfilePictureForm(request.POST, request.FILES)
+        if form.is_valid():
+            to_be_edited_user = Account.objects.get(pk=pk)
+            to_be_edited_user.profile_picture = request.FILES['profile_picture']
+            to_be_edited_user.save()
 
-            return redirect('/opd/editprofile/{}/'.format(pk))
+        return redirect('/opd/editprofile/{}/'.format(pk))
     return HttpResponse("ERROR No Permission")
 
 
