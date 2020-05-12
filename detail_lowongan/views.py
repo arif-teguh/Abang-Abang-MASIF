@@ -8,8 +8,8 @@ def detail_lowongan(request, id_lowongan):
     obj_lowongan = Lowongan.objects.filter(id=id_lowongan)
     kelengkapan = 'tidak_lengkap'
     if(request.user.is_authenticated):
-        if(request.user.is_user == True) :
-            
+        user_is_user = request.user.is_user 
+        if(user_is_user) :
             pelamar = request.user.userprofile
             not_set = 'Not set'
             if( (Lowongan.objects.get(pk=id_lowongan).is_lowongan_masih_berlaku) == True and
