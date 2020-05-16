@@ -88,7 +88,7 @@ def opd_list_pendaftar(request, id_lowongan):
     if request.user.is_authenticated and request.user.is_opd:
         if (cek_id_lowongan_dan_opd(request, id_lowongan)):
             lowongan = Lowongan.objects.get(id=id_lowongan)
-            lamaran = UserLamarMagang.objects.filter(lowongan_foreign_key=id_lowongan)
+            lamaran = UserLamarMagang.objects.filter(lowongan_foreign_key=id_lowongan , status_kesbangpol = "MENUNGGU_OPD")
             return render(request, 'opd_list_pendaftar.html',
                           {'lowongan': lowongan,
                            'lamaran': lamaran
