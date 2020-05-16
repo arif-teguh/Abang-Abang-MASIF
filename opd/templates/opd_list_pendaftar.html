@@ -20,12 +20,27 @@
         <h1 id='p2'>Daftar Pelamar {{ lowongan.judul }}</h1>
         <p id='p2'>Jumlah Pelamar : {{ lamaran.count }}</p>
 
+        <div class="dropdown show">
+                <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                   data-toggle="dropdown"
+                   aria-haspopup="true" aria-expanded="false">
+                    Status pendaftaran :
+                </a>
+
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                    <a class="dropdown-item" href="/opd/lowongan/list-pendaftar-selesai-{{lowongan.id}}">Pendaftar yang sudah selesai
+                        </a>
+                    <a class="dropdown-item" href="/opd/lowongan/list-pendaftar-{{lowongan.id}}/">Pendaftar yang masih diproses
+                        </a>
+        </div>
+
+
         <div class="accordion " id="accordionExample">
             <div class="card">
                 <div class="card-header" id="headingOne">
                     <div class="row">
                         <div class="col-1"><h6>No.</h6></div>
-                        <div class="col-9"><h6>Nama</h6></div>
+                        <div class="col-6"><h6>Nama</h6></div>
                         <div class class="col-2"> <h6>Status Lamaran</h6></div>
 
                     </div>
@@ -38,8 +53,9 @@
                     <div class="card-header" id="headingOne">
                         <div class="row">
                             <div class="col-1"><h6>{{ forloop.counter }}</h6></div>
-                            <div class="col-9"><h6>{{ item.user_foreign_key.name }}</h6></div>
+                            <div class="col-6"><h6>{{ item.user_foreign_key.name }}</h6></div>
                             <div class class="col-2"> 
+                            
                                 {% if item.status_lamaran == "DITERIMA" and item.status_kesbangpol == "DITERIMA" %}
                                     <div class="state-text-wrapper bg-success">
                                         SELESAI
@@ -47,7 +63,7 @@
 
                                 {% elif item.status_lamaran == "DITERIMA" %}
                                     <div class="state-text-wrapper bg-primary">
-                                        MENUNGGU KESBANGPOL
+                                        DITERIMA
                                     </div>
                                 {% elif item.status_lamaran == "DITOLAK" %}
                                     <div class="state-text-wrapper bg-danger">
@@ -64,8 +80,9 @@
                                 {% endif %}
 
                             </div>
-
                             <div class="col-2">
+                            </div>
+                            <div class="col-1">
 
                                 <h6 class="mb-0">
                                     <a class="click-dropdown dropdown-toggle" data-toggle="collapse"
@@ -92,8 +109,17 @@
                                     <span class="email">{{ item.user_foreign_key.email }}</span>
                                     <span class="address">{{ item.user_foreign_key.userprofile.address }}</span>
                                     <h6>Status lamaran : {{item.status_lamaran}}</h6>
-                                    <h6 id = 'notes' value = '{{item.status_lamaran}}'>{{item.notes_status_lamaran}}</h6>
-                                    <h6 id = 'notes2'>Kekesbangpol pada tanggal : {{item.tanggal_kesbangpol}}</h6>
+                                    {% if item.status_lamaran == "DITERIMA"  %}
+                                        {% if item.tanggal_kesbangpol == null  %}
+                                            <h6 id = 'notes2'>Kekesbangpol pada tanggal : Menunggu kesbangpol</h6>
+                                        {% else %}
+                                            <h6 id = 'notes2'>Kekesbangpol pada tanggal : {{item.tanggal_kesbangpol}}</h6>
+                                        {% endif %}
+                                    {% elif item.status_lamaran == "WAWANCARA" %}
+                                        <h6 id = 'notes2'>Wawancara pada tanggal : {{item.notes_status_lamaran}}</h6>
+                                    {% elif item.status_lamaran == "DITOLAK" %}
+                                        <h6 id = 'notes2'>Notes dari OPD : {{item.notes_status_lamaran}}</h6>
+                                    {% endif %}
                                 </div>
 
                             </div>
@@ -151,7 +177,7 @@
 
         </div>
     </div>
-    <script src='{% static "/js/list_pelamar.js" %}'></script>
+     <script src='{% static "/js/list_pelamar.js" %}'></script>
 
 {% endblock %}
 </body>
