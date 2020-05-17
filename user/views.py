@@ -93,7 +93,7 @@ def sex_validator(post):
 
 def phone_number_validator(post):
     phone_number = post['phone']
-    if re.match(r'^\+?1?\d{3,15}$', phone_number):
+    if 3 <= len(phone_number) < 15:
         return {'result': True, 'message': 'success'}
     return {'result': False, 'message': 'Nomor telepon salah'}
 
@@ -279,7 +279,6 @@ def user_see_status_lamaran(request, id_user_lamar_magang):
             return HttpResponse('[ERROR] Lamaran Not Found')
 
         if lamaran_obj.user_foreign_key.email == request.user.email:
-            # return HttpResponse(lamaran_obj)
             context = {
                 'lamaran_obj': lamaran_obj
             }

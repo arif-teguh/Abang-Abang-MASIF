@@ -9,8 +9,7 @@ from . import views
 
 # Create your tests here.
 mock_date = datetime.date(2012, 12, 12)
-
-
+url_detail_lowongan = '/cari-lowongan/detail-lowongan/'
 class TestingDetailLowongan(TestCase):
     URL_detail_lowongan = '/cari-lowongan/detail-lowongan/'
 
@@ -31,18 +30,22 @@ class TestingDetailLowongan(TestCase):
         )
 
     def test_detail_lowongan_page_response_status(self):
-        response = Client().get(self.URL_detail_lowongan + str(self.lowongan1.id))
+        response = Client().get(url_detail_lowongan + str(self.lowongan1.id))
         self.assertEqual(response.status_code, 200)
 
     def test_detail_lowongan_template(self):
-        response = Client().get(self.URL_detail_lowongan + str(self.lowongan1.id))
+        response = Client().get(url_detail_lowongan + str(self.lowongan1.id))
         self.assertTemplateUsed(response, 'detail_lowongan.html')
 
     def test_detail_lowongan_content(self):
-        response = Client().get(self.URL_detail_lowongan + str(self.lowongan1.id))
+        response = Client().get(url_detail_lowongan + str(self.lowongan1.id))
         html_response = response.content.decode('utf8')
         self.assertIn('<title>Detail Lowongan</title>', html_response)
 
     def test_detail_lowongan_func(self):
-        found = resolve(self.URL_detail_lowongan + str(self.lowongan1.id))
+        found = resolve(url_detail_lowongan + str(self.lowongan1.id))
         self.assertEqual(found.func, views.detail_lowongan)
+
+    def test_response_benar(self):
+         response = Client().get(url_detail_lowongan + str(self.lowongan1.id))
+         self.assertContains(response,'tidak_lengkap')
