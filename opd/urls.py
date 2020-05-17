@@ -1,7 +1,6 @@
 from django.contrib.auth.views import LoginView
 from django.urls import path
 
-from opd.opd_login_form import OpdAuthenticationForm
 from . import views
 
 urlpatterns = [
@@ -9,6 +8,7 @@ urlpatterns = [
     path('sorting/waktu-magang/<str:param>', views.sort_by_waktu_magang),
     path('sorting/batas-akhir/<str:param>', views.sort_by_batas_akhir),
     path('searching/<str:param>', views.search_by_judul),
+    path('lowongan/list-pendaftar-selesai-<str:id_lowongan>/', views.opd_list_pendaftar_selesai),
     path('lowongan/buka-tutup/<str:id_lowongan>/', views.opd_tutup_lowongan, name='opd_tutup_lowongan'),
     path('proses-<str:id_user>-<str:id_lowongan>/<str:status>/<str:catatan>/', views.opd_update_lamaran,
          name='opd_update_lamaran'),
@@ -16,8 +16,6 @@ urlpatterns = [
     path('lowongan/cv_pendaftar-<str:id_user>-<str:id_lowongan>/', views.opd_download_cv, name='opd_download_cv'),
     path('lowongan/list-pendaftar-<str:id_lowongan>/', views.opd_list_pendaftar, name='opd_list_pendaftar'),
     path('lowongan/detail-<str:id_lowongan>/', views.opd_detail_lowongan, name='opd_detail_lowongan'),
-    path('login/', LoginView.as_view(template_name='opd_login.html', form_class=OpdAuthenticationForm, ),
-         name='opd_login'),
     path('verification/404', views.opd_verification_not_found,
          name='opd_verification_not_found'),
     path('verification/<str:token>',

@@ -21,6 +21,7 @@ from .user_registration_form import UserRegistrationForm
 
 URL_USER_DASHBOARD = '/user/dashboard/'
 ERROR_PAGE_NOT_FOUND = 'ERROR 404 Page not found'
+USER_VERIFIED_MESSAGE = 'User Verified'
 
 
 def account_is_user(request):
@@ -228,7 +229,7 @@ def user_register2_google(request):
             google_user.name = request.POST['user_name']
             google_user.phone = request.POST['phone']
             google_user.save()
-            messages.success(request, 'User Verified')
+            messages.success(request, USER_VERIFIED_MESSAGE)
             return redirect("/")
         except ValidationError as e:
             err = e
@@ -248,7 +249,7 @@ def user_verification(request, token):
             google_user.save()
             create_user = UserProfile(user=google_user, unique_pelamar_attribute='user')
             create_user.save()
-            messages.success(request, 'User Verified')
+            messages.success(request, USER_VERIFIED_MESSAGE)
             return redirect("/user/register-google/")
         else:
             return redirect("/")
@@ -270,7 +271,7 @@ def user_verification(request, token):
         create_user = UserProfile(user=new_user, unique_pelamar_attribute='user')
         create_user.save()
         user_from_verification_list.delete()
-        messages.success(request, 'User Verified')
+        messages.success(request, USER_VERIFIED_MESSAGE)
         return redirect("/user/login")
 
 

@@ -71,9 +71,10 @@
                     <a class="dropdown-item" href="/opd/sorting/batas-akhir/desc">Batas Akhir Pendaftaran
                         [descending]</a>
                 </div>
-
             </div>
         </div>
+
+        
 
         <div class="col-sm">
             <form onsubmit="return searchFunc();">
@@ -98,6 +99,21 @@
                     <p id="judul-lowongan">{{ each.judul }}</p>
                     <p>Kategori: {{ each.kategori }}</p>
                     <p>Jumlah pelamar : {{ each.list_pendaftar_key.count }}</p>
+                    
+                    {% if each.is_lowongan_masih_berlaku %}
+                        <p>Status lowongan : 
+                            <button class="btn btn-primary mt-auto">
+                                Buka
+                            </button>
+                        </p>
+                    {% else %}
+                        <p>Status lowongan : 
+                            <button class="btn btn-primary mt-auto bg-danger">
+                                Tutup
+                            </button>
+                        </p>
+                    {% endif %}
+                    
                 </div>
                 <div class="col-1 d-flex align-items-end flex-column col3">
             <pre>

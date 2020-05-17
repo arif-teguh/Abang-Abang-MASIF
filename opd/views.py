@@ -18,7 +18,7 @@ template_opd_lowongan = 'opd_lowongan.html'
 
 
 def sort_by_waktu_magang(request, param):
-    filter_obj = Lowongan.objects.filter(opd_foreign_key = request.user.id)
+    filter_obj = Lowongan.objects.filter(opd_foreign_key=request.user.id)
     if request.method == 'GET':
         response = {}
         if param == 'asc':
@@ -36,7 +36,7 @@ def sort_by_waktu_magang(request, param):
 
 
 def sort_by_batas_akhir(request, param):
-    filter_obj = Lowongan.objects.filter(opd_foreign_key = request.user.id)
+    filter_obj = Lowongan.objects.filter(opd_foreign_key=request.user.id)
     if request.method == 'GET':
         response = {}
         if param == 'asc':
@@ -72,7 +72,7 @@ def opd_login(request):
 def opd_update_lamaran(request, id_lowongan, id_user, status, catatan):
     try:
         userlamarmagang = UserLamarMagang.objects.get(user_foreign_key=id_user, lowongan_foreign_key=id_lowongan)
-        if (cek_id_lowongan_dan_opd(request, id_lowongan)):
+        if (cek_id_lowongan_dan_opd(request, id_lowongan) and userlamarmagang.status_kesbangpol != 'DITERIMA'):
             userlamarmagang.status_lamaran = status
             userlamarmagang.notes_status_lamaran = catatan
             userlamarmagang.save()
@@ -88,7 +88,7 @@ def opd_list_pendaftar(request, id_lowongan):
     if request.user.is_authenticated and request.user.is_opd:
         if (cek_id_lowongan_dan_opd(request, id_lowongan)):
             lowongan = Lowongan.objects.get(id=id_lowongan)
-            lamaran = UserLamarMagang.objects.filter(lowongan_foreign_key=id_lowongan)
+            lamaran = UserLamarMagang.objects.filter(lowongan_foreign_key=id_lowongan , status_kesbangpol = "MENUNGGU_OPD")
             return render(request, 'opd_list_pendaftar.html',
                           {'lowongan': lowongan,
                            'lamaran': lamaran
@@ -97,6 +97,24 @@ def opd_list_pendaftar(request, id_lowongan):
             return redirect(opd_home)
     else:
         return redirect(home)
+
+def opd_list_pendaftar_selesai(request , id_lowongan):
+    try:
+        if request.user.is_authenticated and request.user.is_opd:
+            if (cek_id_lowongan_dan_opd(request, id_lowongan)):
+                lowongan = Lowongan.objects.get(id=id_lowongan)
+                lamaran = UserLamarMagang.objects.filter(lowongan_foreign_key=id_lowongan , status_kesbangpol = 'DITERIMA')
+                return render(request, 'opd_list_pendaftar.html',
+                            {'lowongan': lowongan,
+                            'lamaran': lamaran
+                            })
+            else:
+                return redirect(opd_home)
+        else:
+            return redirect(home)
+    except ObjectDoesNotExist:
+        return redirect(opd_home)
+
 
 
 def opd_download_file(request, id_user, id_lowongan):
@@ -148,9 +166,9 @@ def cek_id_lowongan_dan_opd(request, id_lowongan):
 
 def opd_home(request):
     if request.user.is_authenticated and request.user.is_opd:
-        data = Lowongan.objects.filter(opd_foreign_key = request.user.id)
-        
-        return render(request,'opd_lowongan.html', {'data': data})
+        data = Lowongan.objects.filter(opd_foreign_key=request.user.id)
+
+        return render(request, 'opd_lowongan.html', {'data': data})
     else:
         return redirect(home)
 
@@ -196,7 +214,7 @@ def opd_verification(request, token):
             create_opd = OpdProfile(user=new_user, unique_opd_attribute="opd")
             create_opd.save()
             opd_from_verification_list.delete()
-            return redirect("/opd/login")
+            return redirect("/user/login")
     else:
         form = OpdConfirmationForm()
     return render(
@@ -245,15 +263,14 @@ def opd_edit_profile_handler(request, pk):
 
 
 def upload_profile_picture_opd(request, pk):
-    if is_permitted_to_edit(request, pk):
-        if request.method == 'POST':
-            form = ProfilePictureForm(request.POST, request.FILES)
-            if form.is_valid():
-                to_be_edited_user = Account.objects.get(pk=pk)
-                to_be_edited_user.profile_picture = request.FILES['profile_picture']
-                to_be_edited_user.save()
+    if is_permitted_to_edit(request, pk) and request.method == 'POST':
+        form = ProfilePictureForm(request.POST, request.FILES)
+        if form.is_valid():
+            to_be_edited_user = Account.objects.get(pk=pk)
+            to_be_edited_user.profile_picture = request.FILES['profile_picture']
+            to_be_edited_user.save()
 
-            return redirect('/opd/editprofile/{}/'.format(pk))
+        return redirect('/opd/editprofile/{}/'.format(pk))
     return HttpResponse("ERROR No Permission")
 
 
