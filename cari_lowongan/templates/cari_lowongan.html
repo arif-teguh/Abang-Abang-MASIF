@@ -4,6 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" href='{% static "/css/cari_lowongan.css" %}'>
+    <link rel="stylesheet" type="text/css" href='{% static "/css/baseStyle.css" %}'>
+
     <script src="{% static 'jquery/jquery-3.4.1.min.js' %}"></script>
 
     {% include 'import-bootstrap-jquery.html' %}
@@ -49,13 +51,14 @@
         <div class="outer-box">
             <div class="row inner-box">
                 <div class="col-2 col1">
-                    <img src="{% static 'img/image 6.png' %}" alt="opd-logo">
+                    <img class="profpic-opd-small" src="/media/{{ i.opd_foreign_key.profile_picture }}" alt='opd-logo'>
                     <p>Dinas Depok</p>
                 </div>
                 <div class="col-9 align-self-center col2">
                     <p id="judul-lowongan">{{ i.judul }}</p>
-                    <p>Kategori: <br>{{ i.kategori }}</p>
-                    <p>Batas Akhir Pendaftaran: <br>{{ i.batas_akhir_pendaftaran }}</p>
+                    <p>Kategori : {{ i.kategori }}</p>
+                    <p>Alamat : {{ i.opd_foreign_key.opdprofile.address }}</p>
+                    <p>Batas akhir pendaftaran : {{ i.batas_akhir_pendaftaran }}</p>
                 </div>
                 <div class="col-1 d-flex align-items-end flex-column col3">
                     <button onclick="window.location.href='/cari-lowongan/detail-lowongan/{{ i.id }}'" type="button"
@@ -66,7 +69,7 @@
         </div>
     {% endfor %}
 </div>
-
+{% include 'footer.html' %}
 </body>
 
 <script type="text/javascript">
