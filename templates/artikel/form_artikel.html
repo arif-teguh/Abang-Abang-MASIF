@@ -14,7 +14,8 @@
   </head>
   <body>
   {% include 'navbar-admin-page.html' %}
-    <div class="container-fluid mb-5">
+    </br>
+    <div class="container-fluid">
       <div class="row-12">
         {%if type == 'update'%}
           <form method="POST" action="{% url 'update_form_artikel' form.instance.pk %}" enctype="multipart/form-data">
@@ -40,8 +41,8 @@
 
         {% endif %}
       </div>
-
       <script src="/static/js/artikel_form.js"></script>
     </div>
+    {% include 'footer.html' %}
   </body>
 </html>
