@@ -1,14 +1,19 @@
-import tempfile
 import shutil
-from django.test import TestCase, override_settings, Client
+import tempfile
+
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.test import TestCase, override_settings, Client
+
 from account.models import Account
 from .models import Artikel
 
 MEDIA_ROOT = tempfile.mkdtemp()
 url_form_artikel = "/artikel/form/"
-url_post_form_artikel = url_form_artikel+"post/"
-url_update_form_artikel = url_form_artikel+"edit/"
+url_post_form_artikel = url_form_artikel + "post/"
+url_update_form_artikel = url_form_artikel + "edit/"
+MOCK_EMAIL = 'mock@mail.com'
+MOCK_PASSWORD = '123123123'
+
 
 @override_settings(MEDIA_ROOT=MEDIA_ROOT)
 class ArtikelModelTest(TestCase):
@@ -27,6 +32,20 @@ class ArtikelModelTest(TestCase):
         )
         self.artikel1.save()
         self.artikel2.save()
+        Account.objects.create_user(email=MOCK_EMAIL, password=MOCK_PASSWORD)
+        self.admin_mock_user = Account.objects.all()[0]
+        self.admin_mock_user.is_opd = False
+        self.admin_mock_user.is_superuser = False
+        self.admin_mock_user.is_admin = True
+        self.admin_mock_user.is_user = False
+        self.admin_mock_user.is_staff = False
+        self.admin_mock_user.is_active = False
+        self.admin_mock_user.save()
+        self.artikel1_correct_pk_delete_url = url_update_form_artikel + str(self.artikel1.pk) + '/delete/'
+        self.artikel1_wrong_pk_delete_url = url_update_form_artikel + str(12321312) + '/delete/'
+        self.artikel1_string_pk_delete_url = url_update_form_artikel + 'asd' + '/delete/'
+        self.artikel1_no_pk_delete_url = url_update_form_artikel + '/delete/'
+        self.client.login(username=MOCK_EMAIL, password=MOCK_PASSWORD)
 
     @classmethod
     def tearDownClass(cls):
@@ -62,6 +81,38 @@ class ArtikelModelTest(TestCase):
 
     def test_waktu_dibuat_not_none(self):
         self.assertIsNotNone(self.artikel1.waktu_dibuat)
+
+    def test_delete_artikel_account_correct_pk(self):
+        response = self.client.post(
+            self.artikel1_correct_pk_delete_url,
+            {}
+        )
+        all_test_article = list(Artikel.objects.all())
+        self.assertEqual(
+            'Article Successfully Deleted', response.content.decode('utf8')
+        )
+        self.assertEqual(all_test_article, [self.artikel2])
+
+    def test_delete_opd_account_string_pk(self):
+        hasil = self.client.post(self.artikel1_string_pk_delete_url, {})
+        self.assertEqual(404, hasil.status_code)
+
+    def test_delete_opd_account_no_pk(self):
+        hasil = self.client.post(self.artikel1_no_pk_delete_url, {})
+        self.assertEqual(404, hasil.status_code)
+
+    def test_delete_opd_account_correct_pk_not_admin(self):
+        self.admin_mock_user.is_admin = False
+        self.admin_mock_user.save()
+        self.client.post(
+            self.artikel1_correct_pk_delete_url,
+            {}
+        )
+        self.assertEqual(
+            self.artikel2,
+            Artikel.objects.get(pk=self.artikel2.pk)
+        )
+
 
 @override_settings(MEDIA_ROOT=MEDIA_ROOT)
 class ArtikelFormTest(TestCase):
@@ -107,9 +158,9 @@ class ArtikelFormTest(TestCase):
     def test_post_form_artikel_url_for_admin_and_form_is_valid(self):
         Account.objects.filter(pk=self.user.id).update(is_admin=True)
         data_artikel = {
-            "judul":"judul_admin",
-            "deskripsi":"desk1",
-            "foto_artikel":self.test_file_jpg_a
+            "judul": "judul_admin",
+            "deskripsi": "desk1",
+            "foto_artikel": self.test_file_jpg_a
         }
         response = self.client.post(url_post_form_artikel, data_artikel)
         self.assertTrue(Artikel.objects.filter(judul="judul_admin").exists())
@@ -118,9 +169,9 @@ class ArtikelFormTest(TestCase):
     def test_post_form_artikel_url_not_admin_and_form_is_valid(self):
         Account.objects.filter(pk=self.user.id).update(is_admin=False)
         data_artikel = {
-            "judul":"judul_admin",
-            "deskripsi":"desk1",
-            "foto_artikel":self.test_file_jpg_a
+            "judul": "judul_admin",
+            "deskripsi": "desk1",
+            "foto_artikel": self.test_file_jpg_a
         }
         response = self.client.post(url_post_form_artikel, data_artikel)
         self.assertFalse(Artikel.objects.filter(judul="judul_admin").exists())
@@ -128,42 +179,43 @@ class ArtikelFormTest(TestCase):
 
     def test_update_form_artikel_url_for_non_opd(self):
         Account.objects.filter(pk=self.user.id).update(is_admin=False)
-        response = self.client.get(url_update_form_artikel+"111/")
+        response = self.client.get(url_update_form_artikel + "111/")
         self.assertEqual(response.status_code, 302)
 
     def test_update_form_artikel_url_for_admin_and_form_not_is_valid(self):
         Account.objects.filter(pk=self.user.id).update(is_admin=True)
         id_artikel = str(self.artikel_obj.id)
-        response = self.client.get(url_update_form_artikel+id_artikel+"/")
+        response = self.client.get(url_update_form_artikel + id_artikel + "/")
         self.assertEqual(response.status_code, 200)
 
     def test_update_form_artikel_url_for_admin_and_form_is_valid(self):
         Account.objects.filter(pk=self.user.id).update(is_admin=True)
         id_artikel = self.artikel_obj.id
         data_artikel = {
-            "id":id_artikel,
-            "judul":"judul_update",
-            "deskripsi":"desk1",
-            "foto_artikel":self.test_file_jpg_b
+            "id": id_artikel,
+            "judul": "judul_update",
+            "deskripsi": "desk1",
+            "foto_artikel": self.test_file_jpg_b
         }
-        url_update = url_update_form_artikel+str(id_artikel)+"/"
+        url_update = url_update_form_artikel + str(id_artikel) + "/"
         response = self.client.post(url_update, data_artikel)
         self.assertTrue(Artikel.objects.filter(judul="judul_update").exists())
         self.assertEqual(response.status_code, 302)
-    
+
     def test_url_update_is_not_exist(self):
         Account.objects.filter(pk=self.user.id).update(is_admin=True)
         id_artikel = 123456
         data_artikel = {
-            "id":id_artikel,
-            "judul":"test_error",
-            "deskripsi":"desk1",
-            "foto_artikel":self.test_file_jpg_b
+            "id": id_artikel,
+            "judul": "test_error",
+            "deskripsi": "desk1",
+            "foto_artikel": self.test_file_jpg_b
         }
-        url_update = url_update_form_artikel+str(id_artikel)+"/"
+        url_update = url_update_form_artikel + str(id_artikel) + "/"
         response = self.client.post(url_update, data_artikel)
         self.assertFalse(Artikel.objects.filter(judul="test_error").exists())
         self.assertEqual(response.status_code, 302)
+
 
 @override_settings(MEDIA_ROOT=MEDIA_ROOT)
 class ArtikelReadTest(TestCase):
