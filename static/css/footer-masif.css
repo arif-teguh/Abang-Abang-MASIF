@@ -1,15 +1,111 @@
-.footer-masif {
-    position: absolute;
-    width: 100%;
-    bottom: 0;
-    color: white;
-    background-color: #005371;
+
+.masif-footer {
+    margin-top: 250px;
+    font-size: 13px;
+    font-family: "Open Sans", sans-serif;
 }
 
-#diskominfo-text-footer {
-    font-weight: bolder;
+.dark-div {
+    color: rgba(255, 255, 255, .75);
 }
 
-.footer-row {
-    margin: 0;
+footer.main-color-2-bg, .main-color-2-bg.back-to-top {
+    background-color: #2b2b2b;
+}
+
+#bottom-nav {
+    background: rgba(0, 0, 0, .2);
+}
+
+.back-to-top-wrap {
+    margin-top: -20px;
+    margin-bottom: 20px;
+}
+
+.back-to-top-wrap {
+    height: 0;
+    overflow: visible;
+}
+
+#bottom-nav .footer-content {
+    padding-top: 30px;
+    padding-bottom: 30px;
+    min-height: 80px;
+}
+
+#bottom-nav .copyright {
+    padding-top: 20px;
+}
+
+.footer-social {
+    padding-top: 10px;
+}
+
+.pull-right {
+    float: right !important;
+}
+
+#bottom-nav .social-list {
+    margin-bottom: 0;
+}
+
+.dark-div a {
+    color: #fff
+}
+
+.dark-div a:hover {
+    color: #c8385e;
+}
+
+.dark-div h1, .dark-div h2, .dark-div h3, .dark-div h4, .dark-div h5, .dark-div h6, .dark-div .btn-primary {
+    color: #fff;
+}
+
+#bottom-nav > div > div.text-center.back-to-top-wrap > a {
+
+
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    -webkit-font-smoothing: antialiased;
+    font-family: "Open Sans", sans-serif;
+    text-align: center;
+    box-sizing: border-box;
+    background: transparent;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+    border-radius: 0;
+    -webkit-transform: rotate(45deg);
+    transition: all .3s;
+    color: #fff;
+    background-color: #2b2b2b;
+
+}
+
+.back-to-top .fa {
+    transform: rotate(-45deg);
+    -ms-transform: rotate(-45deg);
+    -moz-transform: rotate(-45deg);
+    -webkit-transform: rotate(-45deg);
+}
+
+#bottom-nav > div > div.text-center.back-to-top-wrap > a:hover {
+    background-color: #fff;
+    color: #444;
+
+    /*transform: rotate(45deg);*/
+}
+
+
+@media (min-width: 768px) {
+    body > div.container {
+        min-height: 400px;
+    }
+
+    .masif-footer {
+        margin-top: 100px;
+    }
+
 }
