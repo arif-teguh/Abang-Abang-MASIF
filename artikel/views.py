@@ -1,4 +1,4 @@
-from django.shortcuts import get_object_or_404, render, redirect
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .forms import ArtikelForm
 from .models import Artikel
@@ -41,7 +41,11 @@ def update_form_artikel(request, id_artikel):
     if request.user.is_admin == False:
         return redirect('/')
 
-    artikel_data = get_object_or_404(Artikel, pk=id_artikel)
+    try:
+        artikel_data = Artikel.objects.get(pk=id_artikel)
+    except Artikel.DoesNotExist:
+        return redirect("/")
+
     form = ArtikelForm(instance=artikel_data)
     if request.method == 'POST':
         form = ArtikelForm(request.POST or None,

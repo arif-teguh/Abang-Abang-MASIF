@@ -150,6 +150,20 @@ class ArtikelFormTest(TestCase):
         response = self.client.post(url_update, data_artikel)
         self.assertTrue(Artikel.objects.filter(judul="judul_update").exists())
         self.assertEqual(response.status_code, 302)
+    
+    def test_url_update_is_not_exist(self):
+        Account.objects.filter(pk=self.user.id).update(is_admin=True)
+        id_artikel = 123456
+        data_artikel = {
+            "id":id_artikel,
+            "judul":"test_error",
+            "deskripsi":"desk1",
+            "foto_artikel":self.test_file_jpg_b
+        }
+        url_update = url_update_form_artikel+str(id_artikel)+"/"
+        response = self.client.post(url_update, data_artikel)
+        self.assertFalse(Artikel.objects.filter(judul="test_error").exists())
+        self.assertEqual(response.status_code, 302)
 
 @override_settings(MEDIA_ROOT=MEDIA_ROOT)
 class ArtikelReadTest(TestCase):
