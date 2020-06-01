@@ -1,5 +1,9 @@
-from django.shortcuts import get_object_or_404, render, redirect
+from django.http import HttpResponse
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
+
+from admin.views import user_is_admin
 from .forms import ArtikelForm
 from .models import Artikel
 
@@ -41,7 +45,11 @@ def update_form_artikel(request, id_artikel):
     if request.user.is_admin == False:
         return redirect('/')
 
-    artikel_data = get_object_or_404(Artikel, pk=id_artikel)
+    try:
+        artikel_data = Artikel.objects.get(pk=id_artikel)
+    except Artikel.DoesNotExist:
+        return redirect("/")
+
     form = ArtikelForm(instance=artikel_data)
     if request.method == 'POST':
         form = ArtikelForm(request.POST or None,
@@ -52,7 +60,8 @@ def update_form_artikel(request, id_artikel):
             return redirect(url_artikel+str(id_artikel))
     response = {
         'form': form,
-        'type':'update'
+        'type':'update',
+        'pk' : id_artikel,
     }
     return render(request, dir_form_artikel, response)
 
@@ -72,3 +81,10 @@ def view_read_artikel(request, artikel_id):
         'error': error
     }
     return render(request, 'artikel/artikel-read.html', context)
+
+@csrf_exempt
+def admin_delete_artikel(request, id_artikel):
+    if request.method == "POST" and user_is_admin(request):
+        Artikel.objects.filter(pk=id_artikel)[0].delete()
+        return HttpResponse('Article Successfully Deleted')
+    return HttpResponse('Forbidden')

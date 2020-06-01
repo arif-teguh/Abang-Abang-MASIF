@@ -21,9 +21,9 @@
                 </div>
                 <div class="col-9 align-self-center col2">
                     <p id="judul-lowongan">{{ i.judul }}</p>
-                    <p>{{ i.kategori }}</p>
-                    <p>{{ i.opd_foreign_key.opdprofile.address }}</p>
-                    <p>{{ i.batas_akhir_pendaftaran }}</p>
+                    <p>Kategori : {{ i.kategori }}</p>
+                    <p>Alamat : {{ i.opd_foreign_key.opdprofile.address }}</p>
+                    <p>Batas akhir pendaftaran : {{ i.batas_akhir_pendaftaran }}</p>
                 </div>
                 <div class="col-1 d-flex align-items-end flex-column col3">
                     <button id='{{ status }}' onclick="window.location.href='/lowongan/user/lamar/{{ i.id }}'"
@@ -69,5 +69,10 @@
         </div>
     </div>
 {% endfor %}
+{% include 'footer.html' %}
+<script>
+    document.getElementById('tidak_lengkap').disabled = true;
+    document.getElementById('tidak_lengkap2').disabled = true;
+</script>
 </body>
 </html>

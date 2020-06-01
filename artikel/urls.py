@@ -19,4 +19,8 @@ urlpatterns = [
     path('form/edit/<int:id_artikel>/',
          views.update_form_artikel,
          name="update_form_artikel"),
+
+    path('form/edit/<int:id_artikel>/delete/',
+         views.admin_delete_artikel,
+         name="delete_artikel"),
 ]
