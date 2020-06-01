@@ -46,24 +46,26 @@
     </div>
 
     {% for i in data %}
-        <div class="outer-box">
-            <div class="row inner-box">
-                <div class="col-2 col1">
-                    <img src="{% static 'img/image 6.png' %}" alt="opd-logo">
-                    <p>Dinas Depok</p>
-                </div>
-                <div class="col-9 align-self-center col2">
-                    <p id="judul-lowongan">{{ i.judul }}</p>
-                    <p>Kategori: <br>{{ i.kategori }}</p>
-                    <p>Batas Akhir Pendaftaran: <br>{{ i.batas_akhir_pendaftaran }}</p>
-                </div>
-                <div class="col-1 d-flex align-items-end flex-column col3">
-                    <button onclick="window.location.href='/cari-lowongan/detail-lowongan/{{ i.id }}'" type="button"
-                            class="btn btn-primary mt-auto">Lamar
-                    </button>
+        {% if i.is_lowongan_masih_berlaku %}
+            <div class="outer-box">
+                <div class="row inner-box">
+                    <div class="col-2 col1">
+                        <img src="{% static 'img/image 6.png' %}" alt="opd-logo">
+                        <p>Dinas Depok</p>
+                    </div>
+                    <div class="col-9 align-self-center col2">
+                        <p id="judul-lowongan">{{ i.judul }}</p>
+                        <p>Kategori: <br>{{ i.kategori }}</p>
+                        <p>Batas Akhir Pendaftaran: <br>{{ i.batas_akhir_pendaftaran }}</p>
+                    </div>
+                    <div class="col-1 d-flex align-items-end flex-column col3">
+                        <button onclick="window.location.href='/cari-lowongan/detail-lowongan/{{ i.id }}'" type="button"
+                                class="btn btn-primary mt-auto">Lamar
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
+        {% endif %}
     {% endfor %}
 </div>
 
