@@ -16,9 +16,21 @@
 <nav class="navbar navbar-expand-sm navbar-dark bg-masif-blue">
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav" style="width: 100%">
+            {% if request.user.is_authenticated %}
+                {% if request.user.is_kesbangpol %}
+                    <li class="nav-item active">
+                        <a class="nav-link" href="{% url 'kesbangpol_dashboard' %}">Dashboard <span class="sr-only">(current)</span></a>
+                    </li>
+                {% else %}
+                    <li class="nav-item active">
+                        <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+                    </li>
+                {% endif %}
+            {% else %}
             <li class="nav-item active">
                 <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
             </li>
+            {% endif %}
             <li class="nav-item active">
                 <a class="nav-link" href="/cari-lowongan/">Cari Lowongan <span class="sr-only">(current)</span></a>
             </li>
@@ -32,6 +44,10 @@
                         {% if request.user.is_opd %}
 
                             <span class="badge badge-primary">OPD</span>
+                        {% endif %}
+
+                        {% if request.user.is_kesbangpol %}
+                            <span class="badge badge-primary">Kesbangpol</span>
                         {% endif %}
 
                         {% if request.user.is_admin %}
@@ -55,6 +71,10 @@
                         {% endif %}
                         {% if request.user.is_user %}
                             <a class="dropdown-item" href="{% url 'user_dashboard' %}">Profile</a>
+                            <div class="dropdown-divider"></div>
+                        {% endif %}
+                        {% if request.user.is_kesbangpol %}
+                            <a class="dropdown-item" href="{% url 'kesbangpol_dashboard' %}">Profile</a>
                             <div class="dropdown-divider"></div>
                         {% endif %}
                         <a class="dropdown-item" href="/logout/">Keluar</a>
