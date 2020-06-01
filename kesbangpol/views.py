@@ -94,6 +94,8 @@ def get_rekomendasi_pdf(request, user_lamar_id):
     data = {}
     try:
         user_lamar = UserLamarMagang.objects.get(id=user_lamar_id)
+        user_lamar.status_kesbangpol = "DITERIMA"
+        user_lamar.save()
         user_account = user_lamar.user_foreign_key
         user_profile = UserProfile.objects.get(user=user_account)
         lowongan = user_lamar.lowongan_foreign_key
