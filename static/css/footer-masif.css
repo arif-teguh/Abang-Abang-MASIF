@@ -100,13 +100,10 @@ footer.main-color-2-bg, .main-color-2-bg.back-to-top {
 
 
 @media (min-width: 768px) {
-<<<<<<< HEAD
-=======
     body > div.container {
         min-height: 400px;
     }
 
->>>>>>> 97caca510f052eb1f5317dc822c6be938ee32a8b
     .masif-footer {
         margin-top: 100px;
     }
