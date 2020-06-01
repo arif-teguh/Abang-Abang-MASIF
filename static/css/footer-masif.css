@@ -98,6 +98,9 @@ footer.main-color-2-bg, .main-color-2-bg.back-to-top {
     /*transform: rotate(45deg);*/
 }
 
+#container-dashboard-opd {
+    min-height: 0px !important;
+}
 
 @media (min-width: 768px) {
     body > div.container {
