@@ -89,7 +89,7 @@
                 <div class="container">
                     <div class="row justify-content-md-center m-5">
                         <div class="col">
-                            <h3>Verifikasi Calon Peserta Magang</h3>
+                            <h3>Detail Calon Peserta Magang</h3>
                         </div>
                     </div>
                     <div class="row m-5">
@@ -157,7 +157,6 @@
         function updateTanggal() {
             id = parseInt($('#userId').text());
             tanggal = new Date($('#tanggal').val());
-            alert(tanggal)
             day = tanggal.getDate();
             month = tanggal.getMonth() + 1;
             year = tanggal.getFullYear();

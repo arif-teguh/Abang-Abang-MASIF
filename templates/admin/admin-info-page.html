@@ -1,0 +1,39 @@
+{% extends 'admin/admin_base.html' %}
+{% block head %}
+    <link rel="stylesheet" href="/static/css/admin-info-page.css">
+    <title>Admin Informasi</title>
+{% endblock %}
+
+{% block admin_body %}
+    <div class="container">
+        <h2 id="title-artikel" class="text-center">Artikel</h2>
+        <button onclick="window.location.href='{% url 'show_form_artikel' %}'" class="btn btn-primary">
+            Buat Artikel Baru
+        </button>
+        <div class="row">
+
+            {% for article in articles %}
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3 d-flex justify-content-center">
+                    <a href="{% url 'update_form_artikel' article.pk %}" class="nostyle card card-artikel">
+                            <img src="/media/{{ article.foto_artikel }}/" class="card-img-top article-img" alt="image">
+                            <div class="card-body article-card-body">
+                                <p class="card-text">
+                                <h6 class="text-center">{{ article.judul }}</h6>
+                            </div>
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+
+
+    </div>
+
+    <script>
+        let imageSelect = $('.card-img-top');
+        let width = imageSelect[0].width;
+        const calculatedHeight = 0.3320 * width;
+        imageSelect.css("max-height", calculatedHeight);
+
+
+    </script>
+{% endblock %}

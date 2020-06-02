@@ -1,4 +1,3 @@
-
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -6,6 +5,7 @@
 
     <meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" href='{% static "/css/cari_lowongan.css" %}'>
+    <link rel="stylesheet" type="text/css" href='{% static "/css/baseStyle.css" %}'>
     {% include 'import-bootstrap-jquery.html' %}
 
     <style>
@@ -20,7 +20,7 @@
     </style>
 
     <title>OPD Dashboard</title>
-    
+
 </head>
 <body>
 
@@ -29,10 +29,10 @@
     <div class="row">
         <div class="col">
             <div class="row">
-                <div><img class="opd-logo" src="https://www.pmidpi.com/wp-content/uploads/2015/07/person-placeholder.jpg" alt="opd-logo"></div>
+                <div><img class="profpic-opd-small" src="/media/{{ user.profile_picture }}" alt="opd-logo"></div>
                 <div class="col">
                     <h3>{{ user.name }}</h3>
-                    <h5>Pemerintah Kota Depok</h5>
+                    <h5>{{ user.opdprofile.address }}</h5>
                     {{ user.phone }}<br>
                     {{ user.email }}
 
@@ -71,9 +71,10 @@
                     <a class="dropdown-item" href="/opd/sorting/batas-akhir/desc">Batas Akhir Pendaftaran
                         [descending]</a>
                 </div>
-
             </div>
         </div>
+
+        
 
         <div class="col-sm">
             <form onsubmit="return searchFunc();">
@@ -86,46 +87,63 @@
 
 
 
-{% for each in data reversed %}
-<div class="outer-box">
-        <div class="row inner-box">
-            <div class="col-2 col1">
-                <img src="{% static 'img/image 6.png' %}" alt="lowongan">
-                <p>Dinas Depok</p>
-            </div>
-            <div class="col-9 align-self-center col2">
-                <p id="judul-lowongan">{{ each.judul }}</p>
-                <p>Kategori: {{ each.kategori }}</p>
-                <p>Jumlah pelamar : {{each.list_pendaftar_key.count}}</p>
-            </div>
-            <div class="col-1 d-flex align-items-end flex-column col3">
+    {% for each in data reversed %}
+        <div class="outer-box">
+            <div class="row inner-box">
+                <div class="col-2 col1">
+                    <img class="profpic-opd-small" src="/media/{{ each.opd_foreign_key.profile_picture }}"
+                         alt="lowongan">
+                    <p>Dinas Depok</p>
+                </div>
+                <div class="col-9 align-self-center col2">
+                    <p id="judul-lowongan">{{ each.judul }}</p>
+                    <p>Kategori: {{ each.kategori }}</p>
+                    <p>Jumlah pelamar : {{ each.list_pendaftar_key.count }}</p>
+                    
+                    {% if each.is_lowongan_masih_berlaku %}
+                        <p>Status lowongan : 
+                            <button class="btn btn-primary mt-auto">
+                                Buka
+                            </button>
+                        </p>
+                    {% else %}
+                        <p>Status lowongan : 
+                            <button class="btn btn-primary mt-auto bg-danger">
+                                Tutup
+                            </button>
+                        </p>
+                    {% endif %}
+                    
+                </div>
+                <div class="col-1 d-flex align-items-end flex-column col3">
             <pre>
 
-                 <button onclick="window.location.href='/opd/lowongan/list-pendaftar-{{each.id}}/'" type="button" class="btn btn-primary mt-auto">Lihat pelamar</button>
-                 <button onclick="window.location.href='/opd/lowongan/detail-{{each.id}}/'" type="button" class="btn btn-primary mt-auto">Detail Lowongan</button>
+                 <button onclick="window.location.href='/opd/lowongan/list-pendaftar-{{ each.id }}/'" type="button"
+                         class="btn btn-primary mt-auto">Lihat pelamar</button>
+                 <button onclick="window.location.href='/opd/lowongan/detail-{{ each.id }}/'" type="button"
+                         class="btn btn-primary mt-auto">Detail Lowongan</button>
             </pre>
+                </div>
             </div>
         </div>
-    </div>
     {% endfor %}
 
-<script type="text/javascript">
+    <script type="text/javascript">
 
-    function searchFunc() {
-        search_word = $("#search-box").val();
-        if(search_word.localeCompare('') != 0){
-        window.location.href = "/opd/searching/" + search_word;
+        function searchFunc() {
+            search_word = $("#search-box").val();
+            if (search_word.localeCompare('') != 0) {
+                window.location.href = "/opd/searching/" + search_word;
+            } else {
+                window.alert('Isi parameter sebelum search');
+            }
+
         }
-        else {
-            window.alert('Isi parameter sebelum search');
-        }
-        
-    }
-</script>
+    </script>
 
- <script src="{% static 'jquery/jquery-3.4.1.min.js' %}"></script>
+    <script src="{% static 'jquery/jquery-3.4.1.min.js' %}"></script>
 
-
-
+</div>
+{% include 'footer.html' %}
 </body>
 </html>

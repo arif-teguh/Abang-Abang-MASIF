@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block head %}
+    <style>
+        #submit-btn {
+            width: 100%
+        }
+    </style>
+    <title>Daftar Pelamar</title>
+{% endblock %}
+{% block body %}
+    <div class="container-fluid">
+        <div class="row justify-content-center" style="height: 100vh">
+            <div class="col-4 align-self-center">
+                {% for message in err %}
+                    <div class="alert alert-danger" role="alert">
+                        {{ message }}
+                    </div>
+                {% endfor %} 
+                <form method="POST" action="{% url 'user_register2_google' %}">
+                    {% csrf_token %}
+                    <h1 class="admin-login-items text-center">Lengkapi Data <br> Akun Pelamar</h1>
+                    <label>Nama : </label>
+                    {{ form.user_name }}
+                    <br>
+                    <label>Email : </label>
+                    {{ request.user.email }}
+                    <br><br>
+                    <label>Telepon : </label>
+                    {{ form.phone }}
+
+                    <br>
+                    <button type="submit" class="btn btn-primary admin-login-items" id="submit-btn">Submit</button>
+
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

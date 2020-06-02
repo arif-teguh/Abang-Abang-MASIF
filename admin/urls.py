@@ -14,4 +14,5 @@ urlpatterns = [
     path('listopd/register/', views.admin_register_opd,
          name='admin_register_opd'),
     path('listopd/deleteopd/', views.admin_delete_opd, name='admin_delete_opd'),
+    path('information/', views.information_page, name='admin_info_page')
 ]

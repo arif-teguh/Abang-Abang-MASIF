@@ -43,9 +43,7 @@
         </div>
     </div>
 </div>
-<hr id="hr">
-<br>
-<br>
+
 
 <div class="container">
     <div class="row">
@@ -55,7 +53,6 @@
         </div>
         <div class="col-4" style="text-align: left"><br>
             <strong id="bold-text">Detail</strong>
-            <p id ='demo'>{{lowongan.is_lowongan_masih_berlaku}}</p>
             <p> Tenaga yang dibutuhkan :{{ lowongan.kuota_peserta}}<br>
                 Waktu mulai  magang : {{ lowongan.waktu_awal_magang}}<br>
                 Waktu akhir magang : {{ lowongan.waktu_akhir_magang}}
@@ -63,9 +60,18 @@
             <a href='/lowongan/opd/form/edit/{{lowongan.id}}/'>
             <button type="button" class="btn btn-primary mt-auto">Edit Lowongan</button>
             </a>
-            <a href='/opd/lowongan/buka-tutup/{{lowongan.id}}/'>
-            <button type="button" id = 'tutup' class="btn btn-primary mt-auto">Tutup Lowongan</button>
+             <a href='/opd/lowongan/buka-tutup/{{lowongan.id}}/'>
+                {% if lowongan.is_lowongan_masih_berlaku %}   
+                    <button class="btn btn-primary mt-auto bg-danger">
+                        Tutup Lowongan
+                    </button>
+                {% else %}
+                    <button class="btn btn-primary mt-auto">
+                        Buka Lowongan
+                    </button>
+                {% endif %}
             </a>
+           
         </div>
     </div>
     <div class="row">

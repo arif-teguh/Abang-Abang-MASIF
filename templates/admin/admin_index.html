@@ -27,7 +27,8 @@
                 <h1 id="admin-masif-title">Admin MASIF</h1>
 
                 <div class="row justify-content-center tombol">
-                    <button onclick="window.location.href='#'" type="button" class="btn btn-primary btn-lg">Tambahkan
+                    <button onclick="window.location.href='{% url 'admin_info_page' %}'" type="button"
+                            class="btn btn-primary btn-lg">Tambahkan
                         Informasi Magang
                     </button>
                 </div>
@@ -38,7 +39,8 @@
                     </button>
                 </div>
                 <div class="tombol row justify-content-center">
-                    <button onclick="window.location.href='/lowongan/admin/form/edit-kategori/'" type="button" class="btn btn-primary btn-lg">
+                    <button onclick="window.location.href='/lowongan/admin/form/edit-kategori/'" type="button"
+                            class="btn btn-primary btn-lg">
                         Tambahkan Kategori Lowongan
                     </button>
                 </div>
@@ -46,6 +48,3 @@
         </div>
     </div>
 {% endblock %}
-
-</body>
-</html>

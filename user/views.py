@@ -1,30 +1,28 @@
 import datetime
-import re
 
 from django.contrib import messages
+from django.contrib.sites.shortcuts import get_current_site
+from django.core.exceptions import ValidationError
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.utils.datastructures import MultiValueDictKeyError
 from django.contrib import messages
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ValidationError
+from django.contrib.auth.decorators import login_required
 
-from account.models import Account
-from account.models import UserProfile
+from account.models import UserProfile, Account
+from admin.mailing import send_verification_email
 from lowongan.models import UserLamarMagang
 from user.forms import EditUserProfileForm, CVForm, ProfilePictureForm
 from user.models import UserVerificationList
 from .token import generate_user_token
 from .user_registration_form import UserRegistrationForm
-from account.models import UserProfile, Account
-from admin.mailing import send_verification_email
-from user.models import UserVerificationList
-from user.forms import EditUserProfileForm, CVForm, ProfilePictureForm
-from .user_registration_form import UserRegistrationForm
-from .token import generate_user_token
 
 URL_USER_DASHBOARD = '/user/dashboard/'
 ERROR_PAGE_NOT_FOUND = 'ERROR 404 Page not found'
+USER_VERIFIED_MESSAGE = 'User Verified'
+
 
 def account_is_user(request):
     try:
@@ -66,7 +64,6 @@ def delete_cv(request):
 
 def user_dashboard(request):
     if account_is_user(request):
-
         return render(request, 'user/user-dashboard.html',
                       {'form_pp': ProfilePictureForm(),
                        'user': request.user, 'form_cv': CVForm()})
@@ -144,7 +141,7 @@ def user_edit_profile(request):
         else:
             born_date_in_database = str(
                 request.user.userprofile.born_date
-                ).split('-')
+            ).split('-')
             shown_born_date = '{}/{}/{}'.format(born_date_in_database[2],
                                                 born_date_in_database[1],
                                                 born_date_in_database[0])
@@ -208,7 +205,7 @@ def user_register(request):
                 )
                 new_account.save()
                 base_url = get_current_site(request).domain
-                verif_url = base_url+'/user/verification/'+secret
+                verif_url = base_url + '/user/verification/' + secret
                 send_verification_email(verif_url, email)
                 return render(
                     request,
@@ -222,6 +219,24 @@ def user_register(request):
                   'user/user_register.html',
                   {'form': form, 'err': err})
 
+@login_required
+def user_register2_google(request):
+    err = []
+    if request.method == 'POST':
+        form = UserRegistrationForm(request.POST)
+        try:
+            google_user = Account.objects.get(email=request.user.email)
+            google_user.name = request.POST['user_name']
+            google_user.phone = request.POST['phone']
+            google_user.save()
+            messages.success(request, USER_VERIFIED_MESSAGE)
+            return redirect("/")
+        except ValidationError as e:
+            err = e
+    else:
+        form = UserRegistrationForm()
+    return render(request, 'user/user_register2_google.html', {'form': form, 'err': err})
+
 
 def user_verification(request, token):
     if token == 'google-oauth2':
@@ -229,13 +244,13 @@ def user_verification(request, token):
         google_is_user = google_user.is_user
         if google_user.name == "" and google_user.phone == "" and not google_is_user:
             google_user.name = "Pelamar"
-            google_user.phone = "081122232222"
+            google_user.phone = ""
             google_user.is_user = True
             google_user.save()
             create_user = UserProfile(user=google_user, unique_pelamar_attribute='user')
             create_user.save()
-            messages.success(request, 'User Verified')
-            return redirect("/")
+            messages.success(request, USER_VERIFIED_MESSAGE)
+            return redirect("/user/register-google/")
         else:
             return redirect("/")
     else:
@@ -256,7 +271,7 @@ def user_verification(request, token):
         create_user = UserProfile(user=new_user, unique_pelamar_attribute='user')
         create_user.save()
         user_from_verification_list.delete()
-        messages.success(request, 'User Verified')
+        messages.success(request, USER_VERIFIED_MESSAGE)
         return redirect("/user/login")
 
 
