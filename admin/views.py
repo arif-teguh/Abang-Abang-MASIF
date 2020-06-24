@@ -73,7 +73,7 @@ def admin_register_opd(request):
                     new_account.save()
                     base_url = get_current_site(request).domain
                     verif_url = base_url + '/opd/verification/' + secret
-                    send_verification_email(verif_url, email)
+                    send_verification_email(verif_url, email, "OPD")
                     return render(
                         request,
                         'activation_link.html'

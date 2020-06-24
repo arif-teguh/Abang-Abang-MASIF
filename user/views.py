@@ -206,7 +206,7 @@ def user_register(request):
                 new_account.save()
                 base_url = get_current_site(request).domain
                 verif_url = base_url + '/user/verification/' + secret
-                send_verification_email(verif_url, email)
+                send_verification_email(verif_url, email, "anda")
                 return render(
                     request,
                     'activation_link.html',

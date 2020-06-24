@@ -2,9 +2,9 @@ from django.core.mail import send_mail, BadHeaderError
 from django.core.validators import validate_email
 from django.core.validators import ValidationError
 
-def send_verification_email(verification_url, recipient_email):
-    subject = 'Verifikasi OPD'
-    msg = 'Berikut link untuk verifikasi email untuk akun OPD: '\
+def send_verification_email(verification_url, recipient_email, recipient_type):
+    subject = 'Verifikasi Akun'
+    msg = 'Berikut link untuk verifikasi email untuk akun '+ recipient_type +': '\
         + verification_url
     from_mail = 'admin@masif.com'
     try:
