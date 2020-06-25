@@ -1,15 +1,13 @@
 import datetime
 
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.hashers import make_password
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ValidationError
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.utils.datastructures import MultiValueDictKeyError
-from django.contrib import messages
-from django.contrib.sites.shortcuts import get_current_site
-from django.core.exceptions import ValidationError
-from django.contrib.auth.decorators import login_required
 
 from account.models import UserProfile, Account
 from admin.mailing import send_verification_email
@@ -196,12 +194,14 @@ def user_register(request):
                 phone = form.cleaned_data['phone']
                 secret = generate_user_token()
                 password = form.cleaned_data['password']
+                hashed_password = make_password(password)
+                print(secret)
                 new_account = UserVerificationList(
                     secret=secret,
                     name=name,
                     email=email,
                     phone=phone,
-                    password=password
+                    password=hashed_password
                 )
                 new_account.save()
                 base_url = get_current_site(request).domain
@@ -260,12 +260,13 @@ def user_verification(request, token):
             user_name = user_from_verification_list.name
             email = user_from_verification_list.email
             phone = user_from_verification_list.phone
-            password = user_from_verification_list.password
+            hashed_password = user_from_verification_list.password
         except UserVerificationList.DoesNotExist:
             return redirect('/user/verification/404')
-        new_user = Account.objects.create_user(email, password)
+        new_user = Account.objects.create_user(email, hashed_password)
         new_user.name = user_name
         new_user.phone = phone
+        new_user.password = hashed_password
         new_user.is_user = True
         new_user.save()
         create_user = UserProfile(user=new_user, unique_pelamar_attribute='user')
